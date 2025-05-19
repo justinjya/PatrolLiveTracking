@@ -1,0 +1,95 @@
+/* Sidebar container */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #f8f9fa;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+/* Sidebar content */
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Toggle button */
+.toggle-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.toggle-button {
+  cursor: pointer;
+  font-size: 20px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+/* Menu items */
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.menu-icon {
+  width: 20px;
+  text-align: center;
+}
+
+.menu-label {
+  margin-left: 10px;
+}
+
+/* Spacer */
+.spacer {
+  flex-grow: 1;
+}
+
+/* Secondary Sidebar */
+.secondary-sidebar {
+  width: 200px;
+  height: 100vh;
+  background-color: #e9ecef;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.secondary-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  align-items: center;
+}
+
+.secondary-sidebar-header {
+  display: flex;
+  align-items: center;
+}
+
+.close-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+  padding: 0
+}
