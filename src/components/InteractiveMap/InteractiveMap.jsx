@@ -1,6 +1,6 @@
 import { Map } from "@vis.gl/react-google-maps";
 import React, { useContext } from "react";
-import { LocationContext } from "../contexts/LocationContext";
+import { LocationContext } from "../../contexts/LocationContext";
 
 function InteractiveMap() {
   const { currentLocation, zoom } = useContext(LocationContext);

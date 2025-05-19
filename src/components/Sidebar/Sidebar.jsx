@@ -1,21 +1,25 @@
 import React, { useState } from "react";
+import SecondarySidebar from "../SecondarySidebar/SecondarySidebar";
 import "./Sidebar.css";
 
-function Sidebar() {
+function Sidebar({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [activeMenu, setActiveMenu] = useState(null); // Track the active menu item
+  const [secondaryContent, setSecondaryContent] = useState(null); // Track the content for the secondary sidebar
 
   const toggleSidebar = () => {
     setIsCollapsed(prev => !prev);
   };
 
-  const handleMenuClick = menu => {
+  const handleMenuClick = (menu, content) => {
     setActiveMenu(menu); // Open the secondary sidebar for the selected menu
+    setSecondaryContent(content); // Set the content for the secondary sidebar
     setIsCollapsed(true); // Collapse the primary sidebar
   };
 
   const closeSecondarySidebar = () => {
     setActiveMenu(null); // Close the secondary sidebar
+    setSecondaryContent(null); // Clear the content for the secondary sidebar
   };
 
   return (
@@ -26,49 +30,23 @@ function Sidebar() {
           {/* Toggle Button */}
           <ToggleButton isCollapsed={isCollapsed} onToggle={toggleSidebar} activeMenu={activeMenu} />
 
-          {/* Sidebar Menu */}
+          {/* Render Menu Items */}
           <div className="menu">
-            <MenuItem
-              icon="➕"
-              label="Add Patrol Route"
-              isCollapsed={isCollapsed}
-              onClick={() => handleMenuClick("addPatrolRoute")}
-            />
-            <MenuItem
-              icon="👮"
-              label="Patrols"
-              isCollapsed={isCollapsed}
-              onClick={() => handleMenuClick("patrols")}
-            />
-            <MenuItem
-              icon="⚠️"
-              label="Incidents"
-              isCollapsed={isCollapsed}
-              onClick={() => handleMenuClick("incidents")}
-            />
+            {React.Children.map(children, child =>
+              React.cloneElement(child, {
+                isCollapsed,
+                onClick: () => handleMenuClick(child.props.label, child.props.children || child.props.pageComponent)
+              })
+            )}
           </div>
-
-          {/* Spacer */}
-          <div className="spacer"></div>
-
-          {/* Bottom Element */}
-          <MenuItem icon="⚙️" label="Settings" isCollapsed={isCollapsed} onClick={() => handleMenuClick("settings")} />
         </div>
       </div>
 
       {/* Secondary Sidebar */}
       {activeMenu && (
-        <div className="secondary-sidebar">
-          <div className="secondary-sidebar-content">
-            <button className="close-button" onClick={closeSecondarySidebar}>
-              X
-            </button>
-            <div className="secondary-sidebar-header">
-              <h3>{activeMenu}</h3>
-            </div>
-            <p>Details for {activeMenu}</p>
-          </div>
-        </div>
+        <SecondarySidebar onClose={closeSecondarySidebar} title={activeMenu}>
+          {secondaryContent}
+        </SecondarySidebar>
       )}
     </div>
   );
@@ -97,4 +75,4 @@ function MenuItem({ icon, label, isCollapsed, onClick }) {
   );
 }
 
-export default Sidebar;
+export { MenuItem, Sidebar };

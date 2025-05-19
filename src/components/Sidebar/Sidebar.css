@@ -62,34 +62,3 @@
 .spacer {
   flex-grow: 1;
 }
-
-/* Secondary Sidebar */
-.secondary-sidebar {
-  width: 200px;
-  height: 100vh;
-  background-color: #e9ecef;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.secondary-sidebar-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 20px;
-  align-items: center;
-}
-
-.secondary-sidebar-header {
-  display: flex;
-  align-items: center;
-}
-
-.close-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  align-self: flex-end;
-  padding: 0
-}
