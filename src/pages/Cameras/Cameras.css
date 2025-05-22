@@ -1,0 +1,34 @@
+.icon-button {
+  background-color: transparent;
+  color: black;
+  cursor: pointer;
+}
+
+.camera-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.camera-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.view-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.view-button:hover {
+  background-color: #0056b3;
+}

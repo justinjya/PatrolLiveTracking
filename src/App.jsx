@@ -1,7 +1,7 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import React from "react";
 import "./App.css";
-import { LocationProvider } from "./contexts/LocationContext";
+import { MapDataProvider } from "./contexts/MapDataContext";
 import Home from "./pages/Home";
 
 function App() {
@@ -9,9 +9,9 @@ function App() {
 
   return (
     <APIProvider apiKey={API_KEY}>
-      <LocationProvider>
+      <MapDataProvider>
         <Home />
-      </LocationProvider>
+      </MapDataProvider>
     </APIProvider>
   );
 }
