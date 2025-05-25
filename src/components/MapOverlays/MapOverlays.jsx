@@ -1,9 +1,9 @@
-import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
 import React from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
-  const { markers, isEditing, addMarker, setMarkers } = useMapDataContext();
+  const { markers, isEditing, addMarker, setMarkers, selectedTask } = useMapDataContext();
 
   const handleAddMarker = () => {
     if (infoWindow && infoWindow.type === "map") {
@@ -17,29 +17,26 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
     }
   };
 
-        const handleDeleteMarker = () => {
-      if (infoWindow && infoWindow.type === "marker") {
-        const { marker } = infoWindow;
-        setMarkers((prev) => {
-          const updatedCameras = prev.cameras.filter((m) => m.id !== marker.id);
-          console.log("Updated cameras:", updatedCameras); // Debugging log
-    
-          if (updatedCameras.length === 0) {
-            console.log("Removing cameras key from localStorage");
-            localStorage.removeItem("cameras");
-          } else {
-            console.log("Updating cameras in localStorage:", updatedCameras);
-            localStorage.setItem("cameras", JSON.stringify(updatedCameras));
-          }
-    
-          return {
-            ...prev,
-            cameras: updatedCameras,
-          };
-        });
-        closeInfoWindow(); // Close the InfoWindow
-      }
-    };
+  const handleDeleteMarker = () => {
+    if (infoWindow && infoWindow.type === "marker") {
+      const { marker } = infoWindow;
+      setMarkers(prev => {
+        const updatedCameras = prev.cameras.filter(m => m.id !== marker.id);
+
+        if (updatedCameras.length === 0) {
+          localStorage.removeItem("cameras");
+        } else {
+          localStorage.setItem("cameras", JSON.stringify(updatedCameras));
+        }
+
+        return {
+          ...prev,
+          cameras: updatedCameras
+        };
+      });
+      closeInfoWindow(); // Close the InfoWindow
+    }
+  };
 
   return (
     <>
@@ -53,6 +50,32 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           <span style={{ fontSize: "30px" }}>📷</span>
         </AdvancedMarker>
       ))}
+
+      {/* Render markers for assignedRoute */}
+      {selectedTask?.assigned_route?.map(([lat, lng], index) => (
+        <AdvancedMarker key={`assignedRoute-${index}`} position={{ lat, lng }}>
+          <Pin
+            background="blue" // Blue for assignedRoute
+            glyphColor={"#000"}
+            borderColor={"#000"}
+          />
+        </AdvancedMarker>
+      ))}
+
+      {/* Render markers for routePath */}
+      {selectedTask?.route_path &&
+        Object.values(selectedTask.route_path).map((point, index) => (
+          <AdvancedMarker
+            key={`routePath-${index}`}
+            position={{ lat: point.coordinates[0], lng: point.coordinates[1] }}
+          >
+            <Pin
+              background="red" // Red for routePath
+              glyphColor={"#000"}
+              borderColor={"#000"}
+            />
+          </AdvancedMarker>
+        ))}
 
       {/* InfoWindow for map clicks */}
       {infoWindow && infoWindow.type === "map" && isEditing && (

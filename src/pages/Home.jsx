@@ -3,6 +3,7 @@ import InteractiveMap from "../components/InteractiveMap/InteractiveMap";
 import { MenuItem, Sidebar } from "../components/Sidebar/Sidebar";
 import Cameras from "./Cameras/Cameras";
 import { useMapDataContext } from "../contexts/MapDataContext";
+import Patrols from "./Patrols/Patrols";
 
 function Home() {
   const { isEditing, setIsEditing } = useMapDataContext();
@@ -20,7 +21,7 @@ function Home() {
             <p>Add Patrol Route Page</p>
           </MenuItem>
           <MenuItem icon="👮" label="Patrols">
-            <p>Patrols Page</p>
+            <Patrols />
           </MenuItem>
           <MenuItem icon="⚠️" label="Incidents">
             <p>Incidents Page</p>
