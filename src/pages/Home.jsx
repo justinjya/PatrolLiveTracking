@@ -4,6 +4,7 @@ import { MenuItem, Sidebar } from "../components/Sidebar/Sidebar";
 import Cameras from "./Cameras/Cameras";
 import { useMapDataContext } from "../contexts/MapDataContext";
 import Patrols from "./Patrols/Patrols";
+import Incidents from "./Incidents/Incidents";
 
 function Home() {
   const { isEditing, setIsEditing } = useMapDataContext();
@@ -24,7 +25,7 @@ function Home() {
             <Patrols />
           </MenuItem>
           <MenuItem icon="⚠️" label="Incidents">
-            <p>Incidents Page</p>
+            <Incidents />
           </MenuItem>
           <MenuItem icon="📷" label="Cameras">
             <Cameras />
