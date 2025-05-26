@@ -11,7 +11,17 @@ export const SidebarProvider = ({ children }) => {
 
   const toggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
+  }
+
+  const openSidebar = () => {
+    setIsCollapsed(false);
   };
+
+  const closeSidebar = () => {
+    setIsCollapsed(true);
+    setActiveMenu(null);
+    setSecondaryContent(null);
+  }
 
   const handleMenuClick = (menu, content) => {
     setActiveMenu(menu);
@@ -31,6 +41,8 @@ export const SidebarProvider = ({ children }) => {
         activeMenu,
         secondaryContent,
         toggleSidebar,
+        openSidebar,
+        closeSidebar,
         handleMenuClick,
         closeSecondarySidebar,
       }}

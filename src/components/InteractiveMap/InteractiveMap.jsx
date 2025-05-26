@@ -1,5 +1,6 @@
 import { Map, useMap } from "@vis.gl/react-google-maps";
 import React, { useEffect, useState } from "react";
+import { useMapDataContext } from "../../contexts/MapDataContext";
 import MapOverlays from "../MapOverlays/MapOverlays";
 
 function InteractiveMap() {
@@ -8,6 +9,7 @@ function InteractiveMap() {
 
   // Centralized state for the currently open InfoWindow
   const [infoWindow, setInfoWindow] = useState(null); // InfoWindow for map clicks or markers
+  const { isEditing } = useMapDataContext(); // Access edit mode state from context
 
   const map = useMap();
 
@@ -32,7 +34,16 @@ function InteractiveMap() {
     }
   }, [map]);
 
+  useEffect(() => {
+    setInfoWindow(null); // Reset InfoWindow when edit mode changes
+  }, [isEditing]);
+
   const handleMapClick = event => {
+    if (!isEditing) {
+      // If not in edit mode, do not open InfoWindow on map click
+      return;
+    }
+
     // Open an InfoWindow at the clicked location and close any other InfoWindow
     setInfoWindow({
       type: "map", // Indicates this InfoWindow is for a map click
@@ -42,6 +53,11 @@ function InteractiveMap() {
   };
 
   const handleMarkerClick = marker => {
+    if (!isEditing) {
+      // If not in edit mode, do not open InfoWindow on map click
+      return;
+    }
+
     // Open an InfoWindow for the clicked marker and close any other InfoWindow
     setInfoWindow({
       type: "marker", // Indicates this InfoWindow is for a marker

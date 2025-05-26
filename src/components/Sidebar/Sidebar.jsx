@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSidebarContext } from "../../contexts/SidebarContext"; // Import the context
 import SecondarySidebar from "../SecondarySidebar/SecondarySidebar";
 import "./Sidebar.css";
@@ -10,10 +10,17 @@ function Sidebar({ children }) {
     activeMenu,
     secondaryContent,
     toggleSidebar,
+    closeSidebar,
     handleMenuClick,
     closeSecondarySidebar,
   } = useSidebarContext();
-  const { setSelectedIncident } = useMapDataContext(); // Import setSelectedIncident from MapDataContext
+  const { setSelectedIncident, isEditing } = useMapDataContext(); // Import setSelectedIncident from MapDataContext
+
+  useEffect(() => {
+    if (isEditing) {
+      closeSidebar();
+    }
+  }, [isEditing])
 
   return (
     <div style={{ display: "flex" }}>

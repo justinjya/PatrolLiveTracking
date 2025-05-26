@@ -18,8 +18,8 @@ function Cameras() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <h3>List of Cameras</h3>
+    <div style={{ display: "flex", flexDirection: "column", paddingBottom: "40px", gap: "10px" }}>
+      <h3 style={{ textAlign: "start", margin: 0 }}>List of Cameras</h3>
       <div style={{ flexDirection: "row", alignSelf: "flex-end" }}>
         <ExpandableMenu icon="⚙️">
           <button className="icon-button" onClick={handleEditClick}>

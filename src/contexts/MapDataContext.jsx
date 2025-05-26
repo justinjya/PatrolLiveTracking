@@ -21,6 +21,14 @@ export const MapDataProvider = ({ children }) => {
   const mapsLibrary = useMapsLibrary("maps"); // Initialize the Google Maps library
   const [selectedIncident, setSelectedIncident] = useState(null); // Add selectedIncident state
 
+  // Add a new marker
+  const addMarker = (type, marker) => {
+    setMarkers((prev) => ({
+      ...prev,
+      [type]: [...prev[type], marker],
+    }));
+  };
+
   // Method to clear the polyline
   const clearPolylines = () => {
     if (polyline) {
@@ -165,6 +173,7 @@ export const MapDataProvider = ({ children }) => {
         mapsLibrary, // Expose the mapsLibrary
         selectedIncident, // Expose selectedIncident
         setSelectedIncident, // Expose setter for selectedIncident
+        addMarker, // Expose the addMarker method
       }}
     >
       {children}

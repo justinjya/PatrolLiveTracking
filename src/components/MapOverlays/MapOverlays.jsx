@@ -101,7 +101,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       )}
 
       {/* InfoWindow for marker clicks */}
-      {infoWindow && infoWindow.type === "marker" && (
+      {infoWindow && infoWindow.type === "marker" && isEditing && (
         <InfoWindow
           position={{
             lat: infoWindow.marker.lat,
@@ -109,11 +109,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           }}
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
-          {isEditing ? (
             <button onClick={handleDeleteMarker}>Delete Marker</button>
-          ) : (
-            <p>Marker Information</p> // Placeholder for non-editing mode content
-          )}
         </InfoWindow>
       )}
     </>
