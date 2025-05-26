@@ -19,6 +19,7 @@ export const MapDataProvider = ({ children }) => {
   const [selectedTask, setSelectedTask] = useState(null); // Track the selected task
   const [polyline, setPolyline] = useState(null); // State to store the polyline
   const mapsLibrary = useMapsLibrary("maps"); // Initialize the Google Maps library
+  const [selectedIncident, setSelectedIncident] = useState(null); // Add selectedIncident state
 
   // Method to clear the polyline
   const clearPolylines = () => {
@@ -161,7 +162,9 @@ export const MapDataProvider = ({ children }) => {
         setPolyline, // Expose polyline and its setter
         clearPolylines, // Expose the clearPolylines method
         addPolylines, // Expose the addPolylines method
-        mapsLibrary // Expose the mapsLibrary
+        mapsLibrary, // Expose the mapsLibrary
+        selectedIncident, // Expose selectedIncident
+        setSelectedIncident, // Expose setter for selectedIncident
       }}
     >
       {children}

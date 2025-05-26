@@ -1,0 +1,46 @@
+.incidents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 20px;
+}
+
+.incident-item {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(227, 227, 227);
+  gap: 3px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.incident-item p {
+  margin: 0;
+}
+
+.incident-item-id {
+  font-size: 8px;
+}
+
+.view-map-button {
+  color: rgb(0, 149, 255);
+  background-color: transparent;
+  padding: 0;
+  border: none;
+}
+
+.incident-item-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.incident-item-timestamp {
+  font-size: 10px;
+}
+
+.detail-button {
+  color: rgb(88, 88, 88);
+  background-color: transparent;
+  padding: 0;
+  border: none;
+}
