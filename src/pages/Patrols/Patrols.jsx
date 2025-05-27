@@ -1,12 +1,15 @@
 import { useMap } from "@vis.gl/react-google-maps";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Patrols.css";
 
 function Patrols() {
-  const { markers, setSelectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
+  const { markers, setSelectedTask, selectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
   const [collapsedStatuses, setCollapsedStatuses] = useState({}); // State to track collapsed statuses
+
+  // Define the custom order for statuses
+  const statusOrder = ["ongoing", "active", "finished", "expired", "cancelled"];
 
   // Group patrols by status and sort by assignedStartTime
   const groupedPatrols = useMemo(() => {
@@ -23,7 +26,15 @@ function Patrols() {
       grouped[status].sort((a, b) => new Date(a.assignedStartTime) - new Date(b.assignedStartTime));
     });
 
-    return grouped;
+    // Sort the grouped statuses based on the custom order
+    const sortedGrouped = {};
+    Object.keys(grouped)
+      .sort((a, b) => statusOrder.indexOf(a) - statusOrder.indexOf(b))
+      .forEach((status) => {
+        sortedGrouped[status] = grouped[status];
+      });
+
+    return sortedGrouped;
   }, [markers.patrols]);
 
   const handleViewClick = (task) => {
@@ -60,6 +71,20 @@ function Patrols() {
       [status]: !prev[status], // Toggle the collapsed state for the given status
     }));
   };
+
+  // Automatically update the polyline for the currently viewed task if it has the status of "ongoing"
+  useEffect(() => {
+    if (selectedTask && selectedTask?.status === "ongoing" && selectedTask.route_path) {
+      const updatedTask = markers.patrols.find((task) => task.id === selectedTask.id);
+      if (updatedTask) {
+        setSelectedTask(updatedTask); // Update the selected task with the latest state
+      }
+
+      clearPolylines(); // Clear existing polylines
+      const routePath = Object.values(selectedTask.route_path); // Extract route_path values
+      addPolylines(map, routePath); // Add polyline for the selected task
+    }
+  }, [markers.patrols]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px", overflow: "auto" }}>

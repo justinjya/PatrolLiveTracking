@@ -18,9 +18,6 @@ function Home() {
 
       <div style={{ position: "fixed", top: 0, left: 0 }}>
         <Sidebar>
-          <MenuItem icon="➕" label="Add Patrol Route">
-            <p>Add Patrol Route Page</p>
-          </MenuItem>
           <MenuItem icon="👮" label="Patrols">
             <Patrols />
           </MenuItem>

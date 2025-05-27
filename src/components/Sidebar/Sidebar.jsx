@@ -14,7 +14,7 @@ function Sidebar({ children }) {
     handleMenuClick,
     closeSecondarySidebar,
   } = useSidebarContext();
-  const { setSelectedIncident, isEditing } = useMapDataContext(); // Import setSelectedIncident from MapDataContext
+  const { setSelectedIncident, isEditing, clearPolylines } = useMapDataContext(); // Import setSelectedIncident from MapDataContext
 
   useEffect(() => {
     if (isEditing) {
@@ -47,6 +47,7 @@ function Sidebar({ children }) {
       {activeMenu && (
         <SecondarySidebar onClose={() => {
           closeSecondarySidebar();
+          clearPolylines();
           setSelectedIncident(null); // Reset selected incident when closing the sidebar
         }} title={activeMenu}>
           {secondaryContent}

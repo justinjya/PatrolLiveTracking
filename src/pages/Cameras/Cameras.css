@@ -5,30 +5,25 @@
 }
 
 .camera-list {
-  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 0;
-  margin: 0;
 }
 
 .camera-item {
   display: flex;
+  flex-direction: row;
+  background-color: rgb(227, 227, 227);
   justify-content: space-between;
-  align-items: center;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 5px;
+  border-radius: 10px;
 }
 
-.view-button {
-  background-color: #007bff;
-  color: white;
+.view-map-button {
+  font-size: 8px;
+  color: rgb(0, 149, 255);
+  background-color: transparent;
+  padding: 0;
   border: none;
-  border-radius: 3px;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.view-button:hover {
-  background-color: #0056b3;
 }

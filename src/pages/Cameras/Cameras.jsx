@@ -1,12 +1,12 @@
+import { useMap } from "@vis.gl/react-google-maps";
 import React from "react";
 import ExpandableMenu from "../../components/ExpandableMenu/ExpandableMenu";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Cameras.css";
-import { useMap } from "@vis.gl/react-google-maps";
 
 function Cameras() {
   const { markers, setIsEditing } = useMapDataContext();
-  const map = useMap()
+  const map = useMap();
 
   const handleEditClick = () => {
     setIsEditing(true); // Enable edit mode
@@ -31,8 +31,8 @@ function Cameras() {
         {markers.cameras.map(camera => (
           <li key={camera.id} className="camera-item">
             <span>Camera ID: {camera.id}</span>
-            <button className="view-button" onClick={() => handleViewClick(camera)}>
-              View
+            <button className="view-map-button" onClick={() => handleViewClick(camera)}>
+              View on Map
             </button>
           </li>
         ))}

@@ -5,7 +5,8 @@ import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
-  const { markers, todayIncidents, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask } = useMapDataContext();
+  const { markers, todayIncidents, selectedIncident, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask } =
+    useMapDataContext();
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
 
   const handleAddMarker = () => {
@@ -56,10 +57,15 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
 
       {/* Render today's incidents */}
       {todayIncidents.map(incident => (
-        <AdvancedMarker key={incident.id} position={{ lat: incident.latitude, lng: incident.longitude }} onClick={() => {
-          handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
-          setSelectedIncident(incident)
-        }}>
+        <AdvancedMarker
+          key={incident.id}
+          position={{ lat: incident.latitude, lng: incident.longitude }}
+          onClick={() => {
+            setSelectedIncident(incident);
+            handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
+            console.log("Selected Incident:", selectedIncident);
+          }}
+        >
           <span style={{ fontSize: "30px" }}>⚠️</span>
         </AdvancedMarker>
       ))}
@@ -90,6 +96,27 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           </AdvancedMarker>
         ))}
 
+      {/* Render patrol markers for ongoing tasks */}
+      {markers.patrols
+        .filter(patrol => patrol.status === "ongoing") // Filter patrols with status = "ongoing"
+        .map(patrol => {
+          // Get the last entry of the route_path object
+          const lastRoutePoint = Object.entries(patrol.route_path || {}).pop();
+
+          if (!lastRoutePoint) return null; // Skip if no route_path exists
+
+          const [key, point] = lastRoutePoint; // Destructure the key and point
+
+          return (
+            <AdvancedMarker
+              key={`patrol-${patrol.id}-routePath-${key}`}
+              position={{ lat: point.coordinates[0], lng: point.coordinates[1] }}
+            >
+              <span style={{ fontSize: "30px" }}>👮</span>
+            </AdvancedMarker>
+          );
+        })}
+
       {/* InfoWindow for map clicks */}
       {infoWindow && infoWindow.type === "map" && isEditing && (
         <InfoWindow
@@ -109,7 +136,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           }}
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
-            <button onClick={handleDeleteMarker}>Delete Marker</button>
+          <button onClick={handleDeleteMarker}>Delete Marker</button>
         </InfoWindow>
       )}
     </>
