@@ -1,0 +1,130 @@
+.patrols-page {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 40px;
+}
+
+.patrols-title {
+  text-align: start;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.patrols-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.patrol-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patrol-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patrol-cluster-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.toggle-button {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.patrol-status-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patrol-status-group {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patrol-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patrol-status-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.patrol-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patrol-item {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.patrol-item-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.patrol-item-details {
+  font-size: 12px;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.patrol-item-badges, .patrol-item-timestamps {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.badge {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.view-map-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 11px;
+}
