@@ -11,7 +11,8 @@ export const MapDataProvider = ({ children }) => {
   const [markers, setMarkers] = useState({
     cameras: [],
     patrols: [],
-    incidents: []
+    incidents: [],
+    tatars: []
   });
 
   const [todayIncidents, setTodayIncidents] = useState([]); // State to store today's incidents
@@ -23,9 +24,9 @@ export const MapDataProvider = ({ children }) => {
 
   // Add a new marker
   const addMarker = (type, marker) => {
-    setMarkers((prev) => ({
+    setMarkers(prev => ({
       ...prev,
-      [type]: [...prev[type], marker],
+      [type]: [...prev[type], marker]
     }));
   };
 
@@ -82,6 +83,7 @@ export const MapDataProvider = ({ children }) => {
   useEffect(() => {
     const patrolsRef = ref(db, "tasks"); // Reference to the "tasks" node
     const reportsRef = ref(db, "reports"); // Reference to the "reports" node
+    const tatarsRef = ref(db, "users"); // Reference to the "users" node
 
     const unsubscribePatrols = onValue(patrolsRef, snapshot => {
       if (snapshot.exists()) {
@@ -127,7 +129,7 @@ export const MapDataProvider = ({ children }) => {
 
         // Filter incidents based on the timestamp
         // const startOfRange = new Date("2025-05-23T00:00:00").getTime(); // Start of May 23, 2025
-        // const endOfRange = new Date("2025-05-24T23:59:59.999").getTime(); // End of May 25, 2025       
+        // const endOfRange = new Date("2025-05-24T23:59:59.999").getTime(); // End of May 25, 2025
         // const filteredIncidents = incidentsArray.filter(incident => {
         //   const incidentTimestamp = new Date(incident.timestamp).getTime(); // Parse ISO 8601 timestamp
         //   return incidentTimestamp >= startOfRange && incidentTimestamp <= endOfRange;
@@ -149,10 +151,34 @@ export const MapDataProvider = ({ children }) => {
       }
     });
 
+    const unsubscribeTatars = onValue(tatarsRef, snapshot => {
+      if (snapshot.exists()) {
+        const tatarsData = snapshot.val();
+        const tatarsArray = Object.keys(tatarsData)
+          .map(key => ({
+            id: key,
+            ...tatarsData[key]
+          }))
+          .filter(tatar => tatar.role === "patrol"); // Filter users with the role "patrol"
+
+        setMarkers(prev => ({
+          ...prev,
+          tatars: tatarsArray // Update tatars in the markers state
+        }));
+      } else {
+        console.log("No tatars found in the database.");
+        setMarkers(prev => ({
+          ...prev,
+          tatars: []
+        }));
+      }
+    });
+
     // Cleanup subscriptions on component unmount
     return () => {
       unsubscribePatrols();
       unsubscribeReports();
+      unsubscribeTatars();
     };
   }, [db]);
 
@@ -173,7 +199,7 @@ export const MapDataProvider = ({ children }) => {
         mapsLibrary, // Expose the mapsLibrary
         selectedIncident, // Expose selectedIncident
         setSelectedIncident, // Expose setter for selectedIncident
-        addMarker, // Expose the addMarker method
+        addMarker // Expose the addMarker method
       }}
     >
       {children}

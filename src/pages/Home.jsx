@@ -1,10 +1,11 @@
 import React from "react";
 import InteractiveMap from "../components/InteractiveMap/InteractiveMap";
 import { MenuItem, Sidebar } from "../components/Sidebar/Sidebar";
-import Cameras from "./Cameras/Cameras";
 import { useMapDataContext } from "../contexts/MapDataContext";
-import Patrols from "./Patrols/Patrols";
+import Cameras from "./Cameras/Cameras";
 import Incidents from "./Incidents/Incidents";
+import Patrols from "./Patrols/Patrols";
+import TatarManagement from "./TatarManagement/TatarMangement";
 
 function Home() {
   const { isEditing, setIsEditing } = useMapDataContext();
@@ -27,6 +28,9 @@ function Home() {
           <MenuItem icon="📷" label="Cameras">
             <Cameras />
           </MenuItem>
+          <MenuItem icon="🏢" label="Tatar Management">
+            <TatarManagement />
+          </MenuItem>
         </Sidebar>
       </div>
     </div>
@@ -48,7 +52,7 @@ function EditingIndicator({ onClose }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: "10px",
+        gap: "10px"
       }}
     >
       <span>Editing</span>
@@ -59,7 +63,7 @@ function EditingIndicator({ onClose }) {
           border: "none",
           color: "black",
           cursor: "pointer",
-          padding: 0,
+          padding: 0
         }}
       >
         X
