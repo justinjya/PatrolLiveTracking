@@ -4,7 +4,7 @@ import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Incidents.css";
 
 function Incidents() {
-  const { markers, selectedIncident } = useMapDataContext(); // Access selectedIncident from context
+  const { markers, selectedIncident, setSelectedIncident } = useMapDataContext(); // Access selectedIncident from context
   const map = useMap();
 
   const handleViewClick = incident => {
@@ -35,6 +35,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
 
   const toggleDetails = () => {
     setIsExpanded(prev => !prev);
+    setSelectedIncident(prev => (prev && prev.id === incident.id ? null : incident)); // Toggle selection state
   };
 
   const photoUrls = incident.photoUrl ? incident.photoUrl.split(",") : [];
