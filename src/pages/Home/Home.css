@@ -1,0 +1,22 @@
+.editing-indicator {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #002E83;
+  color: #FBFCFD;
+  padding: 10px 20px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.editing-indicator-close-button {
+  background: transparent;
+  border: none;
+  color:#FBFCFD;
+  cursor: pointer;
+  padding: 0;
+}

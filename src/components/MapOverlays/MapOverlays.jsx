@@ -3,6 +3,9 @@ import React from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import "./MapOverlays.css";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
   const { markers, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask, selectedCluster } =
@@ -51,7 +54,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           position={{ lat: marker.lat, lng: marker.lng }}
           onClick={() => handleMarkerClick(marker)} // Handle marker clicks
         >
-          <span style={{ fontSize: "30px" }}>📷</span>
+          <FontAwesomeIcon icon={faCamera} size="3x" className="camera-icon" />
         </AdvancedMarker>
       ))}
 

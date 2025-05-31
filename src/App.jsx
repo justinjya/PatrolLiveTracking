@@ -4,7 +4,7 @@ import "./App.css";
 import { FirebaseProvider } from "./contexts/FirebaseContext";
 import { MapDataProvider } from "./contexts/MapDataContext";
 import { SidebarProvider } from "./contexts/SidebarContext"; // Import SidebarProvider
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 
 function App() {
   const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;

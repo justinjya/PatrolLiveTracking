@@ -1,6 +1,5 @@
 import { useMap } from "@vis.gl/react-google-maps";
 import React from "react";
-import ExpandableMenu from "../../components/ExpandableMenu/ExpandableMenu";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Cameras.css";
 
@@ -18,25 +17,31 @@ function Cameras() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", paddingBottom: "40px", gap: "10px" }}>
-      <h3 style={{ textAlign: "start", margin: 0 }}>List of Cameras</h3>
-      <div style={{ flexDirection: "row", alignSelf: "flex-end" }}>
-        <ExpandableMenu icon="⚙️">
-          <button className="icon-button" onClick={handleEditClick}>
-            Edit
-          </button>
-        </ExpandableMenu>
+    <div className="cameras-container">
+      <div className="cameras-header">
+        <h3 className="cameras-title">List of Cameras</h3>
+        <button className="edit-cameras-button" onClick={handleEditClick}>
+          Edit Cameras
+        </button>
       </div>
-      <ul className="camera-list">
+      <div className="camera-list">
         {markers.cameras.map(camera => (
-          <li key={camera.id} className="camera-item">
-            <span>Camera ID: {camera.id}</span>
-            <button className="view-map-button" onClick={() => handleViewClick(camera)}>
-              View on Map
-            </button>
-          </li>
+          <div key={camera.id} className="camera-item">
+            <span className="camera-id">Camera ID: {camera.id}</span>
+            <div className="camera-details">
+              <div className="camera-coordinates-container">
+                <span className="camera-coordinates">{camera.lat},</span>
+                <div className="camera-actions">
+                  <span className="camera-coordinates">{camera.lng}</span>
+                  <button className="camera-item-view-on-map-button" onClick={() => handleViewClick(camera)}>
+                    View on Map
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
