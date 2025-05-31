@@ -1,7 +1,6 @@
 .tatar-management {
   display: flex;
   flex-direction: column;
-  padding-bottom: 40px;
   gap: 10px;
   height: 100%;
 }
@@ -14,6 +13,7 @@
 .tatar-list {
   flex: 1;
   overflow-y: auto;
+  padding-bottom: 50px;
 }
 
 .tatar-item {
