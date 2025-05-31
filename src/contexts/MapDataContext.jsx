@@ -20,6 +20,7 @@ export const MapDataProvider = ({ children }) => {
   const [polyline, setPolyline] = useState(null); // State to store the polyline
   const mapsLibrary = useMapsLibrary("maps"); // Initialize the Google Maps library
   const [selectedIncident, setSelectedIncident] = useState(null); // Add selectedIncident state
+  const [selectedCluster, setSelectedCluster] = useState(null); // Add selectedIncident state
 
   // Add a new marker
   const addMarker = (type, marker) => {
@@ -173,7 +174,9 @@ export const MapDataProvider = ({ children }) => {
         mapsLibrary, // Expose the mapsLibrary
         selectedIncident, // Expose selectedIncident
         setSelectedIncident, // Expose setter for selectedIncident
-        addMarker // Expose the addMarker method
+        addMarker, // Expose the addMarker method
+        selectedCluster, // Expose selectedCluster
+        setSelectedCluster // Expose setter for selectedCluster
       }}
     >
       {children}

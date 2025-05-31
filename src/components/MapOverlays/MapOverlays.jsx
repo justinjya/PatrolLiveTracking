@@ -5,7 +5,7 @@ import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
-  const { markers, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask } =
+  const { markers, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask, selectedCluster } =
     useMapDataContext();
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
 
@@ -44,7 +44,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
 
   return (
     <>
-      {/* Render camera markers */}
+      {/* Render markers for cameras */}
       {markers.cameras.map(marker => (
         <AdvancedMarker
           key={marker.id}
@@ -55,7 +55,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
         </AdvancedMarker>
       ))}
 
-      {/* Render today's incidents */}
+      {/* Render markers for incidents */}
       {markers.incidents.map(incident => (
         <AdvancedMarker
           key={incident.id}
@@ -115,6 +115,20 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
             </AdvancedMarker>
           );
         })}
+
+      {/* Render markers for when a cluster is selected */}
+      {selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
+        <AdvancedMarker
+          key={`cluster-${selectedCluster.id}-coordinate-${index}`}
+          position={{ lat: coordinate[0], lng: coordinate[1] }}
+        >
+          <Pin
+            background="#FE2B25"
+            glyphColor={"#8D0004"}
+            borderColor={"#FFFEFE"}
+          />
+        </AdvancedMarker>
+      ))}
 
       {/* InfoWindow for map clicks */}
       {infoWindow && infoWindow.type === "map" && isEditing && (

@@ -14,7 +14,7 @@ function Sidebar({ children }) {
     handleMenuClick,
     closeSecondarySidebar
   } = useSidebarContext();
-  const { setSelectedIncident, isEditing, clearPolylines } = useMapDataContext();
+  const { setSelectedIncident, isEditing, clearPolylines, setSelectedCluster } = useMapDataContext();
 
   useEffect(() => {
     if (isEditing) {
@@ -50,6 +50,7 @@ function Sidebar({ children }) {
             closeSecondarySidebar();
             clearPolylines();
             setSelectedIncident(null); // Reset selected incident when closing the sidebar
+            setSelectedCluster(null); // Reset selected cluster when closing the sidebar
           }}
           title={activeMenu}
         >

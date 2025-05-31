@@ -17,15 +17,16 @@
 }
 
 .tatar-item {
-  border: 1px solid #ccc;
+  border: 1px solid #afd7f8;
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: #f9f9f9;
+  background-color: #fff;
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .tatar-name {
@@ -33,7 +34,8 @@
   font-size: 16px;
 }
 
-.tatar-email {
+.tatar-email,
+.tatar-coordinates {
   font-size: 14px;
   color: #555;
 }
@@ -45,48 +47,40 @@
 
 .badge {
   padding: 5px 10px;
-  border-radius: 12px;
+  border-radius: 5px;
   font-size: 12px;
 }
 
-.badge-blue {
-  background-color: #007bff;
-  color: white;
+.shift-badge {
+  background-color: #f1f8ff;
+  color: #0b64c6;
 }
 
-.badge-green {
-  background-color: #28a745;
-  color: white;
-}
-
-.badge-yellow {
-  background-color: #ffc107;
-  color: black;
+.tatar-contents {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .tatar-coordinates {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .action-button {
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   padding: 5px 10px;
   cursor: pointer;
-  font-size: 12px;
-}
-
-.view-button {
-  background-color: #007bff;
-  color: white;
+  font-size: 11px;
 }
 
 .dropdown-button {
   background-color: transparent;
   padding: 0;
   border: none;
-  color: #007bff;
+  color: #002E83;
   cursor: pointer;
   font-size: 12px;
   display: flex;
@@ -107,13 +101,14 @@
 }
 
 .officer-card {
-  border: 1px solid #ccc;
+  border: 1px solid #afd7f8;
   border-radius: 8px;
   padding: 10px;
-  background-color: #f1f1f1;
+  background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   gap: 10px;
 }
 
