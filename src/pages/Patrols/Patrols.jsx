@@ -4,7 +4,7 @@ import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Patrols.css";
 
 function Patrols() {
-  const { markers } = useMapDataContext(); // Access global methods and state
+  const { markers, setSelectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
   const [collapsedClusters, setCollapsedClusters] = useState(() => {
     // Initialize all clusters as collapsed
@@ -56,7 +56,10 @@ function Patrols() {
     return grouped;
   }, [markers.patrols]);
 
-  const handleViewClick = task => {
+  const handleViewClick = (task) => {
+    clearPolylines(); // Use the global clearPolylines method
+
+    // Calculate the center of the assignedRoute
     const assignedRoute = task.assigned_route;
     const center = assignedRoute.reduce(
       (acc, [lat, lng]) => {
@@ -70,8 +73,15 @@ function Patrols() {
     center.lat /= assignedRoute.length;
     center.lng /= assignedRoute.length;
 
+    setSelectedTask(task); // Set the selected task in the context
     map.setCenter(center); // Move map center to the calculated center of assignedRoute
     map.setZoom(17); // Zoom in a bit
+
+    // Add polyline for route_path if it exists
+    if (task.route_path) {
+      const routePath = Object.values(task.route_path); // Extract route_path values
+      addPolylines(map, routePath); // Use the global addPolylines method
+    }
   };
 
   const toggleClusterCollapse = clusterName => {
