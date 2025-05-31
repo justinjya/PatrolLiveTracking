@@ -5,7 +5,7 @@ import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
-  const { markers, todayIncidents, selectedIncident, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask } =
+  const { markers, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask } =
     useMapDataContext();
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
 
@@ -56,7 +56,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       ))}
 
       {/* Render today's incidents */}
-      {todayIncidents.map(incident => (
+      {markers.incidents.map(incident => (
         <AdvancedMarker
           key={incident.id}
           position={{ lat: incident.latitude, lng: incident.longitude }}

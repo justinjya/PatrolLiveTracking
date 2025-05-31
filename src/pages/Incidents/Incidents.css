@@ -1,46 +1,110 @@
+.incidents-page {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 40px;
+}
+
+.incidents-title {
+  text-align: start;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
 .incidents-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-right: 20px;
+  overflow-y: auto;
 }
 
-.incident-item {
+.incident-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f9f9f9;
   display: flex;
   flex-direction: column;
-  background-color: rgb(227, 227, 227);
-  gap: 3px;
-  padding: 10px;
-  border-radius: 10px;
+  gap: 10px;
 }
 
-.incident-item p {
-  margin: 0;
+.incident-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.incident-item-id {
-  font-size: 8px;
+.incident-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.incident-coordinates {
+  font-size: 11px; /* Smaller font size for coordinates */
+  color: #555;
+}
+
+.incident-timestamp {
+  font-size: 12px;
+  color: #555;
 }
 
 .view-map-button {
-  color: rgb(0, 149, 255);
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.dropdown-button {
   background-color: transparent;
   padding: 0;
   border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
 }
 
-.incident-item-title {
-  font-weight: bold;
-  font-size: 18px;
+.dropdown-icon {
+  font-size: 14px;
 }
 
-.incident-item-timestamp {
-  font-size: 10px;
+.incident-extra-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  text-align: left; /* Align text in the details section to the left */
 }
 
-.detail-button {
-  color: rgb(88, 88, 88);
-  background-color: transparent;
-  padding: 0;
-  border: none;
+.incident-description {
+  font-size: 14px;
+  color: #333;
+}
+
+.incident-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.photo-gallery {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.incident-photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }

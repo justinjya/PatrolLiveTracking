@@ -46,18 +46,16 @@ function TatarCard({ tatar }) {
         <div className="tatar-name">{tatar.name}</div>
         <div className="tatar-email">{tatar.email}</div>
       </div>
-      <div className="tatar-badges">
+      <div className="tatar-coordinates">
         <span className="badge badge-green">
           Jumlah Titik: {tatar.cluster_coordinates ? tatar.cluster_coordinates.length : 0}
         </span>
+        <button className="action-button view-button" onClick={viewOnMap}>
+          View on Map
+        </button>
       </div>
       {tatar.officers && Object.keys(tatar.officers).length > 0 && (
         <>
-          <div className="tatar-actions">
-            <button className="action-button view-button" onClick={viewOnMap}>
-              View on Map
-            </button>
-          </div>
           <button className="dropdown-button" onClick={toggleDropdown}>
             {isExpanded
               ? `Hide Officers (${Object.keys(tatar.officers).length})`
