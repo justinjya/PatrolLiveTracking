@@ -43,10 +43,16 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
   // Automatically expand details if the incident is selected
   useEffect(() => {
     if (isSelected) {
-      setIsExpanded(true);
-      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); // Scroll to the selected card
+      setIsExpanded(true); // Expand the card
     }
   }, [isSelected]);
+
+  // Scroll to the expanded version after the state update
+  useEffect(() => {
+    if (isSelected && isExpanded) {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); // Scroll to the expanded card
+    }
+  }, [isExpanded, isSelected]);
 
   return (
     <div ref={cardRef} className="incident-card">
