@@ -63,7 +63,6 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           onClick={() => {
             setSelectedIncident(incident);
             handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
-            console.log("Selected Incident:", selectedIncident);
           }}
         >
           <span style={{ fontSize: "30px" }}>⚠️</span>

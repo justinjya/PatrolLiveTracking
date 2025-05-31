@@ -89,9 +89,9 @@ function Incidents() {
 
   // Render the Incident List Page
   return (
-    <div style={{ display: "flex", flexDirection: "column", overflow: "auto", paddingBottom: "40px" }}>
+    <div style={{ display: "flex", flexDirection: "column", overflow: "hidden", paddingBottom: "40px" }}>
       <h3 style={{ textAlign: "start", margin: 0 }}>List of Incidents</h3>
-      <div style={{ textAlign: "left" }}>
+      <div style={{ textAlign: "left", overflowY: "auto", flex: 1 }}>
         {Object.keys(groupedIncidents).map(date => (
           <div key={date}>
             <h4 style={{ cursor: "pointer", userSelect: "none" }} onClick={() => toggleCollapse(date)}>

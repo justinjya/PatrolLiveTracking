@@ -86,10 +86,103 @@ function Patrols() {
     }
   }, [markers.patrols]);
 
+  const handleBackToList = () => {
+    setSelectedTask(null); // Clear the selected task to go back to the list
+    clearPolylines(); // Clear any existing polylines
+  };
+
+  const handleViewOnMap = (coordinates) => {
+    map.panTo({ lat: coordinates[0], lng: coordinates[1] }); // Pan the map to the specified coordinates
+    map.setZoom(17); // Optionally zoom in
+  };
+
+  // Render the Patrol Details Page
+  if (selectedTask) {
+    return (
+      <div
+        key={selectedTask.id}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "start",
+          height: "100%",
+          overflow: "hidden",
+          paddingBottom: "40px",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+          <button
+            style={{ backgroundColor: "transparent", color: "black", padding: 0, border: "none" }}
+            onClick={handleBackToList}
+          >
+            {"<"}
+          </button>
+          <h3 style={{ margin: 0 }}>Patrol Details</h3>
+        </div>
+        <div style={{ overflowY: "auto", flex: 1, paddingRight: "10px" }}>
+          <h5 style={{ margin: 0 }}>ID: {selectedTask.id}</h5>
+          <p style={{ marginTop: 0, fontSize: "12px" }}>Status: {selectedTask.status}</p>
+          <div>
+            <h5>Assigned Times</h5>
+            <p>Start: {selectedTask.assignedStartTime}</p>
+            <p>End: {selectedTask.assignedEndTime}</p>
+          </div>
+          <div>
+            <h5>Cluster</h5>
+            <p>Name: {selectedTask.clusterName}</p>
+          </div>
+          <div>
+            <h5>Distance</h5>
+            <p>{selectedTask.distance} meters</p>
+          </div>
+          <div>
+            <h5>Activity</h5>
+            <p>Route Path:</p>
+            <ul>
+              {Object.entries(selectedTask.route_path || {}).map(([key, point]) => (
+                <li key={key}>
+                  Coordinates: {point.coordinates.join(", ")} | Timestamp: {point.timestamp}
+                  <button
+                    style={{
+                      marginLeft: "10px",
+                      padding: "5px 10px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleViewOnMap(point.coordinates)}
+                  >
+                    View on Map
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h5>Officer</h5>
+            <p>Name: {selectedTask.officerName}</p>
+          </div>
+          <div>
+            <h5>Timeliness</h5>
+            <p>{selectedTask.timeliness}</p>
+          </div>
+          <div>
+            <h5>Start and End Times</h5>
+            <p>Start: {selectedTask.startTime}</p>
+            <p>End: {selectedTask.endTime}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render the Patrol List Page
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px", overflow: "auto" }}>
-      <h3>List of Patrols</h3>
-      <div style={{ textAlign: "left" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px", paddingBottom: "40px", overflow: "hidden" }}>
+      <h3 style={{ textAlign: "start", margin: 0 }}>List of Patrols</h3>
+      <div style={{ textAlign: "left", overflowY: "auto", flex: 1 }}>
         {Object.keys(groupedPatrols).map((status) => (
           <div key={status}>
             <h4 style={{ cursor: "pointer", userSelect: "none" }} onClick={() => toggleCollapse(status)}>
