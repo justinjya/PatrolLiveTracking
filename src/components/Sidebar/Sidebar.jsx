@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
+import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext"; // Import the context
 import SecondarySidebar from "../SecondarySidebar/SecondarySidebar";
 import "./Sidebar.css";
-import { useMapDataContext } from "../../contexts/MapDataContext";
 
 function Sidebar({ children }) {
   const {
@@ -12,15 +12,15 @@ function Sidebar({ children }) {
     toggleSidebar,
     closeSidebar,
     handleMenuClick,
-    closeSecondarySidebar,
+    closeSecondarySidebar
   } = useSidebarContext();
-  const { setSelectedIncident, isEditing, clearPolylines } = useMapDataContext(); // Import setSelectedIncident from MapDataContext
+  const { setSelectedIncident, isEditing, clearPolylines } = useMapDataContext();
 
   useEffect(() => {
     if (isEditing) {
       closeSidebar();
     }
-  }, [isEditing])
+  }, [isEditing]);
 
   return (
     <div style={{ display: "flex" }}>
@@ -31,12 +31,12 @@ function Sidebar({ children }) {
           <ToggleButton isCollapsed={isCollapsed} onToggle={toggleSidebar} activeMenu={activeMenu} />
 
           {/* Render Menu Items */}
-          <div className="menu">
-            {React.Children.map(children, (child) =>
+          <div className="sidebar-menu">
+            {React.Children.map(children, child =>
               React.cloneElement(child, {
                 isCollapsed,
-                onClick: () =>
-                  handleMenuClick(child.props.label, child.props.children || child.props.pageComponent),
+                isSelected: child.props.label === activeMenu, // Check if the menu is active
+                onClick: () => handleMenuClick(child.props.label, child.props.children || child.props.pageComponent)
               })
             )}
           </div>
@@ -45,11 +45,14 @@ function Sidebar({ children }) {
 
       {/* Secondary Sidebar */}
       {activeMenu && (
-        <SecondarySidebar onClose={() => {
-          closeSecondarySidebar();
-          clearPolylines();
-          setSelectedIncident(null); // Reset selected incident when closing the sidebar
-        }} title={activeMenu}>
+        <SecondarySidebar
+          onClose={() => {
+            closeSecondarySidebar();
+            clearPolylines();
+            setSelectedIncident(null); // Reset selected incident when closing the sidebar
+          }}
+          title={activeMenu}
+        >
           {secondaryContent}
         </SecondarySidebar>
       )}
@@ -59,9 +62,9 @@ function Sidebar({ children }) {
 
 function ToggleButton({ isCollapsed, onToggle, activeMenu }) {
   return (
-    <div className="toggle-button-container">
+    <div className="sidebar-toggle-button-container">
       <button
-        className="toggle-button"
+        className="sidebar-toggle-button"
         onClick={onToggle}
         style={{ visibility: activeMenu ? "hidden" : "visible" }} // Hide button if there's an active menu
       >
@@ -71,11 +74,14 @@ function ToggleButton({ isCollapsed, onToggle, activeMenu }) {
   );
 }
 
-function MenuItem({ icon, label, isCollapsed, onClick }) {
+function MenuItem({ icon, label, isCollapsed, onClick, isSelected }) {
   return (
-    <div className="menu-item" onClick={onClick}>
-      <span className="menu-icon">{icon}</span>
-      {!isCollapsed && <span className="menu-label">{label}</span>}
+    <div
+      className={`sidebar-menu-item ${isSelected ? "selected" : ""}`} // Add 'selected' class if the menu is active
+      onClick={onClick}
+    >
+      <span className="sidebar-menu-icon">{icon}</span>
+      {!isCollapsed && <span className="sidebar-menu-label">{label}</span>}
     </div>
   );
 }

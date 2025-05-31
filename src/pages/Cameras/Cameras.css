@@ -9,22 +9,22 @@
   flex-direction: column;
   gap: 10px;
   padding: 0;
-  padding-right: 20px;
 }
 
 .camera-item {
   display: flex;
   flex-direction: row;
-  background-color: rgb(227, 227, 227);
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   justify-content: space-between;
   padding: 10px;
-  border-radius: 10px;
 }
 
 .view-map-button {
   font-size: 8px;
   color: rgb(0, 149, 255);
-  background-color: transparent;
+  background-color: #007bff;
   padding: 0;
   border: none;
 }
