@@ -39,6 +39,8 @@ function Sidebar({ children }) {
                 isCollapsed,
                 isSelected: child.props.label === activeMenu, // Check if the menu is active
                 onClick: () => {
+                  if (isEditing) return;
+
                   handleMenuClick(child.props.label, child.props.children || child.props.pageComponent)
                   setSelectedTask(null); // Reset selected task when switching menus
                   setSelectedIncident(null); // Reset selected incident when switching menus
@@ -56,6 +58,8 @@ function Sidebar({ children }) {
         <SecondarySidebar
           activeMenu={activeMenu}
           onClose={() => {
+            if (isEditing) return; // Prevent closing if in editing mode
+            
             closeSecondarySidebar();
             setSelectedTask(null); // Reset selected task when closing the sidebar
             setSelectedIncident(null); // Reset selected incident when closing the sidebar
