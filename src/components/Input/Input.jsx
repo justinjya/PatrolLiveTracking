@@ -3,10 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import "./Input.css"; // Import the CSS file
 
-function Input({ icon, type, name, id, placeholder, required, style, position, options = [] }) {
+function Input({ icon, type, name, id, placeholder, required, style, position, options = [], defaultValue = "" }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown visibility
-  const [selectedOption, setSelectedOption] = useState(""); // State for selected option
+  const [selectedOption, setSelectedOption] = useState(() => {
+    // Initialize selectedOption based on defaultValue matching either label or value
+    const defaultOption = options.find(option => option.label === defaultValue || option.value === defaultValue);
+    return defaultOption ? defaultOption.label : defaultValue;
+  });
   const dropdownRef = useRef(null); // Ref for the dropdown container
 
   const togglePasswordVisibility = () => {
@@ -63,7 +67,7 @@ function Input({ icon, type, name, id, placeholder, required, style, position, o
                   key={index}
                   className="dropdown-option"
                   onClick={() => {
-                    setSelectedOption(option.label); // Set selected option
+                    setSelectedOption(option.label); // Set selected option to the label
                     setIsDropdownOpen(false); // Close dropdown
                   }}
                 >
@@ -89,6 +93,7 @@ function Input({ icon, type, name, id, placeholder, required, style, position, o
         placeholder={placeholder}
         required={required}
         style={style} // Allow additional inline styles if needed
+        defaultValue={defaultValue} // Set default value for regular input
       />
       {type === "password" && (
         <FontAwesomeIcon

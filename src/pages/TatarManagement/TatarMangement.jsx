@@ -4,7 +4,9 @@ import {
   faCity,
   faEnvelope,
   faLocationDot,
-  faLock
+  faLock,
+  faPen,
+  faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
@@ -228,17 +230,12 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
               </div>
               {isAddingOfficer && (
                 <>
-                  <div className="add-officer-form-container">
-                    <h4 className="tatar-management-title">Add New Officer</h4>
-                    <form className="add-officer-form">
-                      <Input type="text" id="name" name="name" placeholder="Officer Name" required />
-                      <Input type="dropdown" id="type" name="officer-type" placeholder="Officer Type" options={typeOptions} required />
-                      <Input type="dropdown" id="shift" name="officer-shift" placeholder="Officer Shift" options={shiftOptions} required />
-                      <button className="tatar-form-button" type="submit">
-                        Submit
-                      </button>
-                    </form>
-                  </div>
+                  <OfficerForm
+                    onCancel={() => {
+                      setIsAddingOfficer(false);
+                      setEditingOfficer(null);
+                    }}
+                  />
                   <div className="separator" />
                 </>
               )}
@@ -256,6 +253,8 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 }
 
 function OfficerCard({ officer }) {
+  const [isEditingOfficer, setIsEditingOfficer] = useState(false);
+
   // Find the type label and style from typeOptions
   const typeOption = typeOptions.find(option => option.value === officer.type);
   const typeLabel = typeOption?.label || officer.type;
@@ -264,6 +263,20 @@ function OfficerCard({ officer }) {
   // Find the shift label from shiftOptions
   const shiftOption = shiftOptions.find(option => option.value === officer.shift);
   const shiftLabel = shiftOption?.label || officer.shift;
+
+  const toggleEditOfficer = () => {
+    setIsEditingOfficer(prev => !prev);
+  };
+
+  if (isEditingOfficer) {
+    return (
+      <>
+        <div className="separator" />
+        <OfficerForm officer={officer} onCancel={() => setIsEditingOfficer(false)} />
+        <div className="separator" />
+      </>
+    );
+  }
 
   return (
     <div className="officer-card">
@@ -276,6 +289,61 @@ function OfficerCard({ officer }) {
           <div className="officer-badge shift-badge">{shiftLabel}</div>
         </div>
       </div>
+      <div className="officer-card-button-group">
+        <button className="officer-card-button" onClick={toggleEditOfficer}>
+          <FontAwesomeIcon icon={faPen} />
+        </button>
+        <button className="officer-card-button delete-button">
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function OfficerForm({ officer = {}, onSubmit, onCancel }) {
+  console.log(officer);
+  return (
+    <div className="officer-form-container">
+      <h4 className="tatar-management-title">{officer.id ? "Edit Officer" : "Add New Officer"}</h4>
+      <form className="officer-form" onSubmit={onSubmit}>
+        <Input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Officer Name"
+          required
+          defaultValue={officer.name || ""}
+        />
+        <Input
+          type="dropdown"
+          id="type"
+          name="officer-type"
+          placeholder="Officer Type"
+          options={typeOptions}
+          required
+          defaultValue={officer.type || ""}
+        />
+        <Input
+          type="dropdown"
+          id="shift"
+          name="officer-shift"
+          placeholder="Officer Shift"
+          options={shiftOptions}
+          required
+          defaultValue={officer.shift || ""}
+        />
+        <div className="tatar-form-button-group">
+          {officer.id && (
+            <button className="tatar-form-button tatar-form-cancel-button" type="button" onClick={onCancel}>
+              Cancel
+            </button>
+          )}
+          <button className="tatar-form-button tatar-form-submit-button" type="submit">
+            {officer.id ? "Save Changes" : "Submit"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

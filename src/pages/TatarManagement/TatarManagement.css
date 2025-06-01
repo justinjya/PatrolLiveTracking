@@ -35,21 +35,40 @@
   margin-bottom: 3px;
 }
 
-.add-tatar-form-container, .add-officer-form-container {
+.add-tatar-form-container, .officer-form-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.add-officer-form-container {
+.officer-form-container {
   margin-bottom: 0;
 }
 
-.add-tatar-form, .add-officer-form {
+.add-tatar-form, .officer-form {
   display: flex;
   flex-direction: column;
   gap: 7px;
+}
+
+.tatar-form-button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.tatar-form-button {
+  flex-grow: 1;
+}
+
+.tatar-form-cancel-button {
+  flex-grow: 1;
+  background-color: transparent;
+  color: #002e83;
+}
+
+.tatar-form-submit-button {
+  flex-grow: 2;
 }
 
 .tatar-form-button:disabled, .tatar-edit-patrol-points-button:disabled, .tatar-delete-tatar-button:disabled {
@@ -189,12 +208,34 @@
 }
 
 .officer-badge {
-  padding: 5px 10px;
+  padding: 1px 3px;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .officer-badge.shift-badge {
   background-color: #f1f8ff;
   color: #0b64c6;
+}
+
+.officer-card-button-group {
+  display: flex;
+  gap: 10px;
+  margin-right: 10px;
+}
+
+.officer-card-button {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  color: #002e83;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.officer-card-button.delete-button {
+  color: #9F1B1A;
 }
