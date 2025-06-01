@@ -1,3 +1,5 @@
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import React from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
@@ -35,14 +37,11 @@ function Cameras() {
                 </button>
               </div>
             </div>
-            <div className="camera-details">
-              <div className="camera-coordinates-container">
-                <span className="camera-coordinates">{camera.lat},</span>
-                <div className="camera-actions">
-                  <span className="camera-coordinates">{camera.lng}</span>
-                </div>
-              </div>
-            </div>
+            <span className="camera-coordinates">
+              <FontAwesomeIcon icon={faLocationDot} style={{ color: "#0B64C6" }} />
+              &nbsp;&nbsp;&nbsp;
+              {camera.lat.toFixed(5)}, {camera.lng.toFixed(5)}
+            </span>
           </div>
         ))}
       </div>

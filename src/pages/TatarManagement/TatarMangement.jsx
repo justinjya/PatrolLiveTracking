@@ -2,6 +2,8 @@ import { useMap } from "@vis.gl/react-google-maps";
 import React, { useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./TatarManagement.css"; // Import the CSS file
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 function TatarManagement() {
   const { markers, setSelectedCluster } = useMapDataContext();
@@ -52,6 +54,8 @@ function TatarCard({ tatar, setSelectedCluster }) {
           <div className="tatar-name">{tatar.name}</div>
           <div className="tatar-email">{tatar.email}</div>
           <div className="tatar-coordinates">
+            <FontAwesomeIcon icon={faLocationDot} style={{ color: "#0B64C6" }} />
+            &nbsp;&nbsp;&nbsp;
             {tatar.cluster_coordinates ? tatar.cluster_coordinates.length : 0} Titik Patroli
           </div>
         </div>

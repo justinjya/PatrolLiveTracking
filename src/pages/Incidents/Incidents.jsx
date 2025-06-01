@@ -1,10 +1,13 @@
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import React, { useEffect, useRef, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Incidents.css";
 
 function Incidents() {
-  const { markers, selectedIncident, setSelectedIncident } = useMapDataContext(); // Access selectedIncident from context
+  const { markers, selectedIncident } = useMapDataContext(); // Access selectedIncident from context
   const map = useMap();
 
   const handleViewClick = incident => {
@@ -60,6 +63,8 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
         <div>
           <div className="incident-title">{incident.title}</div>
           <div className="incident-timestamp">
+            <FontAwesomeIcon icon={faClock} style={{ color: "#555" }} />
+            &nbsp;&nbsp;&nbsp;
             {`${new Date(incident.timestamp).toLocaleDateString("id-ID", {
               day: "numeric",
               month: "long",
@@ -71,7 +76,9 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
             })}`}
           </div>
           <div className="incident-coordinates">
-            {incident.latitude}, {incident.longitude}
+            <FontAwesomeIcon icon={faLocationDot} style={{ color: "#0B64C6" }} />
+            &nbsp;&nbsp;&nbsp;
+            {incident.latitude.toFixed(5)}, {incident.longitude.toFixed(5)}
           </div>
         </div>
         <div>
