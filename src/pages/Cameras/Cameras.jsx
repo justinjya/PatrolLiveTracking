@@ -38,7 +38,7 @@ function Cameras() {
               </div>
             </div>
             <span className="camera-coordinates">
-              <FontAwesomeIcon icon={faLocationDot} style={{ color: "#0B64C6" }} />
+              <FontAwesomeIcon icon={faLocationDot} />
               &nbsp;&nbsp;&nbsp;
               {camera.lat.toFixed(5)}, {camera.lng.toFixed(5)}
             </span>

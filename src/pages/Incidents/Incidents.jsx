@@ -63,7 +63,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
         <div className="incident-content">
           <div className="incident-title">{incident.title}</div>
           <div className="incident-timestamp">
-            <FontAwesomeIcon icon={faClock} style={{ color: "#555" }} />
+            <FontAwesomeIcon icon={faClock} />
             &nbsp;&nbsp;&nbsp;
             {`${new Date(incident.timestamp).toLocaleDateString("id-ID", {
               day: "numeric",
@@ -76,7 +76,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
             })}`}
           </div>
           <div className="incident-coordinates">
-            <FontAwesomeIcon icon={faLocationDot} style={{ color: "#0B64C6" }} />
+            <FontAwesomeIcon icon={faLocationDot} />
             &nbsp;&nbsp;&nbsp;
             {incident.latitude.toFixed(5)}, {incident.longitude.toFixed(5)}
           </div>
