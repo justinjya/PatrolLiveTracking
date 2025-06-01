@@ -124,6 +124,34 @@ function Patrols() {
     return intersectionCount; // Return the total count of intersections
   };
 
+  const getOfficerDetails = (clusterId, officerId) => {
+    // Find the cluster by ID
+    const cluster = markers.tatars.find(tatar => tatar.id === clusterId);
+
+    // Normalize officers into an array using Object.values
+    const officers = Array.isArray(cluster?.officers)
+      ? cluster.officers // Use directly if it's already an array
+      : cluster?.officers
+      ? Object.values(cluster.officers) // Convert object to array
+      : []; // Default to an empty array if no officers exist
+
+    // Find the officer by ID
+    const officer = officers.find(officer => officer.id === officerId);
+
+    // Return officer details or default values
+    return officer
+      ? {
+          officerName: officer.name || "Unknown",
+          officerType: officer.type || "Unknown",
+          shift: officer.shift || "Unknown"
+        }
+      : {
+          officerName: "Unknown",
+          officerType: "Unknown",
+          shift: "Unknown"
+        };
+  };
+
   const handleViewClick = task => {
     const assignedRoute = task.assigned_route; // Array of [latitude, longitude]
     const routePath = task.route_path; // Object with coordinates (can be null)
@@ -169,23 +197,6 @@ function Patrols() {
         [status]: !prev[clusterName][status]
       }
     }));
-  };
-
-  const getOfficerDetails = (clusterId, officerId) => {
-    const cluster = markers.tatars.find(tatar => tatar.id === clusterId);
-    const officers = Array.isArray(cluster?.officers) ? cluster.officers : [];
-    const officer = officers.find(officer => officer.id === officerId);
-    return officer
-      ? {
-          officerName: officer.name || "Unknown",
-          officerType: officer.type || "Unknown",
-          shift: officer.shift || "Unknown"
-        }
-      : {
-          officerName: "Unknown",
-          officerType: "Unknown",
-          shift: "Unknown"
-        };
   };
 
   const statusLabels = {
