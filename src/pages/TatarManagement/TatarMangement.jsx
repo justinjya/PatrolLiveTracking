@@ -51,12 +51,12 @@ function TatarCard({ tatar, setSelectedCluster }) {
         <div>
           <div className="tatar-name">{tatar.name}</div>
           <div className="tatar-email">{tatar.email}</div>
-        </div>
-        <div>
           <div className="tatar-coordinates">
             {tatar.cluster_coordinates ? tatar.cluster_coordinates.length : 0} Titik Patroli
           </div>
-          <button className="action-button" onClick={viewOnMap}>
+        </div>
+        <div>
+          <button className="tatar-view-on-map-button" onClick={viewOnMap}>
             View on Map
           </button>
         </div>

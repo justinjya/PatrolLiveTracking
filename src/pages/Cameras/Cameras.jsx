@@ -27,15 +27,19 @@ function Cameras() {
       <div className="camera-list">
         {markers.cameras.map(camera => (
           <div key={camera.id} className="camera-item">
-            <span className="camera-id">Camera ID: {camera.id}</span>
+            <div className="camera-item-header">
+              <span className="camera-id">ID: {camera.id}</span>
+              <div>
+                <button className="camera-item-view-on-map-button" onClick={() => handleViewClick(camera)}>
+                  View on Map
+                </button>
+              </div>
+            </div>
             <div className="camera-details">
               <div className="camera-coordinates-container">
                 <span className="camera-coordinates">{camera.lat},</span>
                 <div className="camera-actions">
                   <span className="camera-coordinates">{camera.lng}</span>
-                  <button className="camera-item-view-on-map-button" onClick={() => handleViewClick(camera)}>
-                    View on Map
-                  </button>
                 </div>
               </div>
             </div>

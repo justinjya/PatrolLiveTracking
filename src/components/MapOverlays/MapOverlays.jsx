@@ -1,10 +1,10 @@
+import { faCamera, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
 import React from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import "./MapOverlays.css";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
@@ -54,7 +54,10 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           position={{ lat: marker.lat, lng: marker.lng }}
           onClick={() => handleMarkerClick(marker)} // Handle marker clicks
         >
-          <FontAwesomeIcon icon={faCamera} size="3x" className="camera-icon" />
+          <div className="camera-icon-container">
+            <FontAwesomeIcon icon={faCamera} size="3x" className="camera-icon" />
+            <div className="camera-icon-background"></div>
+          </div>
         </AdvancedMarker>
       ))}
 
@@ -68,7 +71,10 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
             handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
           }}
         >
-          <span style={{ fontSize: "30px" }}>⚠️</span>
+          <div className="incident-icon-container">
+            <FontAwesomeIcon icon={faTriangleExclamation} size="3x" className="incident-icon" />
+            <div className="incident-icon-background"></div>
+          </div>
         </AdvancedMarker>
       ))}
 
@@ -125,11 +131,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           key={`cluster-${selectedCluster.id}-coordinate-${index}`}
           position={{ lat: coordinate[0], lng: coordinate[1] }}
         >
-          <Pin
-            background="#FE2B25"
-            glyphColor={"#8D0004"}
-            borderColor={"#FFFEFE"}
-          />
+          <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
         </AdvancedMarker>
       ))}
 

@@ -29,17 +29,6 @@
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
-.tatar-name {
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.tatar-email,
-.tatar-coordinates {
-  font-size: 14px;
-  color: #555;
-}
-
 .tatar-badges {
   display: flex;
   gap: 10px;
@@ -62,13 +51,22 @@
   justify-content: space-between;
 }
 
-.tatar-coordinates {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.tatar-name {
+  font-weight: bold;
+  font-size: 16px;
 }
 
-.action-button {
+.tatar-email{
+  font-size: 14px;
+  color: #555;
+}
+
+.tatar-coordinates {
+  font-size: 12px;
+  color: #555;
+}
+
+.tatar-view-on-map-button {
   border: none;
   border-radius: 20px;
   padding: 5px 10px;

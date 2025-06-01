@@ -56,17 +56,29 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
 
   return (
     <div ref={cardRef} className="incident-card">
-      <div className="incident-row">
-        <div className="incident-title">{incident.title}</div>
-        <div className="incident-coordinates">
-          {incident.latitude}, {incident.longitude}
+      <div className="incident-content-container">
+        <div>
+          <div className="incident-title">{incident.title}</div>
+          <div className="incident-timestamp">
+            {`${new Date(incident.timestamp).toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })} ${new Date(incident.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            })}`}
+          </div>
+          <div className="incident-coordinates">
+            {incident.latitude}, {incident.longitude}
+          </div>
         </div>
-      </div>
-      <div className="incident-row">
-        <div className="incident-timestamp">{new Date(incident.timestamp).toLocaleString()}</div>
-        <button className="view-map-button" onClick={() => onViewClick(incident)}>
-          View on Map
-        </button>
+        <div>
+          <button className="incident-view-on-map-button" onClick={() => onViewClick(incident)}>
+            View on Map
+          </button>
+        </div>
       </div>
       <button className="dropdown-button" onClick={toggleDetails}>
         {isExpanded ? "Hide Details" : "Show Details"}
@@ -75,7 +87,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
       {isExpanded && (
         <div className="incident-extra-details">
           <div className="incident-photos">
-            <strong>Photos:</strong>
+            <strong>Photos</strong>
             {photoUrls.length > 0 ? (
               <div className="photo-gallery">
                 {photoUrls.map((url, index) => (
@@ -87,7 +99,8 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
             )}
           </div>
           <div className="incident-description">
-            <strong>Description:</strong> {incident.description || "No description available"}
+            <strong>Description</strong>
+            <span>{incident.description || "No description available"}</span>
           </div>
         </div>
       )}

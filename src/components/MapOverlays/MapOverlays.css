@@ -1,3 +1,45 @@
+.camera-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
 .camera-icon {
-  color: #2a3f66;
+  color: #2a3f66; /* Camera icon color */
+  position: relative;
+  z-index: 2; /* Ensure it is above the background */
+}
+
+.camera-icon-background {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px; /* Adjust size to fit the camera icon */
+  height: 20px; /* Adjust size to fit the camera icon */
+  background-color: #9fb5e0; /* Solid white background */
+  border-radius: 50%; /* Make it circular */
+  z-index: 1; /* Ensure it is below the icon */
+}
+
+.incident-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+.incident-icon {
+  color: #ffbe26; /* Triangle color */
+  position: relative;
+  z-index: 2; /* Ensure it is above the background */
+}
+
+.incident-icon-background {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; /* Adjust size to fit the exclamation */
+  height: 20px; /* Adjust size to fit the exclamation */
+  background-color: #9c7417; /* Solid white background */
+  border-radius: 50%; /* Make it circular */
+  z-index: 1; /* Ensure it is below the icon */
 }
