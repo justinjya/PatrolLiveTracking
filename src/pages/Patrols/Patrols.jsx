@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
-import { shiftLabels, typeLabels } from "../../utils/OfficerLabels";
+import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
 import "./Patrols.css";
 
@@ -323,6 +323,15 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
     map.setZoom(17); // Zoom in to focus on the mock location
   };
 
+  // Find the type label and style from typeOptions
+  const typeOption = typeOptions.find(option => option.value === officerDetails.officerType);
+  const typeLabel = typeOption?.label || officerDetails.officerType;
+  const typeStyle = typeOption?.style || {};
+
+  // Find the shift label from shiftOptions
+  const shiftOption = shiftOptions.find(option => option.value === officerDetails.shift);
+  const shiftLabel = shiftOption?.label || officerDetails.shift;
+
   return (
     <div ref={ref} className={`patrol-item ${task.status === "ongoing" ? "ongoing" : ""}`} key={task.id}>
       <div className="patrol-item-header">
@@ -340,10 +349,10 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
         <div>
           <strong className="patrol-item-officer-name">{officerDetails.officerName}</strong>
           <div className="patrol-item-badges">
-            <div className="patrol-badge type-badge" style={typeLabels[officerDetails.officerType]?.style || {}}>
-              {typeLabels[officerDetails.officerType]?.label || officerDetails.officerType}
+            <div className="patrol-badge type-badge" style={typeStyle}>
+              {typeLabel}
             </div>
-            <div className="patrol-badge shift-badge">{shiftLabels[officerDetails.shift]}</div>
+            <div className="patrol-badge shift-badge">{shiftLabel}</div>
           </div>
         </div>
       </div>

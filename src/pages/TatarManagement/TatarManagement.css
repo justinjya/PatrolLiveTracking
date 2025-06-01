@@ -22,7 +22,7 @@
   margin: 0;
 }
 
-.add-tatar-button {
+.add-tatar-button, .add-officer-button {
   background-color: transparent;
   padding: 0;
   border: none;
@@ -35,25 +35,21 @@
   margin-bottom: 3px;
 }
 
-.add-tatar-form-container {
+.add-tatar-form-container, .add-officer-form-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.add-tatar-form {
+.add-officer-form-container {
+  margin-bottom: 0;
+}
+
+.add-tatar-form, .add-officer-form {
   display: flex;
   flex-direction: column;
   gap: 7px;
-}
-
-.tatar-form-button {
-  border: none;
-  border-radius: 20px;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 12px;
 }
 
 .tatar-form-button:disabled, .tatar-edit-patrol-points-button:disabled, .tatar-delete-tatar-button:disabled {
@@ -115,7 +111,7 @@
   color: #b8b9c2;
 }
 
-.tatar-view-on-map-button, .tatar-edit-patrol-points-button, .tatar-delete-tatar-button {
+.tatar-view-on-map-button, .tatar-edit-patrol-points-button, .tatar-delete-tatar-button, .tatar-form-button {
   border: none;
   border-radius: 20px;
   padding: 5px 10px;
@@ -151,6 +147,11 @@
 
 .dropdown-icon {
   font-size: 14px;
+}
+
+.officer-list-header {
+  display: flex;
+  align-self: flex-end;
 }
 
 .officer-list {

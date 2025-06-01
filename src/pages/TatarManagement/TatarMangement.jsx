@@ -11,7 +11,7 @@ import { useMap } from "@vis.gl/react-google-maps";
 import React, { useState } from "react";
 import Input from "../../components/Input/Input";
 import { useMapDataContext } from "../../contexts/MapDataContext";
-import { shiftLabels, typeLabels } from "../../utils/OfficerLabels";
+import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import "./TatarManagement.css";
 
 function TatarManagement() {
@@ -118,9 +118,15 @@ function TatarManagement() {
 function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsClick, onDeleteTatarClick }) {
   const map = useMap();
   const [isOfficersExpanded, setIsOfficersExpanded] = useState(false);
+  const [isAddingOfficer, setIsAddingOfficer] = useState(false);
 
   const toggleOfficersDropdown = () => {
     setIsOfficersExpanded(prev => !prev);
+    setIsAddingOfficer(false); // Reset adding officer state when toggling dropdown
+  };
+
+  const toggleAddingOfficer = () => {
+    setIsAddingOfficer(prev => !prev);
   };
 
   const viewOnMap = () => {
@@ -214,11 +220,34 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
             </span>
           </button>
           {isOfficersExpanded && (
-            <div className="officer-list">
-              {Object.values(tatar.officers).map(officer => (
-                <OfficerCard key={officer.id} officer={officer} />
-              ))}
-            </div>
+            <>
+              <div className="officer-list-header">
+                <button className="add-officer-button" onClick={toggleAddingOfficer}>
+                  {isAddingOfficer ? "Cancel" : "Add Officer"}
+                </button>
+              </div>
+              {isAddingOfficer && (
+                <>
+                  <div className="add-officer-form-container">
+                    <h4 className="tatar-management-title">Add New Officer</h4>
+                    <form className="add-officer-form">
+                      <Input type="text" id="name" name="name" placeholder="Officer Name" required />
+                      <Input type="dropdown" id="type" name="officer-type" placeholder="Officer Type" options={typeOptions} required />
+                      <Input type="dropdown" id="shift" name="officer-shift" placeholder="Officer Shift" options={shiftOptions} required />
+                      <button className="tatar-form-button" type="submit">
+                        Submit
+                      </button>
+                    </form>
+                  </div>
+                  <div className="separator" />
+                </>
+              )}
+              <div className="officer-list">
+                {Object.values(tatar.officers).map(officer => (
+                  <OfficerCard key={officer.id} officer={officer} />
+                ))}
+              </div>
+            </>
           )}
         </>
       )}
@@ -227,18 +256,24 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 }
 
 function OfficerCard({ officer }) {
+  // Find the type label and style from typeOptions
+  const typeOption = typeOptions.find(option => option.value === officer.type);
+  const typeLabel = typeOption?.label || officer.type;
+  const typeStyle = typeOption?.style || {};
+
+  // Find the shift label from shiftOptions
+  const shiftOption = shiftOptions.find(option => option.value === officer.shift);
+  const shiftLabel = shiftOption?.label || officer.shift;
+
   return (
     <div className="officer-card">
       <div className="officer-details">
         <div className="officer-name">{officer.name}</div>
         <div className="officer-badges">
-          <div
-            className="officer-badge"
-            style={typeLabels[officer.type]?.style || {}} // Apply dynamic styles based on type
-          >
-            {typeLabels[officer.type]?.label || officer.type}
+          <div className="officer-badge" style={typeStyle}>
+            {typeLabel}
           </div>
-          <div className="officer-badge shift-badge">{shiftLabels[officer.shift] || officer.shift}</div>
+          <div className="officer-badge shift-badge">{shiftLabel}</div>
         </div>
       </div>
     </div>
