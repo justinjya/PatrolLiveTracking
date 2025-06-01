@@ -1,18 +1,27 @@
 import { faCalendar, faClock } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronUp,
+  faLocationDot,
+  faMap,
+  faRoute,
+  faUserShield
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { shiftLabels, typeLabels } from "../../utils/OfficerLabels";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
 import "./Patrols.css";
 
 function Patrols() {
-  const { markers, setSelectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
+  const { markers, selectedTask, setSelectedTask } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
   const coreLibrary = useMapsLibrary("core");
   const geometryLibrary = useMapsLibrary("geometry");
+  const itemRefs = useRef({});
+
   const [collapsedClusters, setCollapsedClusters] = useState(() => {
     const initialState = {};
     markers.patrols.forEach(task => {
@@ -21,6 +30,7 @@ function Patrols() {
     });
     return initialState;
   });
+
   const [collapsedStatuses, setCollapsedStatuses] = useState(() => {
     const initialState = {};
     markers.patrols.forEach(task => {
@@ -35,8 +45,13 @@ function Patrols() {
     });
     return initialState;
   });
+
   const groupedByClusterAndStatus = useMemo(() => {
     const grouped = markers.patrols.reduce((acc, task) => {
+      if (task.status === "ongoing") {
+        return acc; // Skip tasks with "ongoing" status
+      }
+
       const clusterName = task.clusterName || "Unknown Cluster";
       const status =
         task.status === "finished" ? task.timeliness || "Unknown Timeliness" : task.status || "Unknown Status";
@@ -77,7 +92,7 @@ function Patrols() {
   }, [markers.patrols]);
 
   const checkIntersection = (assignedRoute, routePath, radius = 5) => {
-    if (!routePath) {
+    if (!routePath || !geometryLibrary || !coreLibrary) {
       return 0; // Return 0 intersections if routePath is null
     }
 
@@ -110,31 +125,33 @@ function Patrols() {
   };
 
   const handleViewClick = task => {
-    clearPolylines();
-
     const assignedRoute = task.assigned_route; // Array of [latitude, longitude]
     const routePath = task.route_path; // Object with coordinates (can be null)
 
-    const center = assignedRoute.reduce(
-      (acc, [lat, lng]) => {
-        acc.lat += lat;
-        acc.lng += lng;
-        return acc;
-      },
-      { lat: 0, lng: 0 }
-    );
+    let center;
 
-    center.lat /= assignedRoute.length;
-    center.lng /= assignedRoute.length;
+    if (task.status === "ongoing" && routePath) {
+      // Center to the last index in route_path for ongoing tasks
+      const lastPoint = Object.values(routePath).slice(-1)[0];
+      center = { lat: lastPoint.coordinates[0], lng: lastPoint.coordinates[1] };
+    } else {
+      // Calculate the center for non-ongoing tasks
+      center = assignedRoute.reduce(
+        (acc, [lat, lng]) => {
+          acc.lat += lat;
+          acc.lng += lng;
+          return acc;
+        },
+        { lat: 0, lng: 0 }
+      );
+
+      center.lat /= assignedRoute.length;
+      center.lng /= assignedRoute.length;
+    }
 
     setSelectedTask(task);
     map.setCenter(center);
     map.setZoom(17);
-
-    if (routePath) {
-      const routePathCoordinates = Object.values(routePath);
-      addPolylines(map, routePathCoordinates);
-    }
   };
 
   const toggleClusterCollapse = clusterName => {
@@ -181,11 +198,32 @@ function Patrols() {
     "Unknown Status": "Unknown Status"
   };
 
+  useEffect(() => {
+    if (selectedTask && itemRefs.current[selectedTask.id]) {
+      itemRefs.current[selectedTask.id]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedTask]);
+
   return (
     <div className="patrols-page">
       <h3 className="patrols-title">List of Patrols</h3>
-      <h3 className="patrols-title">History</h3>
       <div className="patrols-list">
+        <h4 className="patrols-subtitle">Ongoing</h4>
+        {markers.patrols
+          .filter(task => task.status === "ongoing")
+          .map(task => (
+            <PatrolItem
+              key={task.id}
+              ref={el => (itemRefs.current[task.id] = el)}
+              task={task}
+              map={map}
+              setSelectedTask={setSelectedTask}
+              getOfficerDetails={getOfficerDetails}
+              checkIntersection={checkIntersection}
+              onViewClick={() => handleViewClick(task)}
+            />
+          ))}
+        <h4 className="patrols-subtitle">History</h4>
         {Object.keys(groupedByClusterAndStatus).map(clusterName => (
           <div key={clusterName} className="patrol-card">
             <div className="patrol-card-header">
@@ -224,8 +262,8 @@ function Patrols() {
                           <PatrolItem
                             key={task.id}
                             task={task}
-                            setSelectedTask={setSelectedTask}
                             map={map}
+                            setSelectedTask={setSelectedTask}
                             getOfficerDetails={getOfficerDetails}
                             checkIntersection={checkIntersection}
                             onViewClick={() => handleViewClick(task)}
@@ -244,7 +282,7 @@ function Patrols() {
   );
 }
 
-function PatrolItem({ task, getOfficerDetails, checkIntersection, onViewClick }) {
+function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkIntersection, onViewClick }) {
   const officerDetails = getOfficerDetails(task.clusterId, task.userId);
   const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
   const totalPoints = task.assigned_route.length;
@@ -259,10 +297,22 @@ function PatrolItem({ task, getOfficerDetails, checkIntersection, onViewClick })
         )}m ${Math.floor(((new Date(task.endTime) - new Date(task.startTime)) % (1000 * 60)) / 1000)}s`
       : "N/A";
 
+  const handleMockLocationClick = (task, mockDetection) => {
+    setSelectedTask(task); // Set the selected task to the clicked mock detection
+    const center = {
+      lat: mockDetection.coordinates[0],
+      lng: mockDetection.coordinates[1]
+    };
+
+    map.setCenter(center); // Center the map on the first mock location
+    map.setZoom(17); // Zoom in to focus on the mock location
+  };
+
   return (
-    <div className="patrol-item" key={task.id}>
+    <div ref={ref} className={`patrol-item ${task.status === "ongoing" ? "ongoing" : ""}`} key={task.id}>
       <div className="patrol-item-header">
-        <div className="patrol-item-title">Tugas #{task.id.slice(0, 8)}</div>
+        {task.status === "ongoing" && <div className="patrol-item-title">{task.clusterName}</div>}
+        <div className={`patrol-item-${task.status === "ongoing" ? "sub" : ""}title`}>Tugas #{task.id.slice(0, 8)}</div>
         <div className="patrol-item-header-badge-group">
           <div className="patrol-item-timeliness-badge" style={timelinessLabels[task.timeliness]?.style}>
             {timelinessLabels[task.timeliness]?.label || "Unknown Timeliness"}
@@ -380,24 +430,32 @@ function PatrolItem({ task, getOfficerDetails, checkIntersection, onViewClick })
                 <div className="patrol-item-mock-detections-items">
                   {task.mock_detections &&
                     Object.keys(task.mock_detections).map((key, index) => (
-                      <div className="patrol-item-mock-detections-item" key={index}>
-                        <strong>
-                          {`${new Date(task.mock_detections[key].timestamp).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric"
-                          })} ${new Date(task.mock_detections[key].timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false
-                          })}`}
-                        </strong>
-                        <div>
-                          <FontAwesomeIcon icon={faLocationDot} style={{ color: "#9F1D1B" }} />
-                          &nbsp;&nbsp;&nbsp;
-                          {task.mock_detections[key].coordinates[0].toFixed(5)},{" "}
-                          {task.mock_detections[key].coordinates[1].toFixed(5)}
+                      <div className="patrol-item-mock-detections-item-container" key={index}>
+                        <div className="patrol-item-mock-detections-item">
+                          <strong>
+                            {`${new Date(task.mock_detections[key].timestamp).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric"
+                            })} ${new Date(task.mock_detections[key].timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false
+                            })}`}
+                          </strong>
+                          <div>
+                            <FontAwesomeIcon icon={faLocationDot} style={{ color: "#9F1D1B" }} />
+                            &nbsp;&nbsp;&nbsp;
+                            {task.mock_detections[key].coordinates[0].toFixed(5)},{" "}
+                            {task.mock_detections[key].coordinates[1].toFixed(5)}
+                          </div>
                         </div>
+                        <button
+                          className="patrol-item-mock-detections-view-on-map-button"
+                          onClick={() => handleMockLocationClick(task, task.mock_detections[key])}
+                        >
+                          <FontAwesomeIcon icon={faMap} style={{ color: "#9F1D1B" }} />
+                        </button>
                       </div>
                     ))}
                 </div>

@@ -1,16 +1,28 @@
-import { faTriangleExclamation, faVideo } from "@fortawesome/free-solid-svg-icons";
+import { faTriangleExclamation, faUser, faVideo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
-import React from "react";
+import { AdvancedMarker, InfoWindow, Pin, useMap } from "@vis.gl/react-google-maps";
+import React, { useEffect } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
+import Patrols from "../../pages/Patrols/Patrols";
 import "./MapOverlays.css";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
-  const { markers, setSelectedIncident, isEditing, addMarker, setMarkers, selectedTask, selectedCluster } =
-    useMapDataContext();
+  const {
+    markers,
+    isEditing,
+    addMarker,
+    setMarkers,
+    setSelectedIncident,
+    selectedTask,
+    setSelectedTask,
+    selectedCluster,
+    clearPolylines,
+    addPolylines
+  } = useMapDataContext();
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
+  const map = useMap();
 
   const handleAddMarker = () => {
     if (infoWindow && infoWindow.type === "map") {
@@ -44,6 +56,21 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       closeInfoWindow(); // Close the InfoWindow
     }
   };
+
+  useEffect(() => {
+    if (selectedTask && selectedTask.route_path) {
+      const updatedTask = markers.patrols.find(task => task.id === selectedTask.id);
+      clearPolylines();
+      setSelectedTask(updatedTask);
+
+      const routePath = updatedTask.route_path; // Object with coordinates (can be null)
+
+      if (routePath) {
+        const routePathCoordinates = Object.values(routePath);
+        addPolylines(map, routePathCoordinates);
+      }
+    }
+  }, [markers.patrols, selectedTask]);
 
   return (
     <>
@@ -88,7 +115,8 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       ))}
 
       {/* Render markers for routePath */}
-      {selectedTask?.route_path &&
+      {selectedTask?.status !== "ongoing" &&
+        selectedTask?.route_path &&
         Object.values(selectedTask.route_path).map((point, index) => (
           <AdvancedMarker
             key={`routePath-${index}`}
@@ -103,7 +131,10 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
         Object.keys(selectedTask.mock_detections).map((key, index) => (
           <AdvancedMarker
             key={`mockLocation-${index}`}
-            position={{ lat: selectedTask.mock_detections[key].coordinates[0], lng: selectedTask.mock_detections[key].coordinates[1] }}
+            position={{
+              lat: selectedTask.mock_detections[key].coordinates[0],
+              lng: selectedTask.mock_detections[key].coordinates[1]
+            }}
           >
             <Pin background="#9C2CF3" glyphColor={"#500A86"} borderColor={"#FFFEFE"} />
           </AdvancedMarker>
@@ -124,8 +155,13 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
             <AdvancedMarker
               key={`patrol-${patrol.id}-routePath-${key}`}
               position={{ lat: point.coordinates[0], lng: point.coordinates[1] }}
+              onClick={() => {
+                handleMenuClick("Patrols", <Patrols />); // Open the patrols menu
+                setSelectedTask(patrol); // Set the selected task
+              }}
             >
-              <span style={{ fontSize: "30px" }}>👮</span>
+              <FontAwesomeIcon icon={faUser} size="3x" className="patrol-icon" />
+              <FontAwesomeIcon icon={faUser} className="patrol-icon-border" />
             </AdvancedMarker>
           );
         })}

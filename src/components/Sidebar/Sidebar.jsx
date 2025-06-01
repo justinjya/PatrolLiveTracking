@@ -57,9 +57,10 @@ function Sidebar({ children }) {
           activeMenu={activeMenu}
           onClose={() => {
             closeSecondarySidebar();
-            clearPolylines();
+            setSelectedTask(null); // Reset selected task when closing the sidebar
             setSelectedIncident(null); // Reset selected incident when closing the sidebar
             setSelectedCluster(null); // Reset selected cluster when closing the sidebar
+            clearPolylines();
           }}
           title={activeMenu}
         >

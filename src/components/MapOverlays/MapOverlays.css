@@ -38,7 +38,7 @@
 }
 
 .incident-icon {
-  color: #3535F3; /* Triangle color */
+  color: #3535f3; /* Triangle color */
   position: relative;
   z-index: 3; /* Ensure it is above the background */
 }
@@ -64,4 +64,21 @@
   background-color: #e6e6e6; /* Solid white background */
   border-radius: 50%; /* Make it circular */
   z-index: 2;
+}
+
+.patrol-icon {
+  color: #3535f3; /* patrol color */
+  position: relative;
+  z-index: 3; /* Ensure it is above the background */
+}
+
+.patrol-icon-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35px; /* Adjust size to fit the triangle icon */
+  height: 35px; /* Adjust size to fit the triangle icon */
+  color: #fff; /* Solid white background */
+  z-index: 1; /* Ensure it is below the icon */
 }

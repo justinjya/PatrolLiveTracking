@@ -11,6 +11,11 @@
   margin-bottom: 10px;
 }
 
+.patrols-subtitle {
+  text-align: start;
+  margin: 0;
+}
+
 .patrols-list {
   display: flex;
   flex-direction: column;
@@ -47,7 +52,7 @@
 .toggle-button {
   background-color: transparent;
   border: none;
-  color: #002E83;
+  color: #002e83;
   cursor: pointer;
   font-size: 12px;
 }
@@ -68,23 +73,23 @@
 }
 
 .patrol-status-group.ontime {
-  background-color: #E7F9EA;
+  background-color: #e7f9ea;
   color: #007217;
 }
 
 .patrol-status-group.late {
-  background-color: #FDF8E4;
-  color: #8F7100;
+  background-color: #fdf8e4;
+  color: #8f7100;
 }
 
 .patrol-status-group.expired {
-  background-color: #FFEBEB;
-  color: #9F1B1A;
+  background-color: #ffebeb;
+  color: #9f1b1a;
 }
 
 .patrol-status-group.active {
-  background-color: #F1F8FF;
-  color: #0B64C6;
+  background-color: #f1f8ff;
+  color: #0b64c6;
 }
 
 .patrol-status-header {
@@ -102,11 +107,23 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: #1D1D1D;
+  color: #1d1d1d;
 }
 
 .patrol-item {
   border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.patrol-item.ongoing {
+  border: 1px solid #afd7f8;
+  border-radius: 8px;
   padding: 10px;
   background-color: #fff;
   display: flex;
@@ -127,6 +144,10 @@
   font-size: 16px;
 }
 
+.patrol-item-subtitle {
+  font-size: 14px;
+}
+
 .patrol-item-header-badge-group {
   display: flex;
   flex-direction: row;
@@ -143,8 +164,8 @@
 }
 
 .patrol-item-fake-gps-indicator-badge {
-  background-color: #EDD3D2;
-  color: #9F1D1B;
+  background-color: #edd3d2;
+  color: #9f1d1b;
   border-radius: 12px;
   padding: 2px 8px;
   font-size: 11px;
@@ -154,7 +175,7 @@
 .patrol-item-officer-group {
   display: flex;
   flex-direction: row;
-  align-items:end;
+  align-items: end;
   gap: 15px;
 }
 
@@ -170,7 +191,8 @@
   gap: 10px;
 }
 
-.patrol-item-badges, .patrol-item-timestamps {
+.patrol-item-badges,
+.patrol-item-timestamps {
   display: flex;
   flex-direction: row;
   gap: 5px;
@@ -229,8 +251,8 @@
 
 .patrol-badge.percentage-badge {
   font-size: 10px;
-  background-color: #DDF3FF;
-  color: #002E83;
+  background-color: #ddf3ff;
+  color: #002e83;
   font-weight: bold;
   padding: 7px;
 }
@@ -255,7 +277,7 @@
 
 .patrol-item-details-button {
   background-color: transparent;
-  color: #002E83;
+  color: #002e83;
   font-size: 11px;
   cursor: pointer;
   border: none;
@@ -270,7 +292,7 @@
 }
 
 .patrol-item-expanded-details strong {
-  color: #CACBD5;
+  color: #cacbd5;
 }
 
 .patrol-item-expanded-detail-group {
@@ -285,7 +307,8 @@
   gap: 2px;
 }
 
-.patrol-item-distance, .patrol-item-final-photo-report {
+.patrol-item-distance,
+.patrol-item-final-photo-report {
   text-align: end;
 }
 
@@ -298,12 +321,12 @@
 }
 
 .patrol-item-mock-detections {
-  background-color: #FFEBEB;
+  background-color: #ffebeb;
   padding: 10px;
   border-radius: 8px;
 }
 .patrol-item-mock-detections strong {
-  color: #9F1D1B;
+  color: #9f1d1b;
 }
 
 .patrol-item-mock-detections-items {

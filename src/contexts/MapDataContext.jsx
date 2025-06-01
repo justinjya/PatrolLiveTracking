@@ -17,8 +17,8 @@ export const MapDataProvider = ({ children }) => {
   });
 
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
-  const [selectedTask, setSelectedTask] = useState(null); // Track the selected task
   const [polyline, setPolyline] = useState(null); // State to store the polyline
+  const [selectedTask, setSelectedTask] = useState(null); // Track the selected task
   const [selectedIncident, setSelectedIncident] = useState(null); // Add selectedIncident state
   const [selectedCluster, setSelectedCluster] = useState(null); // Add selectedIncident state
   const [initialized, setInitialized] = useState(false); // Track if the context is initialized
