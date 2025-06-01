@@ -29,22 +29,6 @@
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
-.tatar-badges {
-  display: flex;
-  gap: 10px;
-}
-
-.badge {
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-}
-
-.shift-badge {
-  background-color: #f1f8ff;
-  color: #0b64c6;
-}
-
 .tatar-contents {
   display: flex;
   flex-direction: row;
@@ -123,4 +107,15 @@
 .officer-badges {
   display: flex;
   gap: 10px;
+}
+
+.officer-badge {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.officer-badge.shift-badge {
+  background-color: #f1f8ff;
+  color: #0b64c6;
 }

@@ -1,9 +1,10 @@
+import { faChevronDown, faChevronUp, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import React, { useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./TatarManagement.css"; // Import the CSS file
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { shiftLabels, typeLabels } from "../../utils/OfficerLabels";
 
 function TatarManagement() {
   const { markers, setSelectedCluster } = useMapDataContext();
@@ -71,7 +72,9 @@ function TatarCard({ tatar, setSelectedCluster }) {
             {isExpanded
               ? `Hide Officers (${Object.keys(tatar.officers).length})`
               : `Show Officers (${Object.keys(tatar.officers).length})`}
-            <span className="dropdown-icon">{isExpanded ? "↑" : "↓"}</span>
+            <span className="dropdown-icon">
+              {isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+            </span>
           </button>
           {isExpanded && (
             <div className="officer-list">
@@ -87,37 +90,18 @@ function TatarCard({ tatar, setSelectedCluster }) {
 }
 
 function OfficerCard({ officer }) {
-  const shiftLabels = {
-    pagi: "Pagi (07:00 - 15:00)",
-    siang: "Siang (07:00 - 19:00)",
-    sore: "Sore (15:00 - 23:00)",
-    malam: "Malam (23:00 - 07:00)",
-    malam_panjang: "Malam (19:00 - 07:00)"
-  };
-
-  const typeLabels = {
-    outsource: {
-      label: "Outsource",
-      style: { backgroundColor: "#FDF8E4", color: "#9B7E00" }
-    },
-    organik: {
-      label: "Organik",
-      style: { backgroundColor: "#E7F9EA", color: "#007217" }
-    }
-  };
-
   return (
     <div className="officer-card">
       <div className="officer-details">
         <div className="officer-name">{officer.name}</div>
         <div className="officer-badges">
-          <span
-            className="badge"
+          <div
+            className="officer-badge"
             style={typeLabels[officer.type]?.style || {}} // Apply dynamic styles based on type
           >
-            {typeLabels[officer.type]?.label || officer.type.charAt(0).toUpperCase() + officer.type.slice(1)}
-          </span>
-          <span className="badge shift-badge">{shiftLabels[officer.shift] || officer.shift}</span>
+            {typeLabels[officer.type]?.label || officer.type}
+          </div>
+          <div className="officer-badge shift-badge">{shiftLabels[officer.shift] || officer.shift}</div>
         </div>
       </div>
     </div>

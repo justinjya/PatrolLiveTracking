@@ -1,7 +1,12 @@
+import { faCalendar } from "@fortawesome/free-regular-svg-icons";
+import { faChevronDown, faChevronRight, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useMemo, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
+import { shiftLabels, typeLabels } from "../../utils/OfficerLabels";
 import "./Patrols.css";
+import { timelinessLabels } from "../../utils/TimelinessLabels";
 
 function Patrols() {
   const { markers, selectedTask, setSelectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
@@ -16,16 +21,17 @@ function Patrols() {
     });
     return initialState;
   });
-
   const [collapsedStatuses, setCollapsedStatuses] = useState(() => {
     const initialState = {};
     markers.patrols.forEach(task => {
       const clusterName = task.clusterName || "Unknown Cluster";
-      const status = task.status || "Unknown Status";
+      const status =
+        task.status === "finished" ? task.timeliness || "Unknown Timeliness" : task.status || "Unknown Status";
+
       if (!initialState[clusterName]) {
         initialState[clusterName] = {};
       }
-      initialState[clusterName][status] = true;
+      initialState[clusterName][status] = true; // Initialize each status as collapsed
     });
     return initialState;
   });
@@ -33,22 +39,39 @@ function Patrols() {
   const groupedByClusterAndStatus = useMemo(() => {
     const grouped = markers.patrols.reduce((acc, task) => {
       const clusterName = task.clusterName || "Unknown Cluster";
-      const status = task.status || "Unknown Status";
+      const status =
+        task.status === "finished" ? task.timeliness || "Unknown Timeliness" : task.status || "Unknown Status";
 
       if (!acc[clusterName]) {
-        acc[clusterName] = {};
+        acc[clusterName] = { statuses: {}, count: 0 }; // Initialize cluster with statuses and count
       }
-      if (!acc[clusterName][status]) {
-        acc[clusterName][status] = [];
+      if (!acc[clusterName].statuses[status]) {
+        acc[clusterName].statuses[status] = [];
       }
-      acc[clusterName][status].push(task);
+      acc[clusterName].statuses[status].push(task);
+      acc[clusterName].count += 1; // Increment the count for the cluster
       return acc;
     }, {});
 
     Object.keys(grouped).forEach(clusterName => {
-      Object.keys(grouped[clusterName]).forEach(status => {
-        grouped[clusterName][status].sort((a, b) => new Date(b.assignedStartTime) - new Date(a.assignedStartTime)); // Sort by recent assignedStartTime
+      const statuses = grouped[clusterName].statuses;
+
+      // Sort tasks within each status by startTime
+      Object.keys(statuses).forEach(status => {
+        statuses[status].sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
       });
+
+      // Sort statuses by timeliness order for finished tasks
+      const sortedStatuses = Object.keys(statuses).sort((a, b) => {
+        const timelinessOrder = { ontime: 1, late: 2, "Unknown Timeliness": 3 };
+        return (timelinessOrder[a] || 99) - (timelinessOrder[b] || 99);
+      });
+
+      // Reorder statuses based on the sorted order
+      grouped[clusterName].statuses = sortedStatuses.reduce((sorted, status) => {
+        sorted[status] = statuses[status];
+        return sorted;
+      }, {});
     });
 
     return grouped;
@@ -153,19 +176,29 @@ function Patrols() {
         };
   };
 
-      if (selectedTask) {
-      return (
-        <PatrolDetails
-          task={selectedTask}
-          onBack={() => {
-            setSelectedTask(null);
-            clearPolylines(); // Clear polylines when going back to the list
-          }}
-          checkIntersection={checkIntersection} // Pass checkIntersection as a prop
-          getOfficerDetails={getOfficerDetails} // Pass getOfficerDetails as a prop
-        />
-      );
-    }
+  const statusLabels = {
+    ontime: "On Time",
+    late: "Late",
+    expired: "Expired",
+    active: "Active",
+    idle: "Idle",
+    "Unknown Timeliness": "Unknown Timeliness",
+    "Unknown Status": "Unknown Status"
+  };
+
+  // if (selectedTask) {
+  //   return (
+  //     <PatrolDetails
+  //       task={selectedTask}
+  //       onBack={() => {
+  //         setSelectedTask(null);
+  //         clearPolylines(); // Clear polylines when going back to the list
+  //       }}
+  //       checkIntersection={checkIntersection} // Pass checkIntersection as a prop
+  //       getOfficerDetails={getOfficerDetails} // Pass getOfficerDetails as a prop
+  //     />
+  //   );
+  // }
 
   return (
     <div className="patrols-page">
@@ -175,43 +208,64 @@ function Patrols() {
         {Object.keys(groupedByClusterAndStatus).map(clusterName => (
           <div key={clusterName} className="patrol-card">
             <div className="patrol-card-header">
-              <div className="patrol-cluster-name">{clusterName}</div>
+              <div className="patrol-cluster-name">
+                {clusterName}{" "}
+                <span className="patrol-cluster-count">({groupedByClusterAndStatus[clusterName].count})</span>
+              </div>
               <button className="toggle-button" onClick={() => toggleClusterCollapse(clusterName)}>
-                {collapsedClusters[clusterName] ? "Show More ↓" : "Show Less ↑"}
+                {collapsedClusters[clusterName] ? (
+                  <FontAwesomeIcon icon={faChevronDown} />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronUp} />
+                )}
               </button>
             </div>
             {!collapsedClusters[clusterName] && (
               <div className="patrol-status-groups">
-                {Object.keys(groupedByClusterAndStatus[clusterName]).map(status => (
-                  <div key={status} className="patrol-status-group">
+                {Object.keys(groupedByClusterAndStatus[clusterName].statuses).map(status => (
+                  <div key={status} className={`patrol-status-group ${status}`}>
                     <div className="patrol-status-header">
-                      <div className="patrol-status-name">{status}</div>
+                      <div className="patrol-status-name">
+                        {statusLabels[status] || status} (
+                        {groupedByClusterAndStatus[clusterName].statuses[status].length})
+                      </div>
                       <button className="toggle-button" onClick={() => toggleStatusCollapse(clusterName, status)}>
-                        {collapsedStatuses[clusterName][status] ? "Show More ↓" : "Show Less ↑"}
+                        {collapsedStatuses[clusterName][status] ? (
+                          <FontAwesomeIcon icon={faChevronDown} />
+                        ) : (
+                          <FontAwesomeIcon icon={faChevronUp} />
+                        )}
                       </button>
                     </div>
                     {!collapsedStatuses[clusterName][status] && (
                       <div className="patrol-items">
-                        {groupedByClusterAndStatus[clusterName][status].map(task => {
+                        {groupedByClusterAndStatus[clusterName].statuses[status].map(task => {
                           const officerDetails = getOfficerDetails(task.clusterId, task.userId);
                           const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
                           const totalPoints = task.assigned_route.length;
-                          const percentage = ((intersectionCount / totalPoints) * 100).toFixed(2);
+                          const percentage = ((intersectionCount / totalPoints) * 100).toFixed(0);
 
                           return (
                             <div className="patrol-item" key={task.id}>
                               <div className="patrol-item-header">
-                                <div className="patrol-item-title">Tugas {task.id.slice(0, 8)}</div>
-                                <div className="patrol-item-timeliness">{task.timeliness || "Unknown Timeliness"}</div>
+                                <div className="patrol-item-title">Tugas #{task.id.slice(0, 8)}</div>
+                                <div className="patrol-item-timeliness-badge" style={timelinessLabels[task.timeliness]?.style}>{timelinessLabels[task.timeliness]?.label || "Unknown Timeliness"}</div>
                               </div>
-                              <span>{officerDetails.officerName}</span>
+                              <span className="patrol-item-officer-name">{officerDetails.officerName}</span>
                               <div className="patrol-item-details">
                                 <div className="patrol-item-badges">
-                                  <div className="badge">{officerDetails.officerType}</div>
-                                  <div className="badge">{officerDetails.shift}</div>
+                                  <div
+                                    className="patrol-badge type-badge"
+                                    style={typeLabels[officerDetails.officerType]?.style || {}}
+                                  >
+                                    {typeLabels[officerDetails.officerType]?.label || officerDetails.officerType}
+                                  </div>
+                                  <div className="patrol-badge shift-badge">{shiftLabels[officerDetails.shift]}</div>
                                 </div>
                                 <div className="patrol-item-timestamps">
                                   <span>
+                                    <FontAwesomeIcon icon={faCalendar} />
+                                    &nbsp;&nbsp;&nbsp;
                                     {isNaN(new Date(task.startTime).getTime())
                                       ? "N/A"
                                       : `${new Date(task.startTime).toLocaleDateString("id-ID", {
@@ -233,25 +287,32 @@ function Patrols() {
                                         })}
                                   </span>
                                 </div>
-                                <div className="patrol-item-intersections">
-                                  <span>
-                                    {intersectionCount} out of {totalPoints} points
-                                  </span>{" "}
-                                  <div className="patrol-item-bar-chart">
-                                    <div
-                                      className="patrol-item-bar"
-                                      style={{ width: `${percentage}%`, backgroundColor: "#4caf50" }}
-                                    ></div>
+                                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                  <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                                    <div className="patrol-item-intersections">
+                                      <div>Intersections</div>
+                                      <div className="patrol-item-intersection-count">
+                                        {intersectionCount} out of {totalPoints} points
+                                      </div>
+                                    </div>
+                                    <div className="patrol-item-bar-chart">
+                                      <div
+                                        className="patrol-item-bar"
+                                        style={{ width: `${percentage}%`, backgroundColor: "#007217" }}
+                                      ></div>
+                                    </div>
                                   </div>
-                                  <span>{percentage}% Completed</span>
+                                  <div className="patrol-badge percentage-badge">{percentage}%</div>
                                 </div>
                               </div>
-                              <button className="view-map-button" onClick={() => handleViewClick(task)}>
-                                View on Map
-                              </button>
-                              <button className="show-details-button" onClick={() => showDetails(task)}>
-                                Show Details
-                              </button>
+                              <div className="patrol-item-button-group">
+                                <button className="patrol-item-view-on-map-button" onClick={() => handleViewClick(task)}>
+                                  View on Map
+                                </button>
+                                <button className="patrol-item-details-button" onClick={() => showDetails(task)}>
+                                  Details <FontAwesomeIcon icon={faChevronRight} />
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
@@ -377,10 +438,7 @@ function PatrolDetails({ task, onBack, checkIntersection, getOfficerDetails }) {
               {intersectionCount} out of {totalPoints} points
             </span>
             <div className="patrol-item-bar-chart">
-              <div
-                className="patrol-item-bar"
-                style={{ width: `${percentage}%`, backgroundColor: "#4caf50" }}
-              ></div>
+              <div className="patrol-item-bar" style={{ width: `${percentage}%`, backgroundColor: "#4caf50" }}></div>
             </div>
             <span>{percentage}% Completed</span>
           </div>

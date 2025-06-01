@@ -1,5 +1,5 @@
 import { useMapsLibrary } from "@vis.gl/react-google-maps"; // Import useMapsLibrary
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, set } from "firebase/database";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useFirebase } from "./FirebaseContext";
 
@@ -8,6 +8,7 @@ const MapDataContext = createContext();
 
 export const MapDataProvider = ({ children }) => {
   const { db } = useFirebase(); // Access Firebase Realtime Database instance
+  const mapsLibrary = useMapsLibrary("maps"); // Initialize the Google Maps library
   const [markers, setMarkers] = useState({
     cameras: [],
     patrols: [],
@@ -18,9 +19,9 @@ export const MapDataProvider = ({ children }) => {
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
   const [selectedTask, setSelectedTask] = useState(null); // Track the selected task
   const [polyline, setPolyline] = useState(null); // State to store the polyline
-  const mapsLibrary = useMapsLibrary("maps"); // Initialize the Google Maps library
   const [selectedIncident, setSelectedIncident] = useState(null); // Add selectedIncident state
   const [selectedCluster, setSelectedCluster] = useState(null); // Add selectedIncident state
+  const [initialized, setInitialized] = useState(false); // Track if the context is initialized
 
   // Add a new marker
   const addMarker = (type, marker) => {
@@ -49,9 +50,9 @@ export const MapDataProvider = ({ children }) => {
         lng: point.coordinates[1]
       })), // Convert to Google Maps LatLng format
       geodesic: true,
-      strokeColor: "#FF0000", // Red color for the polyline
+      strokeColor: "#0F64C6", // Red color for the polyline
       strokeOpacity: 1.0,
-      strokeWeight: 2
+      strokeWeight: 3
     });
 
     // Add the polyline to the map
@@ -158,6 +159,13 @@ export const MapDataProvider = ({ children }) => {
     };
   }, [db]);
 
+  useEffect(() => {
+    // Set initialized to true after the first render
+    if (markers.patrols.length > 0 || markers.incidents.length > 0 || markers.tatars.length > 0) {
+      setInitialized(true);
+    }
+  }, [markers.patrols, markers.incidents, markers.tatars]);
+
   return (
     <MapDataContext.Provider
       value={{
@@ -176,7 +184,8 @@ export const MapDataProvider = ({ children }) => {
         setSelectedIncident, // Expose setter for selectedIncident
         addMarker, // Expose the addMarker method
         selectedCluster, // Expose selectedCluster
-        setSelectedCluster // Expose setter for selectedCluster
+        setSelectedCluster, // Expose setter for selectedCluster
+        initialized, // Expose initialized state
       }}
     >
       {children}

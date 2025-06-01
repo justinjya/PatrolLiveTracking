@@ -1,4 +1,4 @@
-import { faCamera, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faTriangleExclamation, faVideo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
 import React from "react";
@@ -55,8 +55,8 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           onClick={() => handleMarkerClick(marker)} // Handle marker clicks
         >
           <div className="camera-icon-container">
-            <FontAwesomeIcon icon={faCamera} size="3x" className="camera-icon" />
-            <FontAwesomeIcon icon={faCamera} className="camera-icon-border" />
+            <FontAwesomeIcon icon={faVideo} size="3x" className="camera-icon" />
+            <FontAwesomeIcon icon={faVideo} className="camera-icon-border" />
             <div className="camera-icon-fill"></div>
           </div>
         </AdvancedMarker>
@@ -83,11 +83,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       {/* Render markers for assignedRoute */}
       {selectedTask?.assigned_route?.map(([lat, lng], index) => (
         <AdvancedMarker key={`assignedRoute-${index}`} position={{ lat, lng }}>
-          <Pin
-            background="blue" // Blue for assignedRoute
-            glyphColor={"#000"}
-            borderColor={"#000"}
-          />
+          <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
         </AdvancedMarker>
       ))}
 
@@ -98,11 +94,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
             key={`routePath-${index}`}
             position={{ lat: point.coordinates[0], lng: point.coordinates[1] }}
           >
-            <Pin
-              background="red" // Red for routePath
-              glyphColor={"#000"}
-              borderColor={"#000"}
-            />
+            <Pin background="#00EB1A" glyphColor={"#008100"} borderColor={"#FFFEFE"} />
           </AdvancedMarker>
         ))}
 

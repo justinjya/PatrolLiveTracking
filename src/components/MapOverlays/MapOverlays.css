@@ -6,7 +6,18 @@
 .camera-icon {
   color: #2a3f66; /* Camera icon color */
   position: relative;
-  z-index: 2; /* Ensure it is above the background */
+  z-index: 3; /* Ensure it is above the background */
+}
+
+.camera-icon-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 41px; /* Adjust size to fit the camera icon */
+  height: 40px; /* Adjust size to fit the camera icon */
+  color: #fff; /* Solid white background */
+  z-index: 1; /* Ensure it is below the icon */
 }
 
 .camera-icon-fill {
@@ -18,7 +29,7 @@
   height: 20px; /* Adjust size to fit the camera icon */
   background-color: #9fb5e0; /* Solid white background */
   border-radius: 50%; /* Make it circular */
-  z-index: 1; /* Ensure it is below the icon */
+  z-index: 2; /* Ensure it is below the icon */
 }
 
 .incident-icon-container {
@@ -27,12 +38,12 @@
 }
 
 .incident-icon {
-  color: #ffbe26; /* Triangle color */
+  color: #3535F3; /* Triangle color */
   position: relative;
-  z-index: 2; /* Ensure it is above the background */
+  z-index: 3; /* Ensure it is above the background */
 }
 
-.incident-icon-border, .camera-icon-border {
+.incident-icon-border {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -45,11 +56,12 @@
 
 .incident-icon-fill {
   position: absolute;
-  top: 50%;
+  top: 51%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 10px; /* Adjust size to fit the triangle icon */
   height: 20px; /* Adjust size to fit the triangle icon */
-  background-color: #9c7417; /* Solid white background */
+  background-color: #e6e6e6; /* Solid white background */
   border-radius: 50%; /* Make it circular */
+  z-index: 2;
 }

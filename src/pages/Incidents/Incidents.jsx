@@ -1,5 +1,5 @@
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { faChevronDown, faChevronUp, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import React, { useEffect, useRef, useState } from "react";
@@ -89,7 +89,9 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
       </div>
       <button className="dropdown-button" onClick={toggleDetails}>
         {isExpanded ? "Hide Details" : "Show Details"}
-        <span className="dropdown-icon">{isExpanded ? "↑" : "↓"}</span>
+        <span className="dropdown-icon">
+          {isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+        </span>
       </button>
       {isExpanded && (
         <div className="incident-extra-details">

@@ -1,3 +1,5 @@
+import { faCity, faTriangleExclamation, faUserShield, faVideo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import InteractiveMap from "../../components/InteractiveMap/InteractiveMap";
 import { MenuItem, Sidebar } from "../../components/Sidebar/Sidebar";
@@ -7,14 +9,19 @@ import Incidents from "../Incidents/Incidents";
 import Patrols from "../Patrols/Patrols";
 import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera, faCity, faTriangleExclamation, faUserShield } from "@fortawesome/free-solid-svg-icons";
 
 function Home() {
-  const { isEditing, setIsEditing } = useMapDataContext();
+  const { isEditing, setIsEditing, initialized } = useMapDataContext();
 
   return (
     <div>
+      {!initialized && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <span>Loading...</span>
+        </div>
+      )}
+
       <InteractiveMap />
 
       {/* Editing Indicator */}
@@ -28,7 +35,7 @@ function Home() {
           <MenuItem icon={<FontAwesomeIcon icon={faTriangleExclamation} />} label="Incidents">
             <Incidents />
           </MenuItem>
-          <MenuItem icon={<FontAwesomeIcon icon={faCamera} />} label="Cameras">
+          <MenuItem icon={<FontAwesomeIcon icon={faVideo} />} label="Cameras">
             <Cameras />
           </MenuItem>
           <MenuItem icon={<FontAwesomeIcon icon={faCity} />} label="Tatar Management">
