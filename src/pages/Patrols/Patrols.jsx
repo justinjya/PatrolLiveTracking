@@ -209,20 +209,24 @@ function Patrols() {
       <h3 className="patrols-title">List of Patrols</h3>
       <div className="patrols-list">
         <h4 className="patrols-subtitle">Ongoing</h4>
-        {markers.patrols
-          .filter(task => task.status === "ongoing")
-          .map(task => (
-            <PatrolItem
-              key={task.id}
-              ref={el => (itemRefs.current[task.id] = el)}
-              task={task}
-              map={map}
-              setSelectedTask={setSelectedTask}
-              getOfficerDetails={getOfficerDetails}
-              checkIntersection={checkIntersection}
-              onViewClick={() => handleViewClick(task)}
-            />
-          ))}
+        {markers.patrols.filter(task => task.status === "ongoing").length === 0 ? (
+          <div className="no-tasks-message">No ongoing tasks available</div>
+        ) : (
+          markers.patrols
+            .filter(task => task.status === "ongoing")
+            .map(task => (
+              <PatrolItem
+                key={task.id}
+                ref={el => (itemRefs.current[task.id] = el)}
+                task={task}
+                map={map}
+                setSelectedTask={setSelectedTask}
+                getOfficerDetails={getOfficerDetails}
+                checkIntersection={checkIntersection}
+                onViewClick={() => handleViewClick(task)}
+              />
+            ))
+        )}
         <h4 className="patrols-subtitle">History</h4>
         {Object.keys(groupedByClusterAndStatus).map(clusterName => (
           <div key={clusterName} className="patrol-card">
