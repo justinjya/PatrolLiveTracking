@@ -282,6 +282,7 @@
 .patrol-item-expanded-detail-container {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .patrol-item-distance, .patrol-item-final-photo-report {

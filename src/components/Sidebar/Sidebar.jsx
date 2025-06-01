@@ -16,7 +16,7 @@ function Sidebar({ children }) {
     handleMenuClick,
     closeSecondarySidebar
   } = useSidebarContext();
-  const { setSelectedIncident, isEditing, clearPolylines, setSelectedCluster } = useMapDataContext();
+  const { isEditing, setSelectedTask, setSelectedIncident, setSelectedCluster, clearPolylines } = useMapDataContext();
 
   useEffect(() => {
     if (isEditing) {
@@ -38,7 +38,13 @@ function Sidebar({ children }) {
               React.cloneElement(child, {
                 isCollapsed,
                 isSelected: child.props.label === activeMenu, // Check if the menu is active
-                onClick: () => handleMenuClick(child.props.label, child.props.children || child.props.pageComponent)
+                onClick: () => {
+                  handleMenuClick(child.props.label, child.props.children || child.props.pageComponent)
+                  setSelectedTask(null); // Reset selected task when switching menus
+                  setSelectedIncident(null); // Reset selected incident when switching menus
+                  setSelectedCluster(null); // Reset selected cluster when switching menus
+                  clearPolylines(); // Clear polylines when switching menus
+                }
               })
             )}
           </div>

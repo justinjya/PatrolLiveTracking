@@ -60,7 +60,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
   return (
     <div ref={cardRef} className="incident-card">
       <div className="incident-content-container">
-        <div>
+        <div className="incident-content">
           <div className="incident-title">{incident.title}</div>
           <div className="incident-timestamp">
             <FontAwesomeIcon icon={faClock} style={{ color: "#555" }} />
@@ -89,9 +89,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
       </div>
       <button className="dropdown-button" onClick={toggleDetails}>
         {isExpanded ? "Hide Details" : "Show Details"}
-        <span className="dropdown-icon">
-          {isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
-        </span>
+        <span className="dropdown-icon">{isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span>
       </button>
       {isExpanded && (
         <div className="incident-extra-details">

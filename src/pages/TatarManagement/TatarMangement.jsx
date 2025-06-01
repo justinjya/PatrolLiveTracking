@@ -50,8 +50,8 @@ function TatarCard({ tatar, setSelectedCluster }) {
 
   return (
     <div className="tatar-item">
-      <div className="tatar-contents">
-        <div>
+      <div className="tatar-contents-container">
+        <div className="tatar-contents">
           <div className="tatar-name">{tatar.name}</div>
           <div className="tatar-email">{tatar.email}</div>
           <div className="tatar-coordinates">

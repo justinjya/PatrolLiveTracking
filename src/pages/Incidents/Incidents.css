@@ -36,6 +36,14 @@
   width: 100%;
 }
 
+.incident-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  width: 65%;
+}
+
 .incident-title {
   font-weight: bold;
   font-size: 16px;
@@ -80,21 +88,19 @@
 .incident-extra-details {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   text-align: left;
+  font-size: 12px;
 }
 
-.incident-description {
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  color: #333;
+.incident-extra-details strong {
+  color: #CACBD5;
 }
 
 .incident-photos {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
 }
 
 .photo-gallery {
@@ -109,4 +115,10 @@
   object-fit: cover;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+
+.incident-description {
+  display: flex;
+  flex-direction: column;
+  color: #333;
 }
