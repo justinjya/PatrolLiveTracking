@@ -56,7 +56,8 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
         >
           <div className="camera-icon-container">
             <FontAwesomeIcon icon={faCamera} size="3x" className="camera-icon" />
-            <div className="camera-icon-background"></div>
+            <FontAwesomeIcon icon={faCamera} className="camera-icon-border" />
+            <div className="camera-icon-fill"></div>
           </div>
         </AdvancedMarker>
       ))}
@@ -73,7 +74,8 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
         >
           <div className="incident-icon-container">
             <FontAwesomeIcon icon={faTriangleExclamation} size="3x" className="incident-icon" />
-            <div className="incident-icon-background"></div>
+            <FontAwesomeIcon icon={faTriangleExclamation} className="incident-icon-border" />
+            <div className="incident-icon-fill"></div>
           </div>
         </AdvancedMarker>
       ))}

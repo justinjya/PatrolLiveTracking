@@ -9,7 +9,7 @@
   z-index: 2; /* Ensure it is above the background */
 }
 
-.camera-icon-background {
+.camera-icon-fill {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -32,14 +32,24 @@
   z-index: 2; /* Ensure it is above the background */
 }
 
-.incident-icon-background {
+.incident-icon-border, .camera-icon-border {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 10px; /* Adjust size to fit the exclamation */
-  height: 20px; /* Adjust size to fit the exclamation */
+  width: 35px; /* Adjust size to fit the triangle icon */
+  height: 35px; /* Adjust size to fit the triangle icon */
+  color: #fff; /* Solid white background */
+  z-index: 1; /* Ensure it is below the icon */
+}
+
+.incident-icon-fill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; /* Adjust size to fit the triangle icon */
+  height: 20px; /* Adjust size to fit the triangle icon */
   background-color: #9c7417; /* Solid white background */
   border-radius: 50%; /* Make it circular */
-  z-index: 1; /* Ensure it is below the icon */
 }

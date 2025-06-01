@@ -1,3 +1,5 @@
+import { faChevronRight, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext"; // Import the context
@@ -23,7 +25,7 @@ function Sidebar({ children }) {
   }, [isEditing]);
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="sidebar-container">
       {/* Primary Sidebar */}
       <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-content">
@@ -44,8 +46,9 @@ function Sidebar({ children }) {
       </div>
 
       {/* Secondary Sidebar */}
-      {activeMenu && (
+      <div className="sidebar-secondary-sidebar">
         <SecondarySidebar
+          activeMenu={activeMenu}
           onClose={() => {
             closeSecondarySidebar();
             clearPolylines();
@@ -56,7 +59,7 @@ function Sidebar({ children }) {
         >
           {secondaryContent}
         </SecondarySidebar>
-      )}
+      </div>
     </div>
   );
 }
@@ -65,11 +68,10 @@ function ToggleButton({ isCollapsed, onToggle, activeMenu }) {
   return (
     <div className="sidebar-toggle-button-container">
       <button
-        className="sidebar-toggle-button"
+        className={`sidebar-toggle-button ${activeMenu ? "active" : ""}`}
         onClick={onToggle}
-        style={{ visibility: activeMenu ? "hidden" : "visible" }} // Hide button if there's an active menu
       >
-        {isCollapsed ? ">" : "X"}
+        {isCollapsed ? <FontAwesomeIcon icon={faChevronRight} /> : <FontAwesomeIcon icon={faXmark} />}
       </button>
     </div>
   );
@@ -81,7 +83,7 @@ function MenuItem({ icon, label, isCollapsed, onClick, isSelected }) {
       className={`sidebar-menu-item ${isSelected ? "selected" : ""}`} // Add 'selected' class if the menu is active
       onClick={onClick}
     >
-      <span className="sidebar-menu-icon">{icon}</span>
+      <span className={`sidebar-menu-icon ${isSelected ? "selected" : ""}`}>{icon}</span>
       {!isCollapsed && <span className="sidebar-menu-label">{label}</span>}
     </div>
   );

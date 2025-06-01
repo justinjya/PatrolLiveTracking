@@ -72,10 +72,10 @@ function Patrols() {
       for (const {
         coordinates: [lat2, lng2]
       } of Object.values(routePath)) {
-        const point1 = new window.google.maps.LatLng(lat1, lng1);
-        const point2 = new window.google.maps.LatLng(lat2, lng2);
+        const point1 = new coreLibrary.LatLng(lat1, lng1);
+        const point2 = new coreLibrary.LatLng(lat2, lng2);
 
-        const distance = window.google.maps.geometry.spherical.computeDistanceBetween(point1, point2);
+        const distance = geometryLibrary.spherical.computeDistanceBetween(point1, point2);
         if (distance <= radius) {
           intersectionCount++; // Increment counter for each intersection
           visitedPoints.add(pointKey); // Mark the point as visited
@@ -92,9 +92,6 @@ function Patrols() {
 
     const assignedRoute = task.assigned_route; // Array of [latitude, longitude]
     const routePath = task.route_path; // Object with coordinates (can be null)
-
-    const intersectionCount = checkIntersection(assignedRoute, routePath);
-    console.log(`Number of intersections: ${intersectionCount}`);
 
     const center = assignedRoute.reduce(
       (acc, [lat, lng]) => {
@@ -172,6 +169,7 @@ function Patrols() {
 
   return (
     <div className="patrols-page">
+      <h3 className="patrols-title">List of Patrols</h3>
       <h3 className="patrols-title">History</h3>
       <div className="patrols-list">
         {Object.keys(groupedByClusterAndStatus).map(clusterName => (

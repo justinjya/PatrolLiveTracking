@@ -10,6 +10,7 @@ export const SidebarProvider = ({ children }) => {
   const [secondaryContent, setSecondaryContent] = useState(null);
 
   const toggleSidebar = () => {
+    if (activeMenu) return;
     setIsCollapsed((prev) => !prev);
   }
 

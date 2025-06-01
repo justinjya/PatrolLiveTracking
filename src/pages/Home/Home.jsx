@@ -7,6 +7,8 @@ import Incidents from "../Incidents/Incidents";
 import Patrols from "../Patrols/Patrols";
 import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCamera, faCity, faTriangleExclamation, faUserShield } from "@fortawesome/free-solid-svg-icons";
 
 function Home() {
   const { isEditing, setIsEditing } = useMapDataContext();
@@ -20,16 +22,16 @@ function Home() {
 
       <div style={{ position: "fixed", top: 0, left: 0 }}>
         <Sidebar>
-          <MenuItem icon="👮" label="Patrols">
+          <MenuItem icon={<FontAwesomeIcon icon={faUserShield} />} label="Patrols">
             <Patrols />
           </MenuItem>
-          <MenuItem icon="⚠️" label="Incidents">
+          <MenuItem icon={<FontAwesomeIcon icon={faTriangleExclamation} />} label="Incidents">
             <Incidents />
           </MenuItem>
-          <MenuItem icon="📷" label="Cameras">
+          <MenuItem icon={<FontAwesomeIcon icon={faCamera} />} label="Cameras">
             <Cameras />
           </MenuItem>
-          <MenuItem icon="🏢" label="Tatar Management">
+          <MenuItem icon={<FontAwesomeIcon icon={faCity} />} label="Tatar Management">
             <TatarManagement />
           </MenuItem>
         </Sidebar>
