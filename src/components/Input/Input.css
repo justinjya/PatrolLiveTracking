@@ -1,0 +1,61 @@
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: #000;
+}
+
+.input-icon {
+  position: absolute;
+  color: #002E83;
+}
+
+.icon-left .input-icon {
+  left: 15px; /* Position the icon on the left */
+}
+
+.icon-right .input-icon {
+  right: 15px; /* Position the icon on the right */
+}
+
+.input {
+  width: 100%;
+  padding: 15px 10px;
+  font-size: 16px;
+  border: 1px solid #afd7f8;
+  background-color: #fff;;
+  border-radius: 8px;
+  color: #000;
+}
+
+.icon-left .input {
+  padding-left: 45px; /* Add padding to avoid overlapping with the left icon */
+}
+
+.icon-right .input {
+  padding-right: 45px; /* Add padding to avoid overlapping with the right icon */
+}
+
+.input::placeholder {
+  color: #000;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #002E83;
+}
+
+.input:-webkit-autofill {
+  background-color: #fff !important; /* Match the input's background color */
+  color: #000 !important; /* Match the input's text color */
+  border: 1px solid #afd7f8 !important; /* Match the input's border color */
+  -webkit-text-fill-color: #000 !important; /* Ensure text color stays consistent */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent flashing effect */
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #002E83;
+}

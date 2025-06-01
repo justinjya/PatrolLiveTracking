@@ -16,10 +16,10 @@ function Sidebar({ children }) {
     handleMenuClick,
     closeSecondarySidebar
   } = useSidebarContext();
-  const { isEditing, setSelectedTask, setSelectedIncident, setSelectedCluster, clearPolylines } = useMapDataContext();
+  const { isEditing, setSelectedTask, setSelectedIncident, setSelectedCluster, clearPolylines, clearTempPatrolPoints } = useMapDataContext();
 
   useEffect(() => {
-    if (isEditing) {
+    if (isEditing === "Cameras") {
       closeSidebar();
     }
   }, [isEditing]);
@@ -45,6 +45,7 @@ function Sidebar({ children }) {
                   setSelectedTask(null); // Reset selected task when switching menus
                   setSelectedIncident(null); // Reset selected incident when switching menus
                   setSelectedCluster(null); // Reset selected cluster when switching menus
+                  clearTempPatrolPoints(); // Clear temporary patrol points when switching menus
                   clearPolylines(); // Clear polylines when switching menus
                 }
               })
@@ -64,6 +65,7 @@ function Sidebar({ children }) {
             setSelectedTask(null); // Reset selected task when closing the sidebar
             setSelectedIncident(null); // Reset selected incident when closing the sidebar
             setSelectedCluster(null); // Reset selected cluster when closing the sidebar
+            clearTempPatrolPoints(); // Clear temporary patrol points when closing the sidebar
             clearPolylines();
           }}
           title={activeMenu}

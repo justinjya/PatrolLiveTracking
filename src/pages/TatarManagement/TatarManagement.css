@@ -5,9 +5,66 @@
   height: 100%;
 }
 
+.tatar-management-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
 .tatar-management-title {
   text-align: start;
   margin: 0;
+}
+
+.tatar-management-title {
+  text-align: start;
+  margin: 0;
+}
+
+.add-tatar-button {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  color: #002e83;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.add-tatar-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.add-tatar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.tatar-form-button {
+  border: none;
+  border-radius: 20px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tatar-form-button:disabled, .tatar-edit-patrol-points-button:disabled, .tatar-delete-tatar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.separator {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 10px;
 }
 
 .tatar-list {
@@ -48,17 +105,17 @@
   font-size: 16px;
 }
 
-.tatar-email{
+.tatar-email {
   font-size: 12px;
-  color: #B8B9C2;
+  color: #b8b9c2;
 }
 
 .tatar-coordinates {
   font-size: 12px;
-  color: #B8B9C2;
+  color: #b8b9c2;
 }
 
-.tatar-view-on-map-button {
+.tatar-view-on-map-button, .tatar-edit-patrol-points-button, .tatar-delete-tatar-button {
   border: none;
   border-radius: 20px;
   padding: 5px 10px;
@@ -66,11 +123,24 @@
   font-size: 11px;
 }
 
+.tatar-edit-patrol-points-button {
+  flex-grow: 1;
+}
+
+.tatar-delete-tatar-button {
+  background-color: #FF2825;
+}
+
+.tatar-actions {
+  display: flex;
+  gap: 5px;
+}
+
 .dropdown-button {
   background-color: transparent;
   padding: 0;
   border: none;
-  color: #002E83;
+  color: #002e83;
   cursor: pointer;
   font-size: 12px;
   display: flex;

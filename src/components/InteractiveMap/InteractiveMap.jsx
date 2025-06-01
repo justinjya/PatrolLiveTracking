@@ -52,7 +52,7 @@ function InteractiveMap() {
     });
   };
 
-  const handleMarkerClick = marker => {
+  const handleMarkerClick = ({ marker, index = null }) => {
     if (!isEditing) {
       // If not in edit mode, do not open InfoWindow on map click
       return;
@@ -61,7 +61,8 @@ function InteractiveMap() {
     // Open an InfoWindow for the clicked marker and close any other InfoWindow
     setInfoWindow({
       type: "marker", // Indicates this InfoWindow is for a marker
-      marker
+      marker,
+      index // Index can be null if not provided
     });
   };
 

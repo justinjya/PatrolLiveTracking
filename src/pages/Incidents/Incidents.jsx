@@ -88,7 +88,7 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
         </div>
       </div>
       <button className="dropdown-button" onClick={toggleDetails}>
-        {isExpanded ? "Hide Details" : "Show Details"}
+        {isExpanded ? "Hide Details" : "More Details"}
         <span className="dropdown-icon">{isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span>
       </button>
       {isExpanded && (

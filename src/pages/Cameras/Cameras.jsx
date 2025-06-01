@@ -10,7 +10,7 @@ function Cameras() {
   const map = useMap();
 
   const handleEditClick = () => {
-    setIsEditing(true); // Enable edit mode
+    setIsEditing("Cameras"); // Enable edit mode
   };
 
   const handleViewClick = camera => {
