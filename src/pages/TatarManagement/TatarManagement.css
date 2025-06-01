@@ -57,6 +57,13 @@
   gap: 10px;
 }
 
+.edit-patrol-point-hint {
+  text-align: left;
+  font-size: 11px;
+  color: #BCBDC6;
+  margin-bottom: 5px;
+}
+
 .tatar-form-button {
   flex-grow: 1;
 }

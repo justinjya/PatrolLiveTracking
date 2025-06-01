@@ -20,8 +20,10 @@ function TatarManagement() {
   const { markers, setSelectedCluster, isEditing, setIsEditing, setMarkers, clearTempPatrolPoints } =
     useMapDataContext();
   const [isAddingTatar, setIsAddingTatar] = useState(false);
+  const [selectedTatar, setSelectedTatar] = useState(null); // Track the currently selected Tatar for editing
 
   const toggleEditingTatar = () => {
+    setSelectedTatar(null); // Reset selected Tatar when toggling Tatar editing
     setIsAddingTatar(prev => !prev);
     clearTempPatrolPoints(); // Clear any temporary patrol points when toggling Tatar editing
     if (isEditing === "Patrol Points") {
@@ -30,9 +32,16 @@ function TatarManagement() {
   };
 
   const toggleEditingPatrolPoints = cluster => {
+    if (isEditing === "Patrol Points") {
+      setIsEditing(null); // Reset editing state if currently editing patrol points
+      setSelectedTatar(null); // Reset selected Tatar
+      return;
+    }
+
     setIsEditing("Patrol Points");
 
     if (cluster) {
+      setSelectedTatar(cluster); // Set the selected Tatar for editing
       setMarkers(prev => ({
         ...prev,
         tempPatrolPoints: cluster.cluster_coordinates || []
@@ -89,12 +98,11 @@ function TatarManagement() {
                 position="left"
                 required
               />
-              <button
-                className="tatar-form-button"
-                disabled={isEditing === "Patrol Points"}
-                onClick={() => toggleEditingPatrolPoints(null)}
-              >
-                Edit Patrol Points
+              <span className="edit-patrol-point-hint">
+                Click on the map to add patrol points. You need at least 3 points to define an area.
+              </span>
+              <button className="tatar-form-button" onClick={() => toggleEditingPatrolPoints(null)}>
+                {isEditing === "Patrol Points" ? "Save Changes" : "Edit Patrol Points"}
               </button>
               <button className="tatar-form-button" disabled={isEditing === "Patrol Points"} type="submit">
                 Submit
@@ -110,6 +118,7 @@ function TatarManagement() {
             isEditing={isEditing}
             setSelectedCluster={setSelectedCluster}
             onEditPatrolPointsClick={() => toggleEditingPatrolPoints(tatar)}
+            isSelected={selectedTatar?.id === tatar.id} // Pass whether this Tatar is selected
           />
         ))}
       </div>
@@ -117,7 +126,7 @@ function TatarManagement() {
   );
 }
 
-function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsClick, onDeleteTatarClick }) {
+function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsClick, onDeleteTatarClick, isSelected }) {
   const map = useMap();
   const [isOfficersExpanded, setIsOfficersExpanded] = useState(false);
   const [isAddingOfficer, setIsAddingOfficer] = useState(false);
@@ -150,8 +159,7 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
     map.setZoom(17); // Zoom in to focus on the cluster
   };
 
-  const handleEditPatrolPointsClick = () => {
-    // Calculate the center of the cluster_coordinates
+  const handleEditPatrolPoints = () => {
     const center = tatar.cluster_coordinates.reduce(
       (acc, [lat, lng]) => {
         acc.lat += lat;
@@ -166,8 +174,7 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 
     map.setCenter(center); // Set the map center to the calculated center
     map.setZoom(17); // Zoom in to focus on the cluster
-
-    onEditPatrolPointsClick(); // Trigger the patrol points editing
+    onEditPatrolPointsClick();
   };
 
   return (
@@ -196,14 +203,14 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
       <div className="tatar-actions">
         <button
           className="tatar-edit-patrol-points-button"
-          disabled={isEditing === "Patrol Points"}
-          onClick={handleEditPatrolPointsClick}
+          onClick={handleEditPatrolPoints}
+          disabled={isEditing === "Patrol Points" && !isSelected} // Disable if editing another Tatar's points
         >
-          Edit Patrol Points
+          {isEditing === "Patrol Points" && isSelected ? "Save Changes" : "Edit Patrol Points"}
         </button>
         <button
           className="tatar-delete-tatar-button"
-          disabled={isEditing === "Patrol Points"}
+          disabled={isEditing === "Patrol Points"} // Disable delete button while editing patrol points
           onClick={onDeleteTatarClick}
         >
           Delete Tatar
