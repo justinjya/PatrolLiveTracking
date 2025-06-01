@@ -1,15 +1,15 @@
-import { faCalendar } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faChevronRight, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faClock } from "@fortawesome/free-regular-svg-icons";
+import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useMemo, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { shiftLabels, typeLabels } from "../../utils/OfficerLabels";
-import "./Patrols.css";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
+import "./Patrols.css";
 
 function Patrols() {
-  const { markers, selectedTask, setSelectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
+  const { markers, setSelectedTask, clearPolylines, addPolylines } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
   const coreLibrary = useMapsLibrary("core");
   const geometryLibrary = useMapsLibrary("geometry");
@@ -35,7 +35,6 @@ function Patrols() {
     });
     return initialState;
   });
-
   const groupedByClusterAndStatus = useMemo(() => {
     const grouped = markers.patrols.reduce((acc, task) => {
       const clusterName = task.clusterName || "Unknown Cluster";
@@ -155,10 +154,6 @@ function Patrols() {
     }));
   };
 
-  const showDetails = task => {
-    setSelectedTask(task); // Set the selected task to show its details
-  };
-
   const getOfficerDetails = (clusterId, officerId) => {
     const cluster = markers.tatars.find(tatar => tatar.id === clusterId);
     const officers = Array.isArray(cluster?.officers) ? cluster.officers : [];
@@ -185,20 +180,6 @@ function Patrols() {
     "Unknown Timeliness": "Unknown Timeliness",
     "Unknown Status": "Unknown Status"
   };
-
-  // if (selectedTask) {
-  //   return (
-  //     <PatrolDetails
-  //       task={selectedTask}
-  //       onBack={() => {
-  //         setSelectedTask(null);
-  //         clearPolylines(); // Clear polylines when going back to the list
-  //       }}
-  //       checkIntersection={checkIntersection} // Pass checkIntersection as a prop
-  //       getOfficerDetails={getOfficerDetails} // Pass getOfficerDetails as a prop
-  //     />
-  //   );
-  // }
 
   return (
     <div className="patrols-page">
@@ -239,83 +220,17 @@ function Patrols() {
                     </div>
                     {!collapsedStatuses[clusterName][status] && (
                       <div className="patrol-items">
-                        {groupedByClusterAndStatus[clusterName].statuses[status].map(task => {
-                          const officerDetails = getOfficerDetails(task.clusterId, task.userId);
-                          const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
-                          const totalPoints = task.assigned_route.length;
-                          const percentage = ((intersectionCount / totalPoints) * 100).toFixed(0);
-
-                          return (
-                            <div className="patrol-item" key={task.id}>
-                              <div className="patrol-item-header">
-                                <div className="patrol-item-title">Tugas #{task.id.slice(0, 8)}</div>
-                                <div className="patrol-item-timeliness-badge" style={timelinessLabels[task.timeliness]?.style}>{timelinessLabels[task.timeliness]?.label || "Unknown Timeliness"}</div>
-                              </div>
-                              <span className="patrol-item-officer-name">{officerDetails.officerName}</span>
-                              <div className="patrol-item-details">
-                                <div className="patrol-item-badges">
-                                  <div
-                                    className="patrol-badge type-badge"
-                                    style={typeLabels[officerDetails.officerType]?.style || {}}
-                                  >
-                                    {typeLabels[officerDetails.officerType]?.label || officerDetails.officerType}
-                                  </div>
-                                  <div className="patrol-badge shift-badge">{shiftLabels[officerDetails.shift]}</div>
-                                </div>
-                                <div className="patrol-item-timestamps">
-                                  <span>
-                                    <FontAwesomeIcon icon={faCalendar} />
-                                    &nbsp;&nbsp;&nbsp;
-                                    {isNaN(new Date(task.startTime).getTime())
-                                      ? "N/A"
-                                      : `${new Date(task.startTime).toLocaleDateString("id-ID", {
-                                          day: "numeric",
-                                          month: "long",
-                                          year: "numeric"
-                                        })}, ${new Date(task.startTime).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                          hour12: false
-                                        })}`}{" "}
-                                    -{" "}
-                                    {isNaN(new Date(task.endTime).getTime())
-                                      ? "N/A"
-                                      : new Date(task.endTime).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                          hour12: false
-                                        })}
-                                  </span>
-                                </div>
-                                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                  <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-                                    <div className="patrol-item-intersections">
-                                      <div>Intersections</div>
-                                      <div className="patrol-item-intersection-count">
-                                        {intersectionCount} out of {totalPoints} points
-                                      </div>
-                                    </div>
-                                    <div className="patrol-item-bar-chart">
-                                      <div
-                                        className="patrol-item-bar"
-                                        style={{ width: `${percentage}%`, backgroundColor: "#007217" }}
-                                      ></div>
-                                    </div>
-                                  </div>
-                                  <div className="patrol-badge percentage-badge">{percentage}%</div>
-                                </div>
-                              </div>
-                              <div className="patrol-item-button-group">
-                                <button className="patrol-item-view-on-map-button" onClick={() => handleViewClick(task)}>
-                                  View on Map
-                                </button>
-                                <button className="patrol-item-details-button" onClick={() => showDetails(task)}>
-                                  Details <FontAwesomeIcon icon={faChevronRight} />
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
+                        {groupedByClusterAndStatus[clusterName].statuses[status].map(task => (
+                          <PatrolItem
+                            key={task.id}
+                            task={task}
+                            setSelectedTask={setSelectedTask}
+                            map={map}
+                            getOfficerDetails={getOfficerDetails}
+                            checkIntersection={checkIntersection}
+                            onViewClick={() => handleViewClick(task)}
+                          />
+                        ))}
                       </div>
                     )}
                   </div>
@@ -329,140 +244,168 @@ function Patrols() {
   );
 }
 
-function PatrolDetails({ task, onBack, checkIntersection, getOfficerDetails }) {
+function PatrolItem({ task, getOfficerDetails, checkIntersection, onViewClick }) {
   const officerDetails = getOfficerDetails(task.clusterId, task.userId);
-
   const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
   const totalPoints = task.assigned_route.length;
-  const percentage = ((intersectionCount / totalPoints) * 100).toFixed(2);
+  const percentage = ((intersectionCount / totalPoints) * 100).toFixed(0);
+
+  const [isExpanded, setIsExpanded] = useState(false); // Track whether details are expanded
 
   const duration =
     task.startTime && task.endTime
-      ? `${Math.floor((new Date(task.endTime) - new Date(task.startTime)) / (1000 * 60 * 60))} hours, ${Math.floor(
+      ? `${Math.floor((new Date(task.endTime) - new Date(task.startTime)) / (1000 * 60 * 60))}h ${Math.floor(
           ((new Date(task.endTime) - new Date(task.startTime)) % (1000 * 60 * 60)) / (1000 * 60)
-        )} minutes`
+        )}m ${Math.floor(((new Date(task.endTime) - new Date(task.startTime)) % (1000 * 60)) / 1000)}s`
       : "N/A";
 
   return (
-    <div className="patrol-details-page">
-      <h3 className="patrol-details-title">Patrol Details</h3>
-      <div className="patrol-details">
-        <div className="patrol-item-title">Tugas {task.id.slice(0, 8)}</div>
-        <span>{officerDetails.officerName}</span>
-        <div className="patrol-item-details">
+    <div className="patrol-item" key={task.id}>
+      <div className="patrol-item-header">
+        <div className="patrol-item-title">Tugas #{task.id.slice(0, 8)}</div>
+        <div className="patrol-item-header-badge-group">
+          <div className="patrol-item-timeliness-badge" style={timelinessLabels[task.timeliness]?.style}>
+            {timelinessLabels[task.timeliness]?.label || "Unknown Timeliness"}
+          </div>
+          {task.mockLocationDetected && <div className="patrol-item-fake-gps-indicator-badge">Fake GPS Detected</div>}
+        </div>
+      </div>
+      <div className="patrol-item-officer-group">
+        <FontAwesomeIcon icon={faUserShield} size="2x" />
+        <div>
+          <strong className="patrol-item-officer-name">{officerDetails.officerName}</strong>
           <div className="patrol-item-badges">
-            <div className="badge">{officerDetails.officerType}</div>
-            <div className="badge">{officerDetails.shift}</div>
-          </div>
-          <div className="patrol-item-status">
-            <span>Status: {task.status || "Unknown"}</span>
-          </div>
-          <div className="patrol-item-timeliness">
-            <span>Timeliness: {task.timeliness || "Unknown Timeliness"}</span>
-          </div>
-          <div className="patrol-item-timestamps">
-            <span>
-              {isNaN(new Date(task.startTime).getTime())
-                ? "N/A"
-                : `${new Date(task.startTime).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric"
-                  })}, ${new Date(task.startTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false
-                  })}`}{" "}
-              -{" "}
-              {isNaN(new Date(task.endTime).getTime())
-                ? "N/A"
-                : new Date(task.endTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false
-                  })}
-            </span>
-          </div>
-          <div className="patrol-item-duration">
-            <span>Duration: {duration}</span>
-          </div>
-          <div className="patrol-item-distance">
-            <span>Distance: {task.distance || "Unknown Distance"} km</span>
-          </div>
-          <div className="patrol-item-photo-reports">
-            <span>Initial Photo Report:</span>
-            {task.initialReportPhotoUrl ? (
-              <div>
-                <img src={task.initialReportPhotoUrl} alt="Initial Report" className="patrol-photo" />
-                <span>
-                  {isNaN(new Date(task.initialReportTime).getTime())
-                    ? "N/A"
-                    : `${new Date(task.initialReportTime).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
-                      })}, ${new Date(task.initialReportTime).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false
-                      })}`}
-                </span>
-              </div>
-            ) : (
-              <span>N/A</span>
-            )}
-            <span>Final Photo Report:</span>
-            {task.finalReportPhotoUrl ? (
-              <div>
-                <img src={task.finalReportPhotoUrl} alt="Final Report" className="patrol-photo" />
-                <span>
-                  {isNaN(new Date(task.finalReportTime).getTime())
-                    ? "N/A"
-                    : `${new Date(task.finalReportTime).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
-                      })}, ${new Date(task.finalReportTime).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false
-                      })}`}
-                </span>
-              </div>
-            ) : (
-              <span>N/A</span>
-            )}
-          </div>
-          <div className="patrol-item-intersections">
-            <span>
-              {intersectionCount} out of {totalPoints} points
-            </span>
-            <div className="patrol-item-bar-chart">
-              <div className="patrol-item-bar" style={{ width: `${percentage}%`, backgroundColor: "#4caf50" }}></div>
+            <div className="patrol-badge type-badge" style={typeLabels[officerDetails.officerType]?.style || {}}>
+              {typeLabels[officerDetails.officerType]?.label || officerDetails.officerType}
             </div>
-            <span>{percentage}% Completed</span>
+            <div className="patrol-badge shift-badge">{shiftLabels[officerDetails.shift]}</div>
+          </div>
+        </div>
+      </div>
+      <div className="patrol-item-details">
+        <div className="patrol-item-timestamps">
+          <span>
+            <FontAwesomeIcon icon={faCalendar} />
+            &nbsp;&nbsp;&nbsp;
+            {isNaN(new Date(task.startTime).getTime())
+              ? "N/A"
+              : `${new Date(task.startTime).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                })}, ${new Date(task.startTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}`}{" "}
+            -{" "}
+            {isNaN(new Date(task.endTime).getTime())
+              ? "N/A"
+              : new Date(task.endTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
+          </span>
+        </div>
+        <div className="patrol-item-intersections-container">
+          <div className="patrol-item-intersections-bar-container">
+            <div className="patrol-item-intersections">
+              <div>Intersections</div>
+              <div className="patrol-item-intersection-count">
+                {intersectionCount} out of {totalPoints} points
+              </div>
+            </div>
+            <div className="patrol-item-bar-chart">
+              <div className="patrol-item-bar" style={{ width: `${percentage}%`, backgroundColor: "#007217" }}></div>
+            </div>
+          </div>
+          <div className="patrol-badge percentage-badge">{percentage}%</div>
+        </div>
+      </div>
+      <div className="patrol-item-view-on-map-button-container">
+        <button className="patrol-item-view-on-map-button" onClick={onViewClick}>
+          View on Map
+        </button>
+      </div>
+      <div className="patrol-item-details-button-container">
+        <button className="patrol-item-details-button" onClick={() => setIsExpanded(prev => !prev)}>
+          {isExpanded ? "Hide Details" : "Show Details"} <FontAwesomeIcon icon={faChevronDown} />
+        </button>
+      </div>
+      {isExpanded && (
+        <div className="patrol-item-expanded-details">
+          <div className="patrol-item-expanded-detail-group">
+            <div className="patrol-item-expanded-detail-container patrol-item-duration">
+              <strong>
+                <FontAwesomeIcon icon={faClock} />
+                &nbsp;&nbsp; Duration
+              </strong>
+              <span>{duration}</span>
+            </div>
+            <div className="patrol-item-expanded-detail-container patrol-item-distance">
+              <strong>
+                <FontAwesomeIcon icon={faRoute} />
+                &nbsp;&nbsp; Distance
+              </strong>
+              <span>{(task.distance / 1000).toFixed(2) || "Unknown Distance"} km</span>
+            </div>
+          </div>
+          <div className="patrol-item-expanded-detail-group">
+            <div className="patrol-item-expanded-detail-container">
+              <strong>Initial Photo Report</strong>
+              {task.initialReportPhotoUrl ? (
+                <div>
+                  <img src={task.initialReportPhotoUrl} alt="Initial Report" className="patrol-photo" />
+                </div>
+              ) : (
+                <span>N/A</span>
+              )}
+            </div>
+            <div className="patrol-item-expanded-detail-container patrol-item-final-photo-report">
+              <strong>Final Photo Report</strong>
+              {task.finalReportPhotoUrl ? (
+                <div>
+                  <img src={task.finalReportPhotoUrl} alt="Final Report" className="patrol-photo" />
+                </div>
+              ) : (
+                <span>N/A</span>
+              )}
+            </div>
           </div>
           <div className="patrol-item-fake-gps">
-            <span>Fake GPS Detected: {task.mockLocationDetected ? "Yes" : "No"}</span>
-            <span>Fake GPS Count: {task.mockLocationCount || 0}</span>
-            {task.mock_detections && task.mock_detections.length > 0 && (
+            {task.mock_detections && (
               <div className="patrol-item-mock-detections">
-                <span>Mock Detections:</span>
-                <ul>
-                  {task.mock_detections.map((detection, index) => (
-                    <li key={index}>
-                      {detection.timestamp}: {detection.coordinates.join(", ")}
-                    </li>
-                  ))}
-                </ul>
+                <strong>Mock Detections</strong>
+                <div className="patrol-item-mock-detections-items">
+                  {task.mock_detections &&
+                    Object.keys(task.mock_detections).map((key, index) => (
+                      <div className="patrol-item-mock-detections-item" key={index}>
+                        <strong>
+                          {`${new Date(task.mock_detections[key].timestamp).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric"
+                          })} ${new Date(task.mock_detections[key].timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false
+                          })}`}
+                        </strong>
+                        <div>
+                          <FontAwesomeIcon icon={faLocationDot} style={{ color: "#9F1D1B" }} />
+                          &nbsp;&nbsp;&nbsp;
+                          {task.mock_detections[key].coordinates[0].toFixed(5)},{" "}
+                          {task.mock_detections[key].coordinates[1].toFixed(5)}
+                        </div>
+                      </div>
+                    ))}
+                </div>
               </div>
             )}
           </div>
         </div>
-        <button className="back-button" onClick={onBack}>
-          Back to List
-        </button>
-      </div>
+      )}
     </div>
   );
 }

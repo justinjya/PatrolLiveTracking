@@ -98,6 +98,17 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           </AdvancedMarker>
         ))}
 
+      {/* Render markers for mockDetections */}
+      {selectedTask?.mock_detections &&
+        Object.keys(selectedTask.mock_detections).map((key, index) => (
+          <AdvancedMarker
+            key={`mockLocation-${index}`}
+            position={{ lat: selectedTask.mock_detections[key].coordinates[0], lng: selectedTask.mock_detections[key].coordinates[1] }}
+          >
+            <Pin background="#9C2CF3" glyphColor={"#500A86"} borderColor={"#FFFEFE"} />
+          </AdvancedMarker>
+        ))}
+
       {/* Render patrol markers for ongoing tasks */}
       {markers.patrols
         .filter(patrol => patrol.status === "ongoing") // Filter patrols with status = "ongoing"
