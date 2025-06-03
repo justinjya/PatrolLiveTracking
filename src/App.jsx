@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { APIProvider } from "@vis.gl/react-google-maps";
+import React from "react";
+import "./App.css";
+import { FirebaseProvider } from "./contexts/FirebaseContext";
+import { MapDataProvider } from "./contexts/MapDataContext";
+import { SidebarProvider } from "./contexts/SidebarContext"; // Import SidebarProvider
+import Home from "./pages/Home/Home";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+    testEmail: import.meta.env.VITE_TEST_EMAIL,
+    testPassword: import.meta.env.VITE_TEST_PASSWORD
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <APIProvider apiKey={API_KEY}>
+      <FirebaseProvider config={firebaseConfig}>
+        <MapDataProvider>
+          <SidebarProvider>
+            <Home />
+          </SidebarProvider>
+        </MapDataProvider>
+      </FirebaseProvider>
+    </APIProvider>
+  );
 }
 
-export default App
+export default App;
