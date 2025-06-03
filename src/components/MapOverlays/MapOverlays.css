@@ -80,6 +80,12 @@
   z-index: 3; /* Ensure it is above the background */
 }
 
+.patrol-icon.selected {
+  color: #6f6f6f; /* patrol color */
+  position: relative;
+  z-index: 3; /* Ensure it is above the background */
+}
+
 .patrol-icon-border {
   position: absolute;
   top: 50%;

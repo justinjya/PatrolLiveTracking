@@ -11,7 +11,7 @@ import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
 
 function Home() {
-  const { isEditing, setIsEditing, initialized, clearTempPatrolPoints } = useMapDataContext();
+  const { isEditing, setIsEditing, initialized } = useMapDataContext();
 
   return (
     <div>
@@ -27,7 +27,6 @@ function Home() {
       {/* Editing Indicator */}
       {isEditing && <EditingIndicator isEditing={isEditing} onClose={() => {
         setIsEditing(null);
-        clearTempPatrolPoints(); // Clear temporary patrol points when editing is closed
       }} />}
 
       <div style={{ position: "fixed", top: 0, left: 0 }}>

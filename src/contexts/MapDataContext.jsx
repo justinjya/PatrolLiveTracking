@@ -14,7 +14,6 @@ export const MapDataProvider = ({ children }) => {
     patrols: [],
     incidents: [],
     tatars: [],
-    tempPatrolPoints: []
   });
 
   const [isEditing, setIsEditing] = useState(null); // Track edit mode
@@ -24,14 +23,6 @@ export const MapDataProvider = ({ children }) => {
   const [selectedCluster, setSelectedCluster] = useState(null); // Add selectedIncident state
   const [selectedCamera, setSelectedCamera] = useState(null); // Track the selected camera
   const [initialized, setInitialized] = useState(false); // Track if the context is initialized
-
-  // Method to clear temporary patrol point
-  const clearTempPatrolPoints = () => {
-    setMarkers(prev => ({
-      ...prev,
-      tempPatrolPoints: [] // Clear temporary patrol points
-    }));
-  };
 
   // Method to clear the polyline
   const clearPolylines = () => {
@@ -179,7 +170,6 @@ export const MapDataProvider = ({ children }) => {
         setSelectedTask, // Expose selectedTask and its setter
         polyline,
         setPolyline, // Expose polyline and its setter
-        clearTempPatrolPoints, // Expose the clearTempPatrolPoints method
         clearPolylines, // Expose the clearPolylines method
         addPolylines, // Expose the addPolylines method
         mapsLibrary, // Expose the mapsLibrary
