@@ -1,5 +1,16 @@
 import { faCalendar, faClock } from "@fortawesome/free-regular-svg-icons";
+<<<<<<< HEAD
 import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
+=======
+import {
+  faChevronDown,
+  faChevronUp,
+  faLocationDot,
+  faMap,
+  faRoute,
+  faUserShield
+} from "@fortawesome/free-solid-svg-icons";
+>>>>>>> main
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -525,10 +536,14 @@ function IncidentItem({ incident, onViewClick }) {
           </div>
         </div>
         <div>
+<<<<<<< HEAD
           <button
             className="incident-view-on-map-button patrol-incident-view-on-map-button"
             onClick={() => onViewClick(incident)}
           >
+=======
+          <button className="incident-view-on-map-button patrol-incident-view-on-map-button" onClick={() => onViewClick(incident)}>
+>>>>>>> main
             Lihat di Peta
           </button>
         </div>
