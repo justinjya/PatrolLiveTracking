@@ -1,0 +1,98 @@
+.camera-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+.camera-icon {
+  color: #2a3f66; /* Camera icon color */
+  position: relative;
+  z-index: 3; /* Ensure it is above the background */
+}
+
+.camera-icon.selected {
+  color: #5278be; /* Selected camera icon color */
+}
+
+.camera-icon-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 41px; /* Adjust size to fit the camera icon */
+  height: 40px; /* Adjust size to fit the camera icon */
+  color: #fff; /* Solid white background */
+  z-index: 1; /* Ensure it is below the icon */
+}
+
+.camera-icon-fill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px; /* Adjust size to fit the camera icon */
+  height: 20px; /* Adjust size to fit the camera icon */
+  background-color: #9fb5e0; /* Solid white background */
+  border-radius: 50%; /* Make it circular */
+  z-index: 2; /* Ensure it is below the icon */
+}
+
+.incident-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+.incident-icon {
+  color: #3535f3; /* Triangle color */
+  position: relative;
+  z-index: 3; /* Ensure it is above the background */
+}
+
+.incident-icon.selected {
+  color: rgb(111, 155, 237); /* Selected camera icon color */
+}
+
+.incident-icon-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35px; /* Adjust size to fit the triangle icon */
+  height: 35px; /* Adjust size to fit the triangle icon */
+  color: #fff; /* Solid white background */
+  z-index: 1; /* Ensure it is below the icon */
+}
+
+.incident-icon-fill {
+  position: absolute;
+  top: 51%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; /* Adjust size to fit the triangle icon */
+  height: 20px; /* Adjust size to fit the triangle icon */
+  background-color: #e6e6e6; /* Solid white background */
+  border-radius: 50%; /* Make it circular */
+  z-index: 2;
+}
+
+.patrol-icon {
+  color: #1D1D1D; /* patrol color */
+  position: relative;
+  z-index: 3; /* Ensure it is above the background */
+}
+
+.patrol-icon.selected {
+  color: #6f6f6f; /* patrol color */
+  position: relative;
+  z-index: 3; /* Ensure it is above the background */
+}
+
+.patrol-icon-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35px; /* Adjust size to fit the triangle icon */
+  height: 35px; /* Adjust size to fit the triangle icon */
+  color: #fff; /* Solid white background */
+  z-index: 1; /* Ensure it is below the icon */
+}
