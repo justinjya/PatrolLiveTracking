@@ -1,28 +1,23 @@
 import { faChevronRight, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect } from "react";
+import React from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext"; // Import the context
 import SecondarySidebar from "../SecondarySidebar/SecondarySidebar";
 import "./Sidebar.css";
 
 function Sidebar({ children }) {
+  const { isCollapsed, activeMenu, secondaryContent, toggleSidebar, handleMenuClick, closeSecondarySidebar } =
+    useSidebarContext();
   const {
-    isCollapsed,
-    activeMenu,
-    secondaryContent,
-    toggleSidebar,
-    closeSidebar,
-    handleMenuClick,
-    closeSecondarySidebar
-  } = useSidebarContext();
-  const { isEditing, setSelectedTask, setSelectedIncident, setSelectedCluster, clearPolylines, clearTempPatrolPoints } = useMapDataContext();
-
-  useEffect(() => {
-    if (isEditing === "Cameras") {
-      closeSidebar();
-    }
-  }, [isEditing]);
+    isEditing,
+    setSelectedTask,
+    setSelectedIncident,
+    setSelectedCluster,
+    setSelectedCamera,
+    clearPolylines,
+    clearTempPatrolPoints
+  } = useMapDataContext();
 
   return (
     <div className="sidebar-container">
@@ -41,10 +36,11 @@ function Sidebar({ children }) {
                 onClick: () => {
                   if (isEditing) return;
 
-                  handleMenuClick(child.props.label, child.props.children || child.props.pageComponent)
+                  handleMenuClick(child.props.label, child.props.children || child.props.pageComponent);
                   setSelectedTask(null); // Reset selected task when switching menus
                   setSelectedIncident(null); // Reset selected incident when switching menus
                   setSelectedCluster(null); // Reset selected cluster when switching menus
+                  setSelectedCamera(null); // Reset selected camera when switching menus
                   clearTempPatrolPoints(); // Clear temporary patrol points when switching menus
                   clearPolylines(); // Clear polylines when switching menus
                 }
@@ -60,11 +56,12 @@ function Sidebar({ children }) {
           activeMenu={activeMenu}
           onClose={() => {
             if (isEditing) return; // Prevent closing if in editing mode
-            
+
             closeSecondarySidebar();
             setSelectedTask(null); // Reset selected task when closing the sidebar
             setSelectedIncident(null); // Reset selected incident when closing the sidebar
             setSelectedCluster(null); // Reset selected cluster when closing the sidebar
+            setSelectedCamera(null); // Reset selected camera when closing the sidebar
             clearTempPatrolPoints(); // Clear temporary patrol points when closing the sidebar
             clearPolylines();
           }}
@@ -80,10 +77,7 @@ function Sidebar({ children }) {
 function ToggleButton({ isCollapsed, onToggle, activeMenu }) {
   return (
     <div className="sidebar-toggle-button-container">
-      <button
-        className={`sidebar-toggle-button ${activeMenu ? "active" : ""}`}
-        onClick={onToggle}
-      >
+      <button className={`sidebar-toggle-button ${activeMenu ? "active" : ""}`} onClick={onToggle}>
         {isCollapsed ? <FontAwesomeIcon icon={faChevronRight} /> : <FontAwesomeIcon icon={faXmark} />}
       </button>
     </div>

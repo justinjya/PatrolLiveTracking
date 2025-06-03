@@ -9,7 +9,7 @@ function InteractiveMap() {
 
   // Centralized state for the currently open InfoWindow
   const [infoWindow, setInfoWindow] = useState(null); // InfoWindow for map clicks or markers
-  const { isEditing } = useMapDataContext(); // Access edit mode state from context
+  const { isEditing, setMarkers } = useMapDataContext(); // Access edit mode state from context
 
   const map = useMap();
 

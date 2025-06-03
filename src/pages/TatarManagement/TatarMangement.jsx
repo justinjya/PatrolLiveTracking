@@ -309,7 +309,6 @@ function OfficerCard({ officer }) {
 }
 
 function OfficerForm({ officer = {}, onSubmit, onCancel }) {
-  console.log(officer);
   return (
     <div className="officer-form-container">
       <h4 className="tatar-management-title">{officer.id ? "Edit Officer" : "Add New Officer"}</h4>

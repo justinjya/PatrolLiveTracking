@@ -6,35 +6,24 @@ import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 import Patrols from "../../pages/Patrols/Patrols";
+import AddMarkerInfoWindow from "../AddMarkerInfoWindow/AddMarkerInfoWindow";
 import "./MapOverlays.css";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
   const {
     markers,
     isEditing,
-    addMarker,
     setMarkers,
     setSelectedIncident,
     selectedTask,
     setSelectedTask,
     selectedCluster,
+    selectedCamera,
     clearPolylines,
     addPolylines
   } = useMapDataContext();
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
   const map = useMap();
-
-  const handleAddCameraMarker = () => {
-    if (infoWindow && infoWindow.type === "map") {
-      const newMarker = {
-        id: Date.now(),
-        lat: infoWindow.lat,
-        lng: infoWindow.lng
-      };
-      addMarker("cameras", newMarker); // Add the marker to the "cameras" type
-      closeInfoWindow(); // Close the InfoWindow
-    }
-  };
 
   const handleDeleteCameraMarker = () => {
     if (infoWindow && infoWindow.type === "marker") {
@@ -98,19 +87,22 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
   return (
     <>
       {/* Render markers for cameras */}
-      {markers.cameras.map(marker => (
-        <AdvancedMarker
-          key={marker.id}
-          position={{ lat: marker.lat, lng: marker.lng }}
-          onClick={() => handleMarkerClick({ marker })} // Handle marker clicks
-        >
-          <div className="camera-icon-container">
-            <FontAwesomeIcon icon={faVideo} size="3x" className="camera-icon" />
-            <FontAwesomeIcon icon={faVideo} className="camera-icon-border" />
-            <div className="camera-icon-fill"></div>
-          </div>
-        </AdvancedMarker>
-      ))}
+      {markers.cameras.map(marker => {
+        const isSelected = marker === selectedCamera; // Check if the marker is selected
+        return (
+          <AdvancedMarker
+            key={marker.id}
+            position={{ lat: marker.lat, lng: marker.lng }}
+            onClick={() => handleMarkerClick({ marker })} // Handle marker clicks
+          >
+            <div className="camera-icon-container">
+              <FontAwesomeIcon icon={faVideo} size="3x" className={`camera-icon ${isSelected ? "selected" : ""}`} />
+              <FontAwesomeIcon icon={faVideo} className="camera-icon-border" />
+              <div className="camera-icon-fill"></div>
+            </div>
+          </AdvancedMarker>
+        );
+      })}
 
       {/* Render markers for incidents */}
       {markers.incidents.map(incident => (
@@ -210,14 +202,16 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
         </AdvancedMarker>
       ))}
 
-      {/* InfoWindow for map clicks */}
-      {infoWindow && infoWindow.type === "map" && isEditing === "Cameras" && (
-        <InfoWindow
-          position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
-          onCloseClick={closeInfoWindow} // Close the InfoWindow
-        >
-          <button onClick={handleAddCameraMarker}>Add Marker</button>
-        </InfoWindow>
+      {/* InfoWindow for adding markers */}
+      {infoWindow && infoWindow.type === "map" && (
+        <AdvancedMarker position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
+          <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
+            <AddMarkerInfoWindow
+              position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
+              closeInfoWindow={closeInfoWindow}
+            />
+          </InfoWindow>
+        </AdvancedMarker>
       )}
 
       {/* InfoWindow for marker clicks */}
@@ -229,7 +223,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           }}
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
-          <button onClick={handleDeleteCameraMarker}>Remove Marker</button>
+          <button onClick={handleDeleteCameraMarker}>Remove Camera</button>
         </InfoWindow>
       )}
 
@@ -249,9 +243,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
           }}
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
-          <button onClick={() => handleDeletePatrolPointMarker(infoWindow.index)}>
-            Remove Patrol Point Marker
-          </button>
+          <button onClick={() => handleDeletePatrolPointMarker(infoWindow.index)}>Remove Patrol Point Marker</button>
         </InfoWindow>
       )}
     </>

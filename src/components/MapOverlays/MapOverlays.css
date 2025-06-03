@@ -9,6 +9,10 @@
   z-index: 3; /* Ensure it is above the background */
 }
 
+.camera-icon.selected {
+  color: #5278be; /* Selected camera icon color */
+}
+
 .camera-icon-border {
   position: absolute;
   top: 50%;

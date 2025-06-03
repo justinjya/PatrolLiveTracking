@@ -1,0 +1,24 @@
+.add-marker-info-window {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-marker-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-marker-info-window button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-marker-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}

@@ -1,5 +1,5 @@
 import { useMapsLibrary } from "@vis.gl/react-google-maps"; // Import useMapsLibrary
-import { onValue, ref, set } from "firebase/database";
+import { onValue, ref } from "firebase/database";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useFirebase } from "./FirebaseContext";
 
@@ -22,15 +22,8 @@ export const MapDataProvider = ({ children }) => {
   const [selectedTask, setSelectedTask] = useState(null); // Track the selected task
   const [selectedIncident, setSelectedIncident] = useState(null); // Add selectedIncident state
   const [selectedCluster, setSelectedCluster] = useState(null); // Add selectedIncident state
+  const [selectedCamera, setSelectedCamera] = useState(null); // Track the selected camera
   const [initialized, setInitialized] = useState(false); // Track if the context is initialized
-
-  // Add a new marker
-  const addMarker = (type, marker) => {
-    setMarkers(prev => ({
-      ...prev,
-      [type]: [...prev[type], marker]
-    }));
-  };
 
   // Method to clear temporary patrol point
   const clearTempPatrolPoints = () => {
@@ -192,10 +185,11 @@ export const MapDataProvider = ({ children }) => {
         mapsLibrary, // Expose the mapsLibrary
         selectedIncident, // Expose selectedIncident
         setSelectedIncident, // Expose setter for selectedIncident
-        addMarker, // Expose the addMarker method
         selectedCluster, // Expose selectedCluster
         setSelectedCluster, // Expose setter for selectedCluster
-        initialized, // Expose initialized state
+        selectedCamera, // Expose selectedCamera
+        setSelectedCamera, // Expose setter for selectedCamera
+        initialized // Expose initialized state
       }}
     >
       {children}
