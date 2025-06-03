@@ -130,7 +130,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
             zIndex={999} // Set a high zIndex to ensure it renders above other markers
             onClick={() => {
               setSelectedIncident(incident);
-              handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
+              handleMenuClick("Insiden", <Incidents />); // Open the incidents menu
             }}
           >
             <div className="incident-icon-container">
@@ -194,7 +194,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
               key={`patrol-${patrol.id}-routePath-${key}`}
               position={{ lat: point.coordinates[0], lng: point.coordinates[1] }}
               onClick={() => {
-                handleMenuClick("Patrols", <Patrols />); // Open the patrols menu
+                handleMenuClick("Patroli", <Patrols />); // Open the patrols menu
                 setSelectedTask(patrol); // Set the selected task
               }}
             >
