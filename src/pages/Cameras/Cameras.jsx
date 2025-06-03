@@ -33,27 +33,31 @@ function Cameras() {
           {isEditing === "Cameras" ? "Selesai Mengedit" : "Edit Kamera"}
         </button>
       </div>
-      <span className="edit-cameras-hint">
-        Klik pada peta untuk menambahkan atau menghapus titik kamera.
-      </span>
+      {isEditing === "Cameras" && (
+        <span className="edit-cameras-hint">Klik pada peta untuk menambahkan atau menghapus titik kamera.</span>
+      )}
       <div className="camera-list">
-        {markers.cameras.map(camera => (
-          <div key={camera.id} className="camera-item">
-            <div className="camera-item-details">
-              <span className="camera-name">{camera.name}</span>
-              <span className="camera-coordinates">
-                <FontAwesomeIcon icon={faLocationDot} />
-                &nbsp;&nbsp;&nbsp;
-                {camera.lat.toFixed(5)}, {camera.lng.toFixed(5)}
-              </span>
+        {markers.cameras.length === 0 ? (
+          <div className="no-tasks-message">Tidak ada kamera yang tersedia</div>
+        ) : (
+          markers.cameras.map(camera => (
+            <div key={camera.id} className="camera-item">
+              <div className="camera-item-details">
+                <span className="camera-name">{camera.name}</span>
+                <span className="camera-coordinates">
+                  <FontAwesomeIcon icon={faLocationDot} />
+                  &nbsp;&nbsp;&nbsp;
+                  {camera.lat.toFixed(5)}, {camera.lng.toFixed(5)}
+                </span>
+              </div>
+              <div className="camera-actions">
+                <button className="camera-item-view-on-map-button" onClick={() => handleViewClick(camera)}>
+                  Lihat di Peta
+                </button>
+              </div>
             </div>
-            <div className="camera-actions">
-              <button className="camera-item-view-on-map-button" onClick={() => handleViewClick(camera)}>
-                Lihat di Peta
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

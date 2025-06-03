@@ -1,10 +1,11 @@
+import { push, ref, set } from "firebase/database";
 import React, { useEffect, useState } from "react";
-import { useMapDataContext } from "../../contexts/MapDataContext";
+import { useFirebase } from "../../contexts/FirebaseContext";
 import Input from "../Input/Input";
 import "./AddMarkerInfoWindow.css";
 
 function AddMarkerInfoWindow({ position, closeInfoWindow }) {
-  const { setMarkers } = useMapDataContext(); // Access setMarkers from context to update markers state
+  const { db } = useFirebase(); // Access setMarkers from context to update markers state
   const [isAddingMarker, setIsAddingMarker] = useState(false); // Track whether the dropdown is visible
   const [markerName, setMarkerName] = useState(""); // Track the marker name input
   const [isFormValid, setIsFormValid] = useState(false); // Track form validity
@@ -14,19 +15,23 @@ function AddMarkerInfoWindow({ position, closeInfoWindow }) {
     setIsFormValid(markerName.trim() !== "");
   }, [markerName]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async event => {
     event.preventDefault(); // Prevent default form submission behavior
 
     const newMarker = {
-      id: Date.now().toString(), // Use current timestamp as a unique ID
       name: markerName.trim(), // Use trimmed marker name
       lat: position.lat,
       lng: position.lng
     };
-    setMarkers(prev => ({
-      ...prev,
-      cameras: [...prev.cameras, newMarker] // Add the new marker to the cameras array
-    })); // Update the markers state with the new marker
+
+    try {
+      const camerasRef = ref(db, "cameras"); // Reference to the "cameras" document in Firebase
+      const newCameraRef = push(camerasRef);
+      await set(newCameraRef, newMarker);
+    } catch (error) {
+      console.error("Error adding marker to Firebase:", error);
+    }
+
     closeInfoWindow(); // Close the InfoWindow
   };
 

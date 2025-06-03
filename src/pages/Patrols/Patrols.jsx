@@ -231,59 +231,63 @@ function Patrols() {
             ))
         )}
         <h4 className="patrols-subtitle">Riwayat</h4>
-        {Object.keys(groupedByClusterAndStatus).map(clusterName => (
-          <div key={clusterName} className="patrol-card">
-            <div className="patrol-card-header">
-              <div className="patrol-cluster-name">
-                {clusterName}{" "}
-                <span className="patrol-cluster-count">({groupedByClusterAndStatus[clusterName].count})</span>
+        {markers.patrols.length === 0 ? (
+          <div className="no-tasks-message">Tidak ada riwayat patroli yang tersedia</div>
+        ) : (
+          Object.keys(groupedByClusterAndStatus).map(clusterName => (
+            <div key={clusterName} className="patrol-card">
+              <div className="patrol-card-header">
+                <div className="patrol-cluster-name">
+                  {clusterName}{" "}
+                  <span className="patrol-cluster-count">({groupedByClusterAndStatus[clusterName].count})</span>
+                </div>
+                <button className="toggle-button" onClick={() => toggleClusterCollapse(clusterName)}>
+                  {collapsedClusters[clusterName] ? (
+                    <FontAwesomeIcon icon={faChevronDown} />
+                  ) : (
+                    <FontAwesomeIcon icon={faChevronUp} />
+                  )}
+                </button>
               </div>
-              <button className="toggle-button" onClick={() => toggleClusterCollapse(clusterName)}>
-                {collapsedClusters[clusterName] ? (
-                  <FontAwesomeIcon icon={faChevronDown} />
-                ) : (
-                  <FontAwesomeIcon icon={faChevronUp} />
-                )}
-              </button>
-            </div>
-            {!collapsedClusters[clusterName] && (
-              <div className="patrol-status-groups">
-                {Object.keys(groupedByClusterAndStatus[clusterName].statuses).map(status => (
-                  <div key={status} className={`patrol-status-group ${status}`}>
-                    <div className="patrol-status-header">
-                      <div className="patrol-status-name">
-                        {statusLabels[status] || status} (
-                        {groupedByClusterAndStatus[clusterName].statuses[status].length})
+              {!collapsedClusters[clusterName] && (
+                <div className="patrol-status-groups">
+                  {Object.keys(groupedByClusterAndStatus[clusterName].statuses).map(status => (
+                    <div key={status} className={`patrol-status-group ${status}`}>
+                      <div className="patrol-status-header">
+                        <div className="patrol-status-name">
+                          {statusLabels[status] || status} (
+                          {groupedByClusterAndStatus[clusterName].statuses[status].length})
+                        </div>
+                        <button className="toggle-button" onClick={() => toggleStatusCollapse(clusterName, status)}>
+                          {collapsedStatuses[clusterName][status] ? (
+                            <FontAwesomeIcon icon={faChevronDown} />
+                          ) : (
+                            <FontAwesomeIcon icon={faChevronUp} />
+                          )}
+                        </button>
                       </div>
-                      <button className="toggle-button" onClick={() => toggleStatusCollapse(clusterName, status)}>
-                        {collapsedStatuses[clusterName][status] ? (
-                          <FontAwesomeIcon icon={faChevronDown} />
-                        ) : (
-                          <FontAwesomeIcon icon={faChevronUp} />
-                        )}
-                      </button>
+                      {!collapsedStatuses[clusterName][status] && (
+                        <div className="patrol-items">
+                          {groupedByClusterAndStatus[clusterName].statuses[status].map(task => (
+                            <PatrolItem
+                              key={task.id}
+                              task={task}
+                              map={map}
+                              setSelectedTask={setSelectedTask}
+                              getOfficerDetails={getOfficerDetails}
+                              checkIntersection={checkIntersection}
+                              onViewClick={() => handleViewClick(task)}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    {!collapsedStatuses[clusterName][status] && (
-                      <div className="patrol-items">
-                        {groupedByClusterAndStatus[clusterName].statuses[status].map(task => (
-                          <PatrolItem
-                            key={task.id}
-                            task={task}
-                            map={map}
-                            setSelectedTask={setSelectedTask}
-                            getOfficerDetails={getOfficerDetails}
-                            checkIntersection={checkIntersection}
-                            onViewClick={() => handleViewClick(task)}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

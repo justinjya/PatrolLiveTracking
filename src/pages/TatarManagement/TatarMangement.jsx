@@ -13,9 +13,13 @@ function TatarManagement() {
     <div className="tatar-management">
       <h3 className="tatar-management-title">Daftar Tatar</h3>
       <div className="tatar-list">
-        {markers.tatars.map(tatar => (
-          <TatarCard key={tatar.id} tatar={tatar} setSelectedCluster={setSelectedCluster} />
-        ))}
+        {markers.tatars.length === 0 ? (
+          <div className="no-tasks-message">Tidak ada tatar yang tersedia</div>
+        ) : (
+          markers.tatars.map(tatar => (
+            <TatarCard key={tatar.id} tatar={tatar} setSelectedCluster={setSelectedCluster} />
+          ))
+        )}
       </div>
     </div>
   );

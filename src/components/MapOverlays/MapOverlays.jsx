@@ -8,12 +8,13 @@ import Incidents from "../../pages/Incidents/Incidents";
 import Patrols from "../../pages/Patrols/Patrols";
 import AddMarkerInfoWindow from "../AddMarkerInfoWindow/AddMarkerInfoWindow";
 import "./MapOverlays.css";
+import { ref, remove } from "firebase/database";
+import { useFirebase } from "../../contexts/FirebaseContext";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOptions }) {
   const {
     markers,
     isEditing,
-    setMarkers,
     selectedIncident,
     setSelectedIncident,
     selectedTask,
@@ -23,6 +24,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     clearPolylines,
     addPolylines
   } = useMapDataContext();
+  const { db } = useFirebase(); // Import Firebase database from context
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
   const map = useMap();
   const coreLibrary = useMapsLibrary("core");
@@ -57,23 +59,17 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     ? checkIntersection(selectedTask.assigned_route, selectedTask.route_path)
     : new Set();
 
-  const handleDeleteCameraMarker = () => {
+  const handleDeleteCameraMarker = async () => {
     if (infoWindow && infoWindow.type === "marker") {
       const { marker } = infoWindow;
-      setMarkers(prev => {
-        const updatedCameras = prev.cameras.filter(m => m.id !== marker.id);
 
-        if (updatedCameras.length === 0) {
-          localStorage.removeItem("cameras");
-        } else {
-          localStorage.setItem("cameras", JSON.stringify(updatedCameras));
-        }
+      try {
+        const cameraRef = ref(db, `cameras/${marker.id}`); // Reference to the specific camera entry in Firebase
+        await remove(cameraRef); // Remove the camera entry from Firebase
+      } catch (error) {
+        console.error("Error removing camera from Firebase:", error);
+      }
 
-        return {
-          ...prev,
-          cameras: updatedCameras
-        };
-      });
       closeInfoWindow(); // Close the InfoWindow
     }
   };

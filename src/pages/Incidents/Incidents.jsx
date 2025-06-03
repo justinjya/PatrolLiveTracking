@@ -23,14 +23,18 @@ function Incidents() {
     <div className="incidents-page">
       <h3 className="incidents-title">Daftar Insiden</h3>
       <div className="incidents-list">
-        {sortedIncidents.map(incident => (
-          <IncidentCard
-            key={incident.id}
-            incident={incident}
-            onViewClick={handleViewClick}
-            isSelected={selectedIncident && selectedIncident.id === incident.id} // Check if the incident is selected
-          />
-        ))}
+        {sortedIncidents.length === 0 ? (
+          <div className="no-tasks-message">Tidak ada insiden yang tersedia</div>
+        ) : (
+          sortedIncidents.map(incident => (
+            <IncidentCard
+              key={incident.id}
+              incident={incident}
+              onViewClick={handleViewClick}
+              isSelected={selectedIncident && selectedIncident.id === incident.id} // Check if the incident is selected
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -92,7 +96,9 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
       </div>
       <button className="dropdown-button" onClick={toggleDetails}>
         {isExpanded ? "Sembunyikan Detil" : "Detil Lebih Lanjut"}
-        <span className="dropdown-icon">{isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span>
+        <span className="dropdown-icon">
+          {isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+        </span>
       </button>
       {isExpanded && (
         <div className="incident-extra-details">

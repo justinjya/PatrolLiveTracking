@@ -108,3 +108,10 @@
   border-radius: 2px;
   background-color: #007BFF; /* Blue color for route taken */
 }
+
+.no-tasks-message {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin: 10px 0;
+}
