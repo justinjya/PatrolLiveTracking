@@ -6,10 +6,16 @@ import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Cameras.css";
 
 function Cameras() {
-  const { markers, setIsEditing, setSelectedCamera } = useMapDataContext();
+  const { markers, isEditing, setIsEditing, setSelectedCamera } = useMapDataContext();
   const map = useMap();
 
   const handleEditClick = () => {
+    if (isEditing === "Cameras") {
+      setIsEditing(null); // Disable edit mode
+      return;
+    }
+
+    // If not in edit mode, enable it
     setIsEditing("Cameras"); // Enable edit mode
   };
 
@@ -24,9 +30,12 @@ function Cameras() {
       <div className="cameras-header">
         <h3 className="cameras-title">List of Cameras</h3>
         <button className="edit-cameras-button" onClick={handleEditClick}>
-          Edit Cameras
+          {isEditing === "Cameras" ? "Done Editing" : "Edit Cameras"}
         </button>
       </div>
+      <span className="edit-cameras-hint">
+        Click on the map to add or remove camera points.
+      </span>
       <div className="camera-list">
         {markers.cameras.map(camera => (
           <div key={camera.id} className="camera-item">

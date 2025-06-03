@@ -9,7 +9,7 @@ import Patrols from "../../pages/Patrols/Patrols";
 import AddMarkerInfoWindow from "../AddMarkerInfoWindow/AddMarkerInfoWindow";
 import "./MapOverlays.css";
 
-function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
+function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOptions }) {
   const {
     markers,
     isEditing,
@@ -90,6 +90,8 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       {/* Render markers for cameras */}
       {markers.cameras.map(marker => {
         const isSelected = marker === selectedCamera; // Check if the marker is selected
+        if (!displayOptions.cameras && !isSelected) return null; // Skip rendering if displayOptions is false and marker is not selected
+
         return (
           <AdvancedMarker
             key={marker.id}
@@ -108,6 +110,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       {/* Render markers for incidents */}
       {markers.incidents.map(incident => {
         const isSelected = incident === selectedIncident; // Check if the incident is selected
+        if (!displayOptions.incidents && !isSelected) return null; // Skip rendering if displayOptions is false and incident is not selected
 
         return (
           <AdvancedMarker

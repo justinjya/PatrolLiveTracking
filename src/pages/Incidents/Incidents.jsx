@@ -12,7 +12,7 @@ function Incidents() {
 
   const handleViewClick = incident => {
     map.setCenter({ lat: incident.latitude, lng: incident.longitude }); // Move map center to incident location
-    map.setZoom(15); // Zoom in a bit
+    map.setZoom(17); // Zoom in a bit
     setSelectedIncident(incident); // Set the selected incident in context
   };
 
