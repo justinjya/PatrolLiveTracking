@@ -19,8 +19,8 @@
 .no-tasks-message {
   text-align: center;
   color: #888;
-  font-size: 16px;
-  margin: 20px 0;
+  font-size: 14px;
+  margin: 10px 0;
 }
 
 .patrols-list {
@@ -354,7 +354,7 @@
   background-color: transparent;
   color: #3535f3;
   border: none;
-  box-shadow: none;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .patrol-item-incident-content {
@@ -368,6 +368,14 @@
 }
 
 .patrol-item-incidents strong {
+  color: #3535f3;
+}
+
+.patrol-incident-view-on-map-button {
+  background-color: #3535f3;
+}
+
+.dropdown-button.patrol-incident-dropdown-button {
   color: #3535f3;
 }
 
@@ -391,14 +399,19 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  padding: 10px;
+
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .patrol-item-mock-detections-item {
   border-radius: 8px;
-  padding: 10px;
 }
 
 .patrol-item-mock-detections-view-on-map-button {
-  background-color: transparent;
   border: none;
+  background-color: #9f1d1b;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 11px;
 }

@@ -21,7 +21,7 @@ function Incidents() {
 
   return (
     <div className="incidents-page">
-      <h3 className="incidents-title">List of Incidents</h3>
+      <h3 className="incidents-title">Daftar Insiden</h3>
       <div className="incidents-list">
         {sortedIncidents.map(incident => (
           <IncidentCard
@@ -86,22 +86,22 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
         </div>
         <div>
           <button className="incident-view-on-map-button" onClick={() => onViewClick(incident)}>
-            View on Map
+            Lihat di Peta
           </button>
         </div>
       </div>
       <button className="dropdown-button" onClick={toggleDetails}>
-        {isExpanded ? "Hide Details" : "More Details"}
+        {isExpanded ? "Sembunyikan Detil" : "Detil Lebih Lanjut"}
         <span className="dropdown-icon">{isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span>
       </button>
       {isExpanded && (
         <div className="incident-extra-details">
           <div className="incident-description">
-            <strong>Related Task</strong>
+            <strong>Tugas Terkait</strong>
             <span>Tugas #{incident.taskId.slice(0, 8)}</span>
           </div>
           <div className="incident-photos">
-            <strong>Photos</strong>
+            <strong>Foto</strong>
             {photoUrls.length > 0 ? (
               <div className="photo-gallery">
                 {photoUrls.map((url, index) => (
@@ -109,12 +109,12 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
                 ))}
               </div>
             ) : (
-              <p>No photos available</p>
+              <p>Tidak tersedia</p>
             )}
           </div>
           <div className="incident-description">
-            <strong>Description</strong>
-            <span>{incident.description || "No description available"}</span>
+            <strong>Deskripsi</strong>
+            <span>{incident.description || "Tidak tersedia"}</span>
           </div>
         </div>
       )}

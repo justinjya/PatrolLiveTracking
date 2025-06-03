@@ -18,7 +18,7 @@ function Home() {
       {!initialized && (
         <div className="loading-overlay">
           <div className="spinner"></div>
-          <span>Loading...</span>
+          <span>Memuat...</span>
         </div>
       )}
 
@@ -37,51 +37,56 @@ function Home() {
       {/* Sidebar */}
       <div style={{ position: "fixed", top: 0, left: 0 }}>
         <Sidebar>
-          <MenuItem icon={<FontAwesomeIcon icon={faUserShield} />} label="Patrols">
+          <MenuItem icon={<FontAwesomeIcon icon={faUserShield} />} label="Patroli">
             <Patrols />
           </MenuItem>
-          <MenuItem icon={<FontAwesomeIcon icon={faTriangleExclamation} />} label="Incidents">
+          <MenuItem icon={<FontAwesomeIcon icon={faTriangleExclamation} />} label="Insiden">
             <Incidents />
           </MenuItem>
-          <MenuItem icon={<FontAwesomeIcon icon={faVideo} />} label="Cameras">
+          <MenuItem icon={<FontAwesomeIcon icon={faVideo} />} label="Kamera">
             <Cameras />
           </MenuItem>
-          <MenuItem icon={<FontAwesomeIcon icon={faCity} />} label="Tatar Management">
+          <MenuItem icon={<FontAwesomeIcon icon={faCity} />} label="Manajemen Tatar">
             <TatarManagement />
           </MenuItem>
         </Sidebar>
       </div>
 
       {/* Map Legend */}
-      {selectedTask && <MapLegend />}
+      {selectedTask && <MapLegend selectedTask={selectedTask} />}
     </div>
   );
 }
 
-function MapLegend() {
+function MapLegend({ selectedTask }) {
   return (
     <div className="map-legend">
-      <strong>Map Legend</strong>
+      <strong>Legenda Peta</strong>
       <ul>
         <li>
-          <span className="legend-icon" style={{ backgroundColor: "#00EB1A" }}></span> Intersected Route
+          <span className="legend-icon" style={{ backgroundColor: "#00EB1A" }}></span> Titk Dikunjungi
         </li>
         <li>
-          <span className="legend-icon" style={{ backgroundColor: "#FE2B25" }}></span> Non-Intersected Route
+          <span className="legend-icon" style={{ backgroundColor: "#FE2B25" }}></span> Titik Belum Dikunjungi
         </li>
         <li>
-          <span className="legend-icon" style={{ backgroundColor: "#9C2CF3" }}></span> Mock Location Detected
+          <span className="legend-icon" style={{ backgroundColor: "#9C2CF3" }}></span> Fake GPS
         </li>
+        {selectedTask?.status === "ongoing" && (
+          <li>
+            <span className="legend-icon" style={{ backgroundColor: "#1D1D1D" }}></span> Patroli
+          </li>
+        )}
         <li>
           <FontAwesomeIcon
             icon={faTriangleExclamation}
             className="legend-icon transparent"
             style={{ color: "#3535F3" }}
           />{" "}
-          Incident
+          Insiden
         </li>
         <li>
-          <span className="legend-line" style={{ backgroundColor: "#1264C6" }}></span> Route Taken
+          <span className="legend-line" style={{ backgroundColor: "#1264C6" }}></span> Rute Aktual
         </li>
       </ul>
     </div>

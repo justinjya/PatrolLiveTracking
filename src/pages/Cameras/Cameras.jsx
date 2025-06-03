@@ -28,13 +28,13 @@ function Cameras() {
   return (
     <div className="cameras-container">
       <div className="cameras-header">
-        <h3 className="cameras-title">List of Cameras</h3>
+        <h3 className="cameras-title">Daftar Kamera</h3>
         <button className="edit-cameras-button" onClick={handleEditClick}>
-          {isEditing === "Cameras" ? "Done Editing" : "Edit Cameras"}
+          {isEditing === "Cameras" ? "Selesai Mengedit" : "Edit Kamera"}
         </button>
       </div>
       <span className="edit-cameras-hint">
-        Click on the map to add or remove camera points.
+        Klik pada peta untuk menambahkan atau menghapus titik kamera.
       </span>
       <div className="camera-list">
         {markers.cameras.map(camera => (
@@ -49,7 +49,7 @@ function Cameras() {
             </div>
             <div className="camera-actions">
               <button className="camera-item-view-on-map-button" onClick={() => handleViewClick(camera)}>
-                View on Map
+                Lihat di Peta
               </button>
             </div>
           </div>

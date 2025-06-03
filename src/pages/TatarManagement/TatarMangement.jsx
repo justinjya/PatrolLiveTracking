@@ -11,7 +11,7 @@ function TatarManagement() {
 
   return (
     <div className="tatar-management">
-      <h3 className="tatar-management-title">List of Tatars</h3>
+      <h3 className="tatar-management-title">Daftar Tatar</h3>
       <div className="tatar-list">
         {markers.tatars.map(tatar => (
           <TatarCard key={tatar.id} tatar={tatar} setSelectedCluster={setSelectedCluster} />
@@ -61,12 +61,12 @@ function TatarCard({ tatar, setSelectedCluster }) {
           <div className="tatar-coordinates">
             <FontAwesomeIcon icon={faLocationDot} />
             &nbsp;&nbsp;&nbsp;
-            {tatar.cluster_coordinates ? tatar.cluster_coordinates.length : 0} Patrol Points
+            {tatar.cluster_coordinates ? tatar.cluster_coordinates.length : 0} Titik Patroli
           </div>
         </div>
         <div>
           <button className="tatar-view-on-map-button" onClick={viewOnMap}>
-            View on Map
+            Lihat di Peta
           </button>
         </div>
       </div>
@@ -76,8 +76,8 @@ function TatarCard({ tatar, setSelectedCluster }) {
         <>
           <button className="dropdown-button" onClick={toggleOfficersDropdown}>
             {isOfficersExpanded
-              ? `Hide Officers (${Object.keys(tatar.officers).length})`
-              : `Show Officers (${Object.keys(tatar.officers).length})`}
+              ? `Sembunyikan Petugas (${Object.keys(tatar.officers).length})`
+              : `Tampilkan Petugas (${Object.keys(tatar.officers).length})`}
             <span className="dropdown-icon">
               {isOfficersExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
             </span>

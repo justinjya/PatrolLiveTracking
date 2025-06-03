@@ -200,13 +200,13 @@ function Patrols() {
   };
 
   const statusLabels = {
-    ontime: "On Time",
-    late: "Late",
-    expired: "Expired",
-    active: "Active",
-    idle: "Idle",
-    "Unknown Timeliness": "Unknown Timeliness",
-    "Unknown Status": "Unknown Status"
+    ontime: "Tepat Waktu",
+    late: "Terlambat",
+    expired: "Kadaluarsa",
+    active: "Aktif",
+    idle: "Tidak Aktif",
+    "Unknown Timeliness": "Tidak Diketahui",
+    "Unknown Status": "Tidak Diketahui"
   };
 
   useEffect(() => {
@@ -217,11 +217,11 @@ function Patrols() {
 
   return (
     <div className="patrols-page">
-      <h3 className="patrols-title">List of Patrols</h3>
+      <h3 className="patrols-title">Daftar Patroli</h3>
       <div className="patrols-list">
-        <h4 className="patrols-subtitle">Ongoing</h4>
+        <h4 className="patrols-subtitle">Aktif</h4>
         {markers.patrols.filter(task => task.status === "ongoing").length === 0 ? (
-          <div className="no-tasks-message">No ongoing tasks available</div>
+          <div className="no-tasks-message">Tidak ada tugas aktif yang tersedia</div>
         ) : (
           markers.patrols
             .filter(task => task.status === "ongoing")
@@ -237,7 +237,7 @@ function Patrols() {
               />
             ))
         )}
-        <h4 className="patrols-subtitle">History</h4>
+        <h4 className="patrols-subtitle">Riwayat</h4>
         {Object.keys(groupedByClusterAndStatus).map(clusterName => (
           <div key={clusterName} className="patrol-card">
             <div className="patrol-card-header">
@@ -311,7 +311,7 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
       ? `${Math.floor((new Date(task.endTime) - new Date(task.startTime)) / (1000 * 60 * 60))}h ${Math.floor(
           ((new Date(task.endTime) - new Date(task.startTime)) % (1000 * 60 * 60)) / (1000 * 60)
         )}m ${Math.floor(((new Date(task.endTime) - new Date(task.startTime)) % (1000 * 60)) / 1000)}s`
-      : "N/A";
+      : "Tidak Tersedia";
 
   const handleMockLocationClick = (task, mockDetection) => {
     setSelectedTask(task); // Set the selected task to the clicked mock detection
@@ -332,7 +332,7 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
     map.setCenter(center); // Center the map on the incident location
     map.setZoom(17); // Zoom in to focus on the incident
     setSelectedIncident(incident); // Set the selected incident in context
-  }
+  };
 
   // Find the type label and style from typeOptions
   const typeOption = typeOptions.find(option => option.value === officerDetails.officerType);
@@ -353,12 +353,12 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
         <div className={`patrol-item-${task.status === "ongoing" ? "sub" : ""}title`}>Tugas #{task.id.slice(0, 8)}</div>
         <div className="patrol-item-header-badge-group">
           <div className="patrol-item-timeliness-badge" style={timelinessLabels[task.timeliness]?.style}>
-            {timelinessLabels[task.timeliness]?.label || "Unknown Timeliness"}
+            {timelinessLabels[task.timeliness]?.label || "Tidak Diketahui"}
           </div>
           {relatedIncidents.length > 0 && (
-            <div className="patrol-item-incident-badge">{relatedIncidents.length} Incidents</div>
+            <div className="patrol-item-incident-badge">{relatedIncidents.length} Insiden</div>
           )}
-          {task.mockLocationDetected && <div className="patrol-item-fake-gps-indicator-badge">Fake GPS Detected</div>}
+          {task.mockLocationDetected && <div className="patrol-item-fake-gps-indicator-badge">Fake GPS Terdeteksi</div>}
         </div>
       </div>
       <div className="patrol-item-officer-group">
@@ -402,9 +402,9 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
         <div className="patrol-item-intersections-container">
           <div className="patrol-item-intersections-bar-container">
             <div className="patrol-item-intersections">
-              <div>Intersections</div>
+              <div>Titik Dikunjungi</div>
               <div className="patrol-item-intersection-count">
-                {intersectionCount} out of {totalPoints} points
+                {intersectionCount} dari {totalPoints} titik
               </div>
             </div>
             <div className="patrol-item-bar-chart">
@@ -416,12 +416,12 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
       </div>
       <div className="patrol-item-view-on-map-button-container">
         <button className="patrol-item-view-on-map-button" onClick={onViewClick}>
-          View on Map
+          Lihat di Peta
         </button>
       </div>
       <div className="patrol-item-details-button-container">
         <button className="patrol-item-details-button" onClick={() => setIsExpanded(prev => !prev)}>
-          {isExpanded ? "Hide Details" : "Show Details"} <FontAwesomeIcon icon={faChevronDown} />
+          {isExpanded ? "Sembunyikan Detil" : "Detil Lebih Lanjut"} <FontAwesomeIcon icon={faChevronDown} />
         </button>
       </div>
       {isExpanded && (
@@ -430,43 +430,43 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
             <div className="patrol-item-expanded-detail-container patrol-item-duration">
               <strong>
                 <FontAwesomeIcon icon={faClock} />
-                &nbsp;&nbsp; Duration
+                &nbsp;&nbsp; Durasi
               </strong>
               <span>{duration}</span>
             </div>
             <div className="patrol-item-expanded-detail-container patrol-item-distance">
               <strong>
                 <FontAwesomeIcon icon={faRoute} />
-                &nbsp;&nbsp; Distance
+                &nbsp;&nbsp; Jarak Tempuh
               </strong>
-              <span>{(task.distance / 1000).toFixed(2) || "Unknown Distance"} km</span>
+              <span>{isNaN(task.distance) ? "Tidak Tersedia" : `${(task.distance / 1000).toFixed(2)} km`}</span>
             </div>
           </div>
           <div className="patrol-item-expanded-detail-group">
             <div className="patrol-item-expanded-detail-container">
-              <strong>Initial Photo Report</strong>
+              <strong>Foto Laporan Awal</strong>
               {task.initialReportPhotoUrl ? (
                 <div>
                   <img src={task.initialReportPhotoUrl} alt="Initial Report" className="patrol-photo" />
                 </div>
               ) : (
-                <span>N/A</span>
+                <span>Tidak Tersedia</span>
               )}
             </div>
             <div className="patrol-item-expanded-detail-container patrol-item-final-photo-report">
-              <strong>Final Photo Report</strong>
+              <strong>Foto Laporan Akhir</strong>
               {task.finalReportPhotoUrl ? (
                 <div>
                   <img src={task.finalReportPhotoUrl} alt="Final Report" className="patrol-photo" />
                 </div>
               ) : (
-                <span>N/A</span>
+                <span>Tidak Tersedia</span>
               )}
             </div>
           </div>
           {relatedIncidents.length > 0 && (
             <div className="patrol-item-incidents">
-              <strong>Incidents</strong>
+              <strong>Insiden</strong>
               <div className="patrol-item-incident-list">
                 {relatedIncidents.map(incident => (
                   <IncidentItem key={incident.id} incident={incident} onViewClick={handleIncidentViewClick} />
@@ -477,7 +477,7 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
           <div className="patrol-item-fake-gps">
             {task.mock_detections && (
               <div className="patrol-item-mock-detections">
-                <strong>Mock Detections</strong>
+                <strong>Deteksi Fake GPS</strong>
                 <div className="patrol-item-mock-detections-items">
                   {task.mock_detections &&
                     Object.keys(task.mock_detections).map((key, index) => (
@@ -532,13 +532,13 @@ function IncidentItem({ incident, onViewClick }) {
           </div>
         </div>
         <div>
-          <button className="incident-view-on-map-button" onClick={() => onViewClick(incident)}>
-            View on Map
+          <button className="incident-view-on-map-button patrol-incident-view-on-map-button" onClick={() => onViewClick(incident)}>
+            Lihat di Peta
           </button>
         </div>
       </div>
-      <button className="dropdown-button" onClick={toggleDetails}>
-        {isExpanded ? "Hide Details" : "More Details"}
+      <button className="dropdown-button patrol-incident-dropdown-button" onClick={toggleDetails}>
+        {isExpanded ? "Sembunyikan Detil" : "Detil Lebih Lanjut"}
         <span className="dropdown-icon">
           {isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
         </span>
@@ -546,7 +546,7 @@ function IncidentItem({ incident, onViewClick }) {
       {isExpanded && (
         <div className="incident-extra-details">
           <div className="incident-photos">
-            <strong>Photos</strong>
+            <strong>Foto</strong>
             {photoUrls.length > 0 ? (
               <div className="photo-gallery">
                 {photoUrls.map((url, index) => (
@@ -554,12 +554,12 @@ function IncidentItem({ incident, onViewClick }) {
                 ))}
               </div>
             ) : (
-              <p>No photos available</p>
+              <p>Tidak tersedia</p>
             )}
           </div>
           <div className="incident-description">
-            <strong>Description</strong>
-            <span>{incident.description || "No description available"}</span>
+            <strong>Deskripsi</strong>
+            <span>{incident.description || "Tidak tersedia"}</span>
           </div>
         </div>
       )}
@@ -589,7 +589,7 @@ function MockDetectionItem({ detection, onClick }) {
         </div>
       </div>
       <button className="patrol-item-mock-detections-view-on-map-button" onClick={onClick}>
-        <FontAwesomeIcon icon={faMap} style={{ color: "#9F1D1B" }} />
+        Lihat di Peta
       </button>
     </div>
   );

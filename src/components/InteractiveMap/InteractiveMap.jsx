@@ -122,13 +122,14 @@ function DisplayOptionsChecklist({ displayOptions, setDisplayOptions }) {
       </div>
       {isChecklistExpanded && (
         <div className="checklist">
+          <h4 className="checklist-title">Opsi Tampilan</h4>
           <label>
             <FontAwesomeIcon
               icon={displayOptions.cameras ? faCheckSquare : faSquare}
               className="checkbox-icon"
               onClick={() => toggleChecklistOption("cameras")}
             />
-            &nbsp;&nbsp; Cameras
+            &nbsp;&nbsp; Kamera
           </label>
           <label>
             <FontAwesomeIcon
@@ -136,7 +137,7 @@ function DisplayOptionsChecklist({ displayOptions, setDisplayOptions }) {
               className="checkbox-icon"
               onClick={() => toggleChecklistOption("incidents")}
             />
-            &nbsp;&nbsp; Incidents
+            &nbsp;&nbsp; Insiden
           </label>
         </div>
       )}

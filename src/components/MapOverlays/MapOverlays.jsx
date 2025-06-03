@@ -235,7 +235,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
           }}
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
-          <button onClick={handleDeleteCameraMarker}>Remove Camera</button>
+          <button onClick={handleDeleteCameraMarker}>Hapus Kamera</button>
         </InfoWindow>
       )}
     </>

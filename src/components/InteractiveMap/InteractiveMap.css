@@ -43,6 +43,13 @@
   width: 100px; /* Set a fixed width for the checklist */
 }
 
+.checklist-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
 .checklist label {
   font-size: 14px;
   color: #000;
@@ -50,6 +57,6 @@
 }
 
 .checkbox-icon {
-  font-size: 18px;
+  font-size: 14px;
   color: #002e83;
 }

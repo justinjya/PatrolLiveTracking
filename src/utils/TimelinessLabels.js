@@ -1,13 +1,13 @@
 export const timelinessLabels = {
   ontime: {
-    label: "On Time",
+    label: "Tepat Waktu",
     style: { backgroundColor: "#007217" }
   },
   late: {
-    label: "Late",
+    label: "Terlambat",
     style: { backgroundColor: "#8F7100" }
   },
   idle: {
-    label: "Idle",
+    label: "Tidak Aktif",
   }
 };

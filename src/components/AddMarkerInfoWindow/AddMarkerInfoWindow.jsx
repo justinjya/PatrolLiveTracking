@@ -32,7 +32,7 @@ function AddMarkerInfoWindow({ position, closeInfoWindow }) {
     <div className="add-marker-info-window">
       {!isAddingMarker ? (
         <button className="add-marker-button" onClick={() => setIsAddingMarker(true)}>
-          Add Marker
+          Tambah Titik
         </button>
       ) : (
         <form onSubmit={handleSubmit} className="add-marker-form">
@@ -46,7 +46,7 @@ function AddMarkerInfoWindow({ position, closeInfoWindow }) {
             onChange={e => setMarkerName(e.target.value)} // Update marker name state
           />
           <button type="submit" disabled={!isFormValid}>
-            Save Marker
+            Simpan Titik
           </button>
         </form>
       )}
