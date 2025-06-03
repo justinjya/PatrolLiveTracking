@@ -7,19 +7,23 @@ import { useMapDataContext } from "../../contexts/MapDataContext";
 import "./Incidents.css";
 
 function Incidents() {
-  const { markers, selectedIncident } = useMapDataContext(); // Access selectedIncident from context
+  const { markers, selectedIncident, setSelectedIncident } = useMapDataContext(); // Access selectedIncident from context
   const map = useMap();
 
   const handleViewClick = incident => {
     map.setCenter({ lat: incident.latitude, lng: incident.longitude }); // Move map center to incident location
     map.setZoom(15); // Zoom in a bit
+    setSelectedIncident(incident); // Set the selected incident in context
   };
+
+  // Sort incidents by timestamp in descending order
+  const sortedIncidents = [...markers.incidents].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   return (
     <div className="incidents-page">
       <h3 className="incidents-title">List of Incidents</h3>
       <div className="incidents-list">
-        {markers.incidents.map(incident => (
+        {sortedIncidents.map(incident => (
           <IncidentCard
             key={incident.id}
             incident={incident}
@@ -38,7 +42,6 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
 
   const toggleDetails = () => {
     setIsExpanded(prev => !prev);
-    setSelectedIncident(prev => (prev && prev.id === incident.id ? null : incident)); // Toggle selection state
   };
 
   const photoUrls = incident.photoUrl ? incident.photoUrl.split(",") : [];

@@ -14,6 +14,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
     markers,
     isEditing,
     setMarkers,
+    selectedIncident,
     setSelectedIncident,
     selectedTask,
     setSelectedTask,
@@ -105,22 +106,30 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick }) {
       })}
 
       {/* Render markers for incidents */}
-      {markers.incidents.map(incident => (
-        <AdvancedMarker
-          key={incident.id}
-          position={{ lat: incident.latitude, lng: incident.longitude }}
-          onClick={() => {
-            setSelectedIncident(incident);
-            handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
-          }}
-        >
-          <div className="incident-icon-container">
-            <FontAwesomeIcon icon={faTriangleExclamation} size="3x" className="incident-icon" />
-            <FontAwesomeIcon icon={faTriangleExclamation} className="incident-icon-border" />
-            <div className="incident-icon-fill"></div>
-          </div>
-        </AdvancedMarker>
-      ))}
+      {markers.incidents.map(incident => {
+        const isSelected = incident === selectedIncident; // Check if the incident is selected
+
+        return (
+          <AdvancedMarker
+            key={incident.id}
+            position={{ lat: incident.latitude, lng: incident.longitude }}
+            onClick={() => {
+              setSelectedIncident(incident);
+              handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
+            }}
+          >
+            <div className="incident-icon-container">
+              <FontAwesomeIcon
+                icon={faTriangleExclamation}
+                size="3x"
+                className={`incident-icon ${isSelected ? "selected" : ""}`}
+              />
+              <FontAwesomeIcon icon={faTriangleExclamation} className="incident-icon-border" />
+              <div className="incident-icon-fill"></div>
+            </div>
+          </AdvancedMarker>
+        );
+      })}
 
       {/* Render markers for assignedRoute */}
       {selectedTask?.assigned_route?.map(([lat, lng], index) => (
