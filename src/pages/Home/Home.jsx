@@ -1,4 +1,4 @@
-import { faCity, faTriangleExclamation, faUserShield, faVideo } from "@fortawesome/free-solid-svg-icons";
+import { faCity, faTriangleExclamation, faUserShield, faVideo, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import InteractiveMap from "../../components/InteractiveMap/InteractiveMap";
@@ -54,6 +54,21 @@ function Home() {
 
       {/* Map Legend */}
       {selectedTask && <MapLegend selectedTask={selectedTask} />}
+    </div>
+  );
+}
+
+function EditingIndicator({ isEditing, onClose }) {
+  const isEditingLabels = {
+    Cameras: "Kamera",
+  }
+
+  return (
+    <div className="editing-indicator">
+      <span className="editing-text">Sedang Mengedit Titik {isEditingLabels[isEditing]}</span>
+      <button className="editing-indicator-close-button" onClick={onClose}>
+        <FontAwesomeIcon icon={faXmark} />
+      </button>
     </div>
   );
 }

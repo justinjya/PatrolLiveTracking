@@ -14,7 +14,9 @@ function AddMarkerInfoWindow({ position, closeInfoWindow }) {
     setIsFormValid(markerName.trim() !== "");
   }, [markerName]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Prevent default form submission behavior
+
     const newMarker = {
       id: Date.now().toString(), // Use current timestamp as a unique ID
       name: markerName.trim(), // Use trimmed marker name
