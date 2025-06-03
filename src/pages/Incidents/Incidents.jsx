@@ -96,6 +96,10 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
       </button>
       {isExpanded && (
         <div className="incident-extra-details">
+          <div className="incident-description">
+            <strong>Related Task</strong>
+            <span>Tugas #{incident.taskId.slice(0, 8)}</span>
+          </div>
           <div className="incident-photos">
             <strong>Photos</strong>
             {photoUrls.length > 0 ? (
