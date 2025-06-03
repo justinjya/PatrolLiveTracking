@@ -1,0 +1,104 @@
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: #000;
+  font-size: 14px;
+}
+
+.input-icon {
+  position: absolute;
+  color: #002E83;
+}
+
+.icon-left .input-icon {
+  left: 15px; /* Position the icon on the left */
+}
+
+.icon-right .input-icon {
+  right: 15px; /* Position the icon on the right */
+}
+
+.input {
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid #afd7f8;
+  background-color: #fff;;
+  border-radius: 8px;
+  color: #000;
+}
+
+.icon-left .input {
+  padding-left: 45px; /* Add padding to avoid overlapping with the left icon */
+}
+
+.icon-right .input {
+  padding-right: 45px; /* Add padding to avoid overlapping with the right icon */
+}
+
+.input::placeholder {
+  color: #000;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #002E83;
+}
+
+.input:-webkit-autofill {
+  background-color: #fff !important; /* Match the input's background color */
+  color: #000 !important; /* Match the input's text color */
+  border: 1px solid #afd7f8 !important; /* Match the input's border color */
+  -webkit-text-fill-color: #000 !important; /* Ensure text color stays consistent */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent flashing effect */
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #002E83;
+}
+
+.custom-dropdown {
+  display: flex;
+  flex-grow: 1;
+}
+
+.dropdown-toggle-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  cursor: pointer;
+  color: #002E83;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #afd7f8;
+  border-radius: 8px;
+  list-style: none;
+  padding: 5px 0; /* Add padding inside the dropdown to prevent overlap */
+  margin: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  box-sizing: border-box; /* Ensure border and padding are included in the width */
+}
+
+.dropdown-option {
+  padding: 10px;
+  cursor: pointer;
+  color: #000;
+  text-align: left;
+}
+
+.dropdown-option:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px; /* Add slight rounding to hover effect for better appearance */
+}

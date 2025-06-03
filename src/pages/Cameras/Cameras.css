@@ -1,0 +1,105 @@
+.cameras-container {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+  gap: 7px;
+  overflow: auto;
+}
+
+.cameras-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.cameras-title {
+  text-align: start;
+  margin: 0;
+}
+
+.edit-cameras-button {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  color: #002e83;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.edit-cameras-hint {
+  text-align: left;
+  font-size: 11px;
+  color: #BCBDC6;
+  margin-bottom: 5px;
+}
+
+.separator {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 10px;
+}
+
+.camera-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+  gap: 10px;
+}
+
+.camera-item {
+  display: flex;
+  flex-direction: row;
+  background-color: #fff;
+  border-radius: 8px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px;
+  border: 1px solid #afd7f8;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  gap: 2px;
+}
+
+.camera-item-details {
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  gap: 5px;
+}
+
+.camera-item-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.camera-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.camera-coordinates {
+  font-size: 11px; /* Smaller font size for coordinates */
+  color: #b8b9c2;
+}
+
+.camera-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.camera-item-view-on-map-button {
+  border: none;
+  border-radius: 20px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 11px;
+}
