@@ -1,12 +1,5 @@
 import { faCalendar, faClock } from "@fortawesome/free-regular-svg-icons";
-import {
-  faChevronDown,
-  faChevronUp,
-  faLocationDot,
-  faMap,
-  faRoute,
-  faUserShield
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -219,9 +212,9 @@ function Patrols() {
     <div className="patrols-page">
       <h3 className="patrols-title">Daftar Patroli</h3>
       <div className="patrols-list">
-        <h4 className="patrols-subtitle">Aktif</h4>
+        <h4 className="patrols-subtitle">Sedang Berjalan</h4>
         {markers.patrols.filter(task => task.status === "ongoing").length === 0 ? (
-          <div className="no-tasks-message">Tidak ada tugas aktif yang tersedia</div>
+          <div className="no-tasks-message">Tidak ada patroli yang sedang berjalan</div>
         ) : (
           markers.patrols
             .filter(task => task.status === "ongoing")
@@ -532,7 +525,10 @@ function IncidentItem({ incident, onViewClick }) {
           </div>
         </div>
         <div>
-          <button className="incident-view-on-map-button patrol-incident-view-on-map-button" onClick={() => onViewClick(incident)}>
+          <button
+            className="incident-view-on-map-button patrol-incident-view-on-map-button"
+            onClick={() => onViewClick(incident)}
+          >
             Lihat di Peta
           </button>
         </div>
