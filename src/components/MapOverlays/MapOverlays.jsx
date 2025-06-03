@@ -1,6 +1,6 @@
 import { faTriangleExclamation, faUser, faVideo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AdvancedMarker, InfoWindow, Pin, useMap } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, InfoWindow, Pin, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useEffect } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
@@ -25,6 +25,37 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
   } = useMapDataContext();
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
   const map = useMap();
+  const coreLibrary = useMapsLibrary("core");
+  const geometryLibrary = useMapsLibrary("geometry");
+
+  const checkIntersection = (assignedRoute, routePath, radius = 5) => {
+    if (!routePath || !geometryLibrary || !coreLibrary) {
+      return new Set(); // Return an empty set if routePath is null
+    }
+
+    const intersectedPoints = new Set(); // Track intersected points in assignedRoute
+
+    for (const [lat1, lng1] of assignedRoute) {
+      for (const {
+        coordinates: [lat2, lng2]
+      } of Object.values(routePath)) {
+        const point1 = new coreLibrary.LatLng(lat1, lng1);
+        const point2 = new coreLibrary.LatLng(lat2, lng2);
+
+        const distance = geometryLibrary.spherical.computeDistanceBetween(point1, point2);
+        if (distance <= radius) {
+          intersectedPoints.add(`${lat1},${lng1}`); // Add intersected point to the set
+          break; // Stop checking further routePath points for this assignedRoute point
+        }
+      }
+    }
+
+    return intersectedPoints; // Return the set of intersected points
+  };
+
+  const intersectedPoints = selectedTask?.assigned_route
+    ? checkIntersection(selectedTask.assigned_route, selectedTask.route_path)
+    : new Set();
 
   const handleDeleteCameraMarker = () => {
     if (infoWindow && infoWindow.type === "marker") {
@@ -110,12 +141,16 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
       {/* Render markers for incidents */}
       {markers.incidents.map(incident => {
         const isSelected = incident === selectedIncident; // Check if the incident is selected
-        if (!displayOptions.incidents && !isSelected) return null; // Skip rendering if displayOptions is false and incident is not selected
+        const isRelatedToSelectedTask = selectedTask && incident.taskId === selectedTask.id; // Check if the incident is related to the selected task
+
+        // Render the marker if displayOptions.incidents is true, or if the incident is selected, or if it's related to the selected task
+        if (!displayOptions.incidents && !isSelected && !isRelatedToSelectedTask) return null;
 
         return (
           <AdvancedMarker
             key={incident.id}
             position={{ lat: incident.latitude, lng: incident.longitude }}
+            zIndex={999} // Set a high zIndex to ensure it renders above other markers
             onClick={() => {
               setSelectedIncident(incident);
               handleMenuClick("Incidents", <Incidents />); // Open the incidents menu
@@ -135,23 +170,23 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
       })}
 
       {/* Render markers for assignedRoute */}
-      {selectedTask?.assigned_route?.map(([lat, lng], index) => (
-        <AdvancedMarker key={`assignedRoute-${index}`} position={{ lat, lng }}>
-          <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
-        </AdvancedMarker>
-      ))}
+      {selectedTask?.assigned_route?.map(([lat, lng], index) => {
+        const pointKey = `${lat},${lng}`;
+        const isIntersected = intersectedPoints.has(pointKey);
 
-      {/* Render markers for routePath */}
-      {selectedTask?.status !== "ongoing" &&
-        selectedTask?.route_path &&
-        Object.values(selectedTask.route_path).map((point, index) => (
+        return (
           <AdvancedMarker
-            key={`routePath-${index}`}
-            position={{ lat: point.coordinates[0], lng: point.coordinates[1] }}
+            key={`assignedRoute-${index}`}
+            position={{ lat, lng }}
           >
-            <Pin background="#00EB1A" glyphColor={"#008100"} borderColor={"#FFFEFE"} />
+            <Pin
+              background={isIntersected ? "#00EB1A" : "#FE2B25"} // Green for intersected, red for non-intersected
+              glyphColor={isIntersected ? "#008100" : "#8D0004"}
+              borderColor={"#FFFEFE"}
+            />
           </AdvancedMarker>
-        ))}
+        );
+      })}
 
       {/* Render markers for mockDetections */}
       {selectedTask?.mock_detections &&

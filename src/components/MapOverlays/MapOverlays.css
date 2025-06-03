@@ -75,7 +75,7 @@
 }
 
 .patrol-icon {
-  color: #3535f3; /* patrol color */
+  color: #1D1D1D; /* patrol color */
   position: relative;
   z-index: 3; /* Ensure it is above the background */
 }

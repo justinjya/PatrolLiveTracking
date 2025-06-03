@@ -42,22 +42,22 @@
   align-items: flex-start;
   gap: 5px;
   width: 65%;
+  color: #b8b9c2;
 }
 
 .incident-title {
   font-weight: bold;
   font-size: 16px;
   text-align: start;
+  color: #213547;
 }
 
 .incident-coordinates {
   font-size: 11px; /* Smaller font size for coordinates */
-  color: #B8B9C2;
 }
 
 .incident-timestamp {
   font-size: 12px;
-  color: #B8B9C2;
   text-align: start;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .incident-extra-details strong {
-  color: #CACBD5;
+  color: #cacbd5;
 }
 
 .incident-photos {

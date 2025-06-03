@@ -170,6 +170,15 @@
   font-weight: bold;
 }
 
+.patrol-item-incident-badge {
+  background-color: #3535f3;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
 .patrol-item-fake-gps-indicator-badge {
   background-color: #edd3d2;
   color: #9f1d1b;
@@ -327,11 +336,47 @@
   border: 1px solid #ccc;
 }
 
+.patrol-item-incidents {
+  display: flex;
+  flex-direction: column;
+  background-color: #c7c7eb;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.patrol-item-incident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patrol-item-incident-card {
+  background-color: transparent;
+  color: #3535f3;
+  border: none;
+  box-shadow: none;
+}
+
+.patrol-item-incident-content {
+  color: #1d1d1d;
+  font-size: 12px;
+}
+
+.patrol-item-incident-title {
+  color: #3535f3;
+  font-size: 12px;
+}
+
+.patrol-item-incidents strong {
+  color: #3535f3;
+}
+
 .patrol-item-mock-detections {
   background-color: #ffebeb;
   padding: 10px;
   border-radius: 8px;
 }
+
 .patrol-item-mock-detections strong {
   color: #9f1d1b;
 }

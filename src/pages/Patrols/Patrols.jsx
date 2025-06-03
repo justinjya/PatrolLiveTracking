@@ -231,7 +231,6 @@ function Patrols() {
                 ref={el => (itemRefs.current[task.id] = el)}
                 task={task}
                 map={map}
-                setSelectedTask={setSelectedTask}
                 getOfficerDetails={getOfficerDetails}
                 checkIntersection={checkIntersection}
                 onViewClick={() => handleViewClick(task)}
@@ -297,7 +296,9 @@ function Patrols() {
   );
 }
 
-function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkIntersection, onViewClick }) {
+function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onViewClick }) {
+  const { markers, setSelectedTask, setSelectedIncident } = useMapDataContext(); // Access global methods and state
+
   const officerDetails = getOfficerDetails(task.clusterId, task.userId);
   const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
   const totalPoints = task.assigned_route.length;
@@ -323,6 +324,16 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
     map.setZoom(17); // Zoom in to focus on the mock location
   };
 
+  const handleIncidentViewClick = incident => {
+    const center = {
+      lat: incident.latitude,
+      lng: incident.longitude
+    };
+    map.setCenter(center); // Center the map on the incident location
+    map.setZoom(17); // Zoom in to focus on the incident
+    setSelectedIncident(incident); // Set the selected incident in context
+  }
+
   // Find the type label and style from typeOptions
   const typeOption = typeOptions.find(option => option.value === officerDetails.officerType);
   const typeLabel = typeOption?.label || officerDetails.officerType;
@@ -331,6 +342,9 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
   // Find the shift label from shiftOptions
   const shiftOption = shiftOptions.find(option => option.value === officerDetails.shift);
   const shiftLabel = shiftOption?.label || officerDetails.shift;
+
+  // Filter incidents that match the current taskId
+  const relatedIncidents = markers.incidents.filter(incident => incident.taskId === task.id);
 
   return (
     <div ref={ref} className={`patrol-item ${task.status === "ongoing" ? "ongoing" : ""}`} key={task.id}>
@@ -341,6 +355,9 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
           <div className="patrol-item-timeliness-badge" style={timelinessLabels[task.timeliness]?.style}>
             {timelinessLabels[task.timeliness]?.label || "Unknown Timeliness"}
           </div>
+          {relatedIncidents.length > 0 && (
+            <div className="patrol-item-incident-badge">{relatedIncidents.length} Incidents</div>
+          )}
           {task.mockLocationDetected && <div className="patrol-item-fake-gps-indicator-badge">Fake GPS Detected</div>}
         </div>
       </div>
@@ -447,6 +464,16 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
               )}
             </div>
           </div>
+          {relatedIncidents.length > 0 && (
+            <div className="patrol-item-incidents">
+              <strong>Incidents</strong>
+              <div className="patrol-item-incident-list">
+                {relatedIncidents.map(incident => (
+                  <IncidentItem key={incident.id} incident={incident} onViewClick={handleIncidentViewClick} />
+                ))}
+              </div>
+            </div>
+          )}
           <div className="patrol-item-fake-gps">
             {task.mock_detections && (
               <div className="patrol-item-mock-detections">
@@ -454,33 +481,11 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
                 <div className="patrol-item-mock-detections-items">
                   {task.mock_detections &&
                     Object.keys(task.mock_detections).map((key, index) => (
-                      <div className="patrol-item-mock-detections-item-container" key={index}>
-                        <div className="patrol-item-mock-detections-item">
-                          <strong>
-                            {`${new Date(task.mock_detections[key].timestamp).toLocaleDateString("id-ID", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric"
-                            })} ${new Date(task.mock_detections[key].timestamp).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false
-                            })}`}
-                          </strong>
-                          <div>
-                            <FontAwesomeIcon icon={faLocationDot} style={{ color: "#9F1D1B" }} />
-                            &nbsp;&nbsp;&nbsp;
-                            {task.mock_detections[key].coordinates[0].toFixed(5)},{" "}
-                            {task.mock_detections[key].coordinates[1].toFixed(5)}
-                          </div>
-                        </div>
-                        <button
-                          className="patrol-item-mock-detections-view-on-map-button"
-                          onClick={() => handleMockLocationClick(task, task.mock_detections[key])}
-                        >
-                          <FontAwesomeIcon icon={faMap} style={{ color: "#9F1D1B" }} />
-                        </button>
-                      </div>
+                      <MockDetectionItem
+                        key={index}
+                        detection={task.mock_detections[key]}
+                        onClick={() => handleMockLocationClick(task, task.mock_detections[key])}
+                      />
                     ))}
                 </div>
               </div>
@@ -488,6 +493,104 @@ function PatrolItem({ ref, task, map, setSelectedTask, getOfficerDetails, checkI
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function IncidentItem({ incident, onViewClick }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const cardRef = useRef(null); // Create a reference for the card
+
+  const toggleDetails = () => {
+    setIsExpanded(prev => !prev);
+  };
+
+  const photoUrls = incident.photoUrl ? incident.photoUrl.split(",") : [];
+
+  return (
+    <div ref={cardRef} className="incident-card patrol-item-incident-card">
+      <div className="incident-content-container">
+        <div className="incident-content patrol-item-incident-content">
+          <div className="incident-title patrol-item-incident-title">{incident.title}</div>
+          <div className="incident-timestamp">
+            <FontAwesomeIcon icon={faClock} style={{ color: "#3535F3" }} />
+            &nbsp;&nbsp;&nbsp;
+            {`${new Date(incident.timestamp).toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })} ${new Date(incident.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            })}`}
+          </div>
+          <div className="incident-coordinates">
+            <FontAwesomeIcon icon={faLocationDot} style={{ color: "#3535F3" }} />
+            &nbsp;&nbsp;&nbsp;
+            {incident.latitude.toFixed(5)}, {incident.longitude.toFixed(5)}
+          </div>
+        </div>
+        <div>
+          <button className="incident-view-on-map-button" onClick={() => onViewClick(incident)}>
+            View on Map
+          </button>
+        </div>
+      </div>
+      <button className="dropdown-button" onClick={toggleDetails}>
+        {isExpanded ? "Hide Details" : "More Details"}
+        <span className="dropdown-icon">
+          {isExpanded ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+        </span>
+      </button>
+      {isExpanded && (
+        <div className="incident-extra-details">
+          <div className="incident-photos">
+            <strong>Photos</strong>
+            {photoUrls.length > 0 ? (
+              <div className="photo-gallery">
+                {photoUrls.map((url, index) => (
+                  <img key={index} src={url.trim()} alt={`Incident Photo ${index + 1}`} className="incident-photo" />
+                ))}
+              </div>
+            ) : (
+              <p>No photos available</p>
+            )}
+          </div>
+          <div className="incident-description">
+            <strong>Description</strong>
+            <span>{incident.description || "No description available"}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MockDetectionItem({ detection, onClick }) {
+  return (
+    <div className="patrol-item-mock-detections-item-container">
+      <div className="patrol-item-mock-detections-item">
+        <strong>
+          {`${new Date(detection.timestamp).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+          })} ${new Date(detection.timestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          })}`}
+        </strong>
+        <div>
+          <FontAwesomeIcon icon={faLocationDot} style={{ color: "#9F1D1B" }} />
+          &nbsp;&nbsp;&nbsp;
+          {detection.coordinates[0].toFixed(5)}, {detection.coordinates[1].toFixed(5)}
+        </div>
+      </div>
+      <button className="patrol-item-mock-detections-view-on-map-button" onClick={onClick}>
+        <FontAwesomeIcon icon={faMap} style={{ color: "#9F1D1B" }} />
+      </button>
     </div>
   );
 }
