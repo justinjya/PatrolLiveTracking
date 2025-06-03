@@ -11,7 +11,7 @@ import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
 
 function Home() {
-  const { isEditing, setIsEditing, initialized } = useMapDataContext();
+  const { isEditing, setIsEditing, initialized, selectedTask } = useMapDataContext(); // Access selectedTask from context
 
   return (
     <div>
@@ -25,10 +25,16 @@ function Home() {
       <InteractiveMap />
 
       {/* Editing Indicator */}
-      {isEditing && <EditingIndicator isEditing={isEditing} onClose={() => {
-        setIsEditing(null);
-      }} />}
+      {isEditing && (
+        <EditingIndicator
+          isEditing={isEditing}
+          onClose={() => {
+            setIsEditing(null);
+          }}
+        />
+      )}
 
+      {/* Sidebar */}
       <div style={{ position: "fixed", top: 0, left: 0 }}>
         <Sidebar>
           <MenuItem icon={<FontAwesomeIcon icon={faUserShield} />} label="Patrols">
@@ -45,17 +51,39 @@ function Home() {
           </MenuItem>
         </Sidebar>
       </div>
+
+      {/* Map Legend */}
+      {selectedTask && <MapLegend />}
     </div>
   );
 }
 
-function EditingIndicator({ isEditing, onClose }) {
+function MapLegend() {
   return (
-    <div className="editing-indicator">
-      <span>Editing {isEditing} Location</span>
-      <button className="editing-indicator-close-button" onClick={onClose}>
-        X
-      </button>
+    <div className="map-legend">
+      <strong>Map Legend</strong>
+      <ul>
+        <li>
+          <span className="legend-icon" style={{ backgroundColor: "#00EB1A" }}></span> Intersected Route
+        </li>
+        <li>
+          <span className="legend-icon" style={{ backgroundColor: "#FE2B25" }}></span> Non-Intersected Route
+        </li>
+        <li>
+          <span className="legend-icon" style={{ backgroundColor: "#9C2CF3" }}></span> Mock Location Detected
+        </li>
+        <li>
+          <FontAwesomeIcon
+            icon={faTriangleExclamation}
+            className="legend-icon transparent"
+            style={{ color: "#3535F3" }}
+          />{" "}
+          Incident
+        </li>
+        <li>
+          <span className="legend-line" style={{ backgroundColor: "#1264C6" }}></span> Route Taken
+        </li>
+      </ul>
     </div>
   );
 }

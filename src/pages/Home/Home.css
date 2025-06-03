@@ -54,3 +54,57 @@
   cursor: pointer;
   padding: 0;
 }
+
+.map-legend {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 200px;
+  font-size: 14px;
+  z-index: 1000;
+}
+
+.map-legend strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.map-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.map-legend li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.legend-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+}
+
+.legend-icon.transparent {
+  background-color: transparent;
+}
+
+.legend-line {
+  display: inline-block;
+  width: 20px;
+  height: 5px;
+  margin-right: 10px;
+  border-radius: 2px;
+  background-color: #007BFF; /* Blue color for route taken */
+}
