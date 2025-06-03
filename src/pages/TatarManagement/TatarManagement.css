@@ -5,88 +5,9 @@
   height: 100%;
 }
 
-.tatar-management-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
 .tatar-management-title {
   text-align: start;
   margin: 0;
-}
-
-.tatar-management-title {
-  text-align: start;
-  margin: 0;
-}
-
-.add-tatar-button, .add-officer-button {
-  background-color: transparent;
-  padding: 0;
-  border: none;
-  color: #002e83;
-  cursor: pointer;
-  font-size: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 3px;
-}
-
-.add-tatar-form-container, .officer-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.officer-form-container {
-  margin-bottom: 0;
-}
-
-.add-tatar-form, .officer-form {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.tatar-form-button-group {
-  display: flex;
-  gap: 10px;
-}
-
-.edit-patrol-point-hint {
-  text-align: left;
-  font-size: 11px;
-  color: #BCBDC6;
-  margin-bottom: 5px;
-}
-
-.tatar-form-button {
-  flex-grow: 1;
-}
-
-.tatar-form-cancel-button {
-  flex-grow: 1;
-  background-color: transparent;
-  color: #002e83;
-}
-
-.tatar-form-submit-button {
-  flex-grow: 2;
-}
-
-.tatar-form-button:disabled, .tatar-edit-patrol-points-button:disabled, .tatar-delete-tatar-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.separator {
-  height: 1px;
-  background-color: #e0e0e0;
-  margin: 10px;
 }
 
 .tatar-list {
@@ -127,17 +48,17 @@
   font-size: 16px;
 }
 
-.tatar-email {
+.tatar-email{
   font-size: 12px;
-  color: #b8b9c2;
+  color: #B8B9C2;
 }
 
 .tatar-coordinates {
   font-size: 12px;
-  color: #b8b9c2;
+  color: #B8B9C2;
 }
 
-.tatar-view-on-map-button, .tatar-edit-patrol-points-button, .tatar-delete-tatar-button, .tatar-form-button {
+.tatar-view-on-map-button {
   border: none;
   border-radius: 20px;
   padding: 5px 10px;
@@ -145,24 +66,11 @@
   font-size: 11px;
 }
 
-.tatar-edit-patrol-points-button {
-  flex-grow: 1;
-}
-
-.tatar-delete-tatar-button {
-  background-color: #FF2825;
-}
-
-.tatar-actions {
-  display: flex;
-  gap: 5px;
-}
-
 .dropdown-button {
   background-color: transparent;
   padding: 0;
   border: none;
-  color: #002e83;
+  color: #002E83;
   cursor: pointer;
   font-size: 12px;
   display: flex;
@@ -173,11 +81,6 @@
 
 .dropdown-icon {
   font-size: 14px;
-}
-
-.officer-list-header {
-  display: flex;
-  align-self: flex-end;
 }
 
 .officer-list {
@@ -223,26 +126,4 @@
 .officer-badge.shift-badge {
   background-color: #f1f8ff;
   color: #0b64c6;
-}
-
-.officer-card-button-group {
-  display: flex;
-  gap: 10px;
-  margin-right: 10px;
-}
-
-.officer-card-button {
-  background-color: transparent;
-  padding: 0;
-  border: none;
-  color: #002e83;
-  cursor: pointer;
-  font-size: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.officer-card-button.delete-button {
-  color: #9F1B1A;
 }
