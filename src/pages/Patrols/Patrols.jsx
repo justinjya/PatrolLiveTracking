@@ -525,14 +525,10 @@ function IncidentItem({ incident, onViewClick }) {
           </div>
         </div>
         <div>
-<<<<<<< HEAD
           <button
             className="incident-view-on-map-button patrol-incident-view-on-map-button"
             onClick={() => onViewClick(incident)}
           >
-=======
-          <button className="incident-view-on-map-button patrol-incident-view-on-map-button" onClick={() => onViewClick(incident)}>
->>>>>>> main
             Lihat di Peta
           </button>
         </div>
