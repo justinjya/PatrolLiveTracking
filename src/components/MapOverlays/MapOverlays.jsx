@@ -2,7 +2,7 @@ import { faTriangleExclamation, faUser, faVideo } from "@fortawesome/free-solid-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AdvancedMarker, InfoWindow, Pin, useAdvancedMarkerRef, useMap } from "@vis.gl/react-google-maps";
 import { ref, remove } from "firebase/database";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useFirebase } from "../../contexts/FirebaseContext";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
@@ -65,8 +65,10 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
   }, [markers.patrols, selectedTask]);
 
   useEffect(() => {
-    closeInfoWindow(); // Close InfoWindow when selectedTask changes
-  }, [selectedTask])
+    if (selectedTask) {
+      closeInfoWindow(); // Close InfoWindow when selectedTask.id changes
+    }
+  }, [selectedTask?.id]);
 
   return (
     <>
@@ -172,7 +174,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
 
           const [key, point] = lastRoutePoint; // Destructure the key and point
 
-          const isSelected = patrol === selectedTask; // Check if the marker is selected
+          const isSelected = selectedTask ? patrol.id === selectedTask.id : false; // Check if the marker is selected
 
           return (
             <AdvancedMarker

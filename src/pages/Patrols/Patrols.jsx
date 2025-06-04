@@ -1,18 +1,16 @@
-import { faCalendar, faClock } from "@fortawesome/free-regular-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useMap } from "@vis.gl/react-google-maps";
+import React, { useMemo, useRef, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
 import "./Patrols.css";
 
 function Patrols() {
-  const { markers, selectedTask, setSelectedTask, checkIntersection } = useMapDataContext(); // Access global methods and state
+  const { markers, selectedTask, setSelectedTask, checkIntersection, clearPolylines } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
-  const coreLibrary = useMapsLibrary("core");
-  const geometryLibrary = useMapsLibrary("geometry");
   const itemRefs = useRef({});
 
   const [collapsedClusters, setCollapsedClusters] = useState(() => {
@@ -113,6 +111,15 @@ function Patrols() {
   };
 
   const handleViewClick = task => {
+    if (selectedTask && selectedTask.id === task.id) {
+      // If the same task is clicked, deselect it
+      setSelectedTask(null);
+      clearPolylines();
+      return;
+    }
+
+    itemRefs.current[task.id]?.scrollIntoView({ behavior: "smooth", block: "center" });
+
     const assignedRoute = task.assigned_route; // Array of [latitude, longitude]
     const routePath = task.route_path; // Object with coordinates (can be null)
 
@@ -168,12 +175,6 @@ function Patrols() {
     "Unknown Timeliness": "Tidak Diketahui",
     "Unknown Status": "Tidak Diketahui"
   };
-
-  useEffect(() => {
-    if (selectedTask && itemRefs.current[selectedTask.id]) {
-      itemRefs.current[selectedTask.id]?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [selectedTask]);
 
   return (
     <div className="patrols-page">
@@ -261,7 +262,7 @@ function Patrols() {
 }
 
 function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onViewClick }) {
-  const { markers, setSelectedTask, setSelectedIncident } = useMapDataContext(); // Access global methods and state
+  const { markers, selectedTask, setSelectedTask, setSelectedIncident } = useMapDataContext(); // Access global methods and state
 
   const officerDetails = getOfficerDetails(task.clusterId, task.userId);
   const intersectionCount = checkIntersection(task.assigned_route, task.route_path).size;
@@ -338,10 +339,23 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
         </div>
       </div>
       <div className="patrol-item-details">
-        <div className="patrol-item-timestamps">
-          <span>
-            <FontAwesomeIcon icon={faCalendar} />
-            &nbsp;&nbsp;&nbsp;
+        <div className="patrol-item-detail-group">
+          <span className="patrol-item-timestamps patrol-item-assigned-start-time">
+            <strong>Waktu Mulai</strong>
+            {isNaN(new Date(task.assignedStartTime).getTime())
+              ? "N/A"
+              : `${new Date(task.startTime).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                })}, ${new Date(task.startTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}`}{" "}
+          </span>
+          <span className="patrol-item-timestamps patrol-item-time-range">
+            <strong>Waktu Pelaksanaan</strong>
             {isNaN(new Date(task.startTime).getTime())
               ? "N/A"
               : `${new Date(task.startTime).toLocaleDateString("id-ID", {
@@ -380,7 +394,7 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
       </div>
       <div className="patrol-item-view-on-map-button-container">
         <button className="patrol-item-view-on-map-button" onClick={onViewClick}>
-          Lihat di Peta
+          {selectedTask && selectedTask.id === task.id ? "Sembunyikan dari Peta" : "Lihat di Peta"}
         </button>
       </div>
       <div className="patrol-item-details-button-container">
