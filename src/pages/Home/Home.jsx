@@ -1,4 +1,4 @@
-import { faCity, faTriangleExclamation, faUserShield, faVideo, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleNotch, faCity, faTriangleExclamation, faUserShield, faVideo, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import InteractiveMap from "../../components/InteractiveMap/InteractiveMap";
@@ -17,7 +17,7 @@ function Home() {
     <div>
       {!initialized && (
         <div className="loading-overlay">
-          <div className="spinner"></div>
+          <FontAwesomeIcon icon={faCircleNotch} spin />
           <span>Memuat...</span>
         </div>
       )}
