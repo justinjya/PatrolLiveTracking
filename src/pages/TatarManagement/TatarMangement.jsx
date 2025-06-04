@@ -3,11 +3,13 @@ import {
   faChevronUp,
   faCircleNotch,
   faEnvelope,
-  faLocationDot
+  faLocationDot,
+  faPen,
+  faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
-import { push, ref, set } from "firebase/database";
+import { push, ref, remove, set } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import Input from "../../components/Input/Input";
 import { useFirebase } from "../../contexts/FirebaseContext";
@@ -123,7 +125,7 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
             <>
               <div className="officer-list-header">
                 <button className="add-officer-button" onClick={toggleAddingOfficer}>
-                  {isAddingOfficer ? "Cancel" : "Add Officer"}
+                  {isAddingOfficer ? "Batal" : "Tambah Petugas"}
                 </button>
               </div>
               {isAddingOfficer && (
@@ -151,7 +153,10 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 }
 
 function OfficerCard({ tatar, officer }) {
+  const { db } = useFirebase();
   const [isEditingOfficer, setIsEditingOfficer] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false); // State for delete confirmation
+  const [isDeleting, setIsDeleting] = useState(false); // State for delete loading
 
   // Find the type label and style from typeOptions
   const typeOption = typeOptions.find(option => option.value === officer.type);
@@ -164,6 +169,19 @@ function OfficerCard({ tatar, officer }) {
 
   const toggleEditOfficer = () => {
     setIsEditingOfficer(prev => !prev);
+  };
+
+  const handleDeleteOfficer = async () => {
+    try {
+      setIsDeleting(true); // Set loading state to true
+      const officerRef = ref(db, `users/${tatar.id}/officers/${officer.id}`);
+      await remove(officerRef); // Delete the officer from Firebase
+    } catch (error) {
+      console.error("Error deleting officer:", error);
+    } finally {
+      setIsDeleting(false); // Set loading state to false
+      setIsConfirmingDelete(false); // Close confirmation dialog
+    }
   };
 
   if (isEditingOfficer) {
@@ -187,6 +205,31 @@ function OfficerCard({ tatar, officer }) {
           <div className="officer-badge shift-badge">{shiftLabel}</div>
         </div>
       </div>
+      <div className="officer-card-button-group">
+        <button className="officer-card-button" onClick={toggleEditOfficer}>
+          <FontAwesomeIcon icon={faPen} />
+        </button>
+        {isConfirmingDelete ? (
+          <>
+            <button
+              className="officer-card-button confirm-delete-button"
+              onClick={handleDeleteOfficer}
+              disabled={isDeleting} // Disable the button while deleting
+            >
+              {isDeleting ? <FontAwesomeIcon icon={faCircleNotch} spin /> : <strong>Hapus</strong>}
+            </button>
+            <button className="officer-card-button cancel-button" onClick={() => setIsConfirmingDelete(false)}>
+              Batal
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="officer-card-button delete-button" onClick={() => setIsConfirmingDelete(true)}>
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -201,8 +244,18 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
 
   // Validate the form manually
   useEffect(() => {
-    setIsFormValid(name.trim() !== "" && type.trim() !== "" && shift.trim() !== "");
-  }, [name, type, shift]);
+    if (officer.id) {
+      // If editing an officer, form is valid only if there are changes
+      const hasChanges =
+        name.trim() !== (officer.name || "").trim() ||
+        type.trim() !== (officer.type || "").trim() ||
+        shift.trim() !== (officer.shift || "").trim();
+      setIsFormValid(hasChanges);
+    } else {
+      // If adding a new officer, form is valid if all fields are filled
+      setIsFormValid(name.trim() !== "" && type.trim() !== "" && shift.trim() !== "");
+    }
+  }, [name, type, shift, officer]);
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -210,19 +263,31 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
 
     try {
       const officersRef = ref(db, `users/${tatar.id}/officers`); // Reference to the "officers" document under the specific cluster
-      const newOfficerRef = push(officersRef); // Create a new officer entry
 
-      const newOfficer = {
-        cluster_id: tatar.id,
-        id: newOfficerRef.key, // Use the generated key as the officer ID
-        name: name.trim(),
-        shift,
-        type
-      };
-
-      await set(newOfficerRef, newOfficer); // Save the new officer to Firebase
+      if (officer.id) {
+        // Update existing officer
+        const existingOfficerRef = ref(db, `users/${tatar.id}/officers/${officer.id}`);
+        const updatedOfficer = {
+          ...officer, // Keep existing officer properties
+          name: name.trim(),
+          shift,
+          type
+        };
+        await set(existingOfficerRef, updatedOfficer); // Update the officer in Firebase
+      } else {
+        // Create a new officer
+        const newOfficerRef = push(officersRef); // Create a new officer entry
+        const newOfficer = {
+          cluster_id: tatar.id,
+          id: newOfficerRef.key, // Use the generated key as the officer ID
+          name: name.trim(),
+          shift,
+          type
+        };
+        await set(newOfficerRef, newOfficer); // Save the new officer to Firebase
+      }
     } catch (error) {
-      console.error("Error adding officer to Firebase:", error);
+      console.error("Error saving officer to Firebase:", error);
     } finally {
       setIsLoading(false); // Set loading state to false
     }
@@ -232,7 +297,14 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
 
   return (
     <div className="officer-form-container">
-      <h4 className="tatar-management-title">{officer.id ? "Edit Officer" : "Add New Officer"}</h4>
+      <div className="tatar-management-header">
+        <h4 className="tatar-management-title">{officer.id ? "Edit Petugas" : "Tambah Petugas"}</h4>
+        {officer.id && (
+          <button className="tatar-form-cancel-button" type="button" onClick={onCancel}>
+            Batal
+          </button>
+        )}
+      </div>
       <form className="officer-form" onSubmit={handleSubmit} autoComplete="off">
         <Input
           type="text"
@@ -240,7 +312,7 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
           name="name"
           placeholder="Officer Name"
           required
-          value={name}
+          defaultValue={name}
           onChange={e => setName(e.target.value)}
         />
         <Input
@@ -250,7 +322,7 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
           placeholder="Officer Type"
           options={typeOptions}
           required
-          value={type}
+          defaultValue={type}
           onChange={value => setType(value)}
         />
         <Input
@@ -260,21 +332,16 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
           placeholder="Officer Shift"
           options={shiftOptions}
           required
-          value={shift}
+          defaultValue={shift}
           onChange={value => setShift(value)}
         />
         <div className="tatar-form-button-group">
-          {officer.id && (
-            <button className="tatar-form-button tatar-form-cancel-button" type="button" onClick={onCancel}>
-              Cancel
-            </button>
-          )}
           <button
             className="tatar-form-button tatar-form-submit-button"
             type="submit"
             disabled={!isFormValid || isLoading} // Disable button if form is invalid or loading
           >
-            {isLoading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : officer.id ? "Save Changes" : "Submit"}
+            {isLoading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : officer.id ? "Simpan Perubahan" : "Kirim"}
           </button>
         </div>
       </form>

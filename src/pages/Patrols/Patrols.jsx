@@ -2,7 +2,7 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
@@ -118,8 +118,6 @@ function Patrols() {
       return;
     }
 
-    itemRefs.current[task.id]?.scrollIntoView({ behavior: "smooth", block: "center" });
-
     const assignedRoute = task.assigned_route; // Array of [latitude, longitude]
     const routePath = task.route_path; // Object with coordinates (can be null)
 
@@ -175,6 +173,13 @@ function Patrols() {
     "Unknown Timeliness": "Tidak Diketahui",
     "Unknown Status": "Tidak Diketahui"
   };
+
+  useEffect(() => {
+    // Automatically scroll to the selected task if it exists
+    if (selectedTask && itemRefs.current[selectedTask.id]) {
+      itemRefs.current[selectedTask.id].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedTask?.id])
 
   return (
     <div className="patrols-page">
