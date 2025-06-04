@@ -16,13 +16,6 @@
   margin: 0;
 }
 
-.no-tasks-message {
-  text-align: center;
-  color: #888;
-  font-size: 14px;
-  margin: 10px 0;
-}
-
 .patrols-list {
   display: flex;
   flex-direction: column;
