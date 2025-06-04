@@ -1,15 +1,15 @@
 import { faTriangleExclamation, faUser, faVideo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AdvancedMarker, InfoWindow, Pin, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import React, { useEffect } from "react";
+import { AdvancedMarker, InfoWindow, Pin, useAdvancedMarkerRef, useMap } from "@vis.gl/react-google-maps";
+import { ref, remove } from "firebase/database";
+import React, { useEffect, useState } from "react";
+import { useFirebase } from "../../contexts/FirebaseContext";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 import Patrols from "../../pages/Patrols/Patrols";
 import AddMarkerInfoWindow from "../AddMarkerInfoWindow/AddMarkerInfoWindow";
 import "./MapOverlays.css";
-import { ref, remove } from "firebase/database";
-import { useFirebase } from "../../contexts/FirebaseContext";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOptions }) {
   const {
@@ -22,40 +22,15 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     selectedCluster,
     selectedCamera,
     clearPolylines,
-    addPolylines
+    addPolylines,
+    checkIntersection
   } = useMapDataContext();
   const { db } = useFirebase(); // Import Firebase database from context
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
   const map = useMap();
-  const coreLibrary = useMapsLibrary("core");
-  const geometryLibrary = useMapsLibrary("geometry");
+  const [markerRef] = useAdvancedMarkerRef();
 
-  const checkIntersection = (assignedRoute, routePath, radius = 5) => {
-    if (!routePath || !geometryLibrary || !coreLibrary) {
-      return new Set(); // Return an empty set if routePath is null
-    }
-
-    const intersectedPoints = new Set(); // Track intersected points in assignedRoute
-
-    for (const [lat1, lng1] of assignedRoute) {
-      for (const {
-        coordinates: [lat2, lng2]
-      } of Object.values(routePath)) {
-        const point1 = new coreLibrary.LatLng(lat1, lng1);
-        const point2 = new coreLibrary.LatLng(lat2, lng2);
-
-        const distance = geometryLibrary.spherical.computeDistanceBetween(point1, point2);
-        if (distance <= radius) {
-          intersectedPoints.add(`${lat1},${lng1}`); // Add intersected point to the set
-          break; // Stop checking further routePath points for this assignedRoute point
-        }
-      }
-    }
-
-    return intersectedPoints; // Return the set of intersected points
-  };
-
-  const intersectedPoints = selectedTask?.assigned_route
+  const intersectedPoints = selectedTask?.route_path
     ? checkIntersection(selectedTask.assigned_route, selectedTask.route_path)
     : new Set();
 
@@ -88,6 +63,10 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
       }
     }
   }, [markers.patrols, selectedTask]);
+
+  useEffect(() => {
+    closeInfoWindow(); // Close InfoWindow when selectedTask changes
+  }, [selectedTask])
 
   return (
     <>
@@ -144,11 +123,21 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
 
       {/* Render markers for assignedRoute */}
       {selectedTask?.assigned_route?.map(([lat, lng], index) => {
-        const pointKey = `${lat},${lng}`;
-        const isIntersected = intersectedPoints.has(pointKey);
+        const intersectedPoint = Array.from(intersectedPoints).find(point => point.lat === lat && point.lng === lng);
+
+        const isIntersected = !!intersectedPoint;
 
         return (
-          <AdvancedMarker key={`assignedRoute-${index}`} position={{ lat, lng }}>
+          <AdvancedMarker
+            ref={markerRef}
+            key={`assignedRoute-${index}`}
+            position={{ lat, lng }}
+            onClick={() => {
+              handleMarkerClick({
+                marker: { lat, lng, timestamp: intersectedPoint ? intersectedPoint.timestamp : null }
+              });
+            }} // Handle marker clicks
+          >
             <Pin
               background={isIntersected ? "#00EB1A" : "#FE2B25"} // Green for intersected, red for non-intersected
               glyphColor={isIntersected ? "#008100" : "#8D0004"}
@@ -212,14 +201,12 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
 
       {/* InfoWindow for adding markers */}
       {infoWindow && infoWindow.type === "map" && (
-        <AdvancedMarker position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
-          <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
-            <AddMarkerInfoWindow
-              position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
-              closeInfoWindow={closeInfoWindow}
-            />
-          </InfoWindow>
-        </AdvancedMarker>
+        <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
+          <AddMarkerInfoWindow
+            position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
+            closeInfoWindow={closeInfoWindow}
+          />
+        </InfoWindow>
       )}
 
       {/* InfoWindow for marker clicks */}
@@ -232,6 +219,29 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
           <button onClick={handleDeleteCameraMarker}>Hapus Kamera</button>
+        </InfoWindow>
+      )}
+
+      {/* InfoWindow for selected marker */}
+      {infoWindow && infoWindow.type === "marker" && selectedTask && (
+        <InfoWindow
+          position={{ lat: infoWindow.marker.lat, lng: infoWindow.marker.lng }}
+          onCloseClick={closeInfoWindow}
+        >
+          <div>
+            <strong>
+              {infoWindow.marker.timestamp
+                ? `Titik ini dikunjungi pada ${new Date(infoWindow.marker.timestamp).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                  })}, ${new Date(infoWindow.marker.timestamp).toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}`
+                : "Titik ini belum dikunjungi."}
+            </strong>
+          </div>
         </InfoWindow>
       )}
     </>

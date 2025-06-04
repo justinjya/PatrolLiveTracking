@@ -9,7 +9,7 @@ import { timelinessLabels } from "../../utils/TimelinessLabels";
 import "./Patrols.css";
 
 function Patrols() {
-  const { markers, selectedTask, setSelectedTask } = useMapDataContext(); // Access global methods and state
+  const { markers, selectedTask, setSelectedTask, checkIntersection } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
   const coreLibrary = useMapsLibrary("core");
   const geometryLibrary = useMapsLibrary("geometry");
@@ -83,39 +83,6 @@ function Patrols() {
 
     return grouped;
   }, [markers.patrols]);
-
-  const checkIntersection = (assignedRoute, routePath, radius = 5) => {
-    if (!routePath || !geometryLibrary || !coreLibrary) {
-      return 0; // Return 0 intersections if routePath is null
-    }
-
-    let intersectionCount = 0; // Initialize intersection counter
-    const visitedPoints = new Set(); // Track visited points in assignedRoute
-
-    for (const [lat1, lng1] of assignedRoute) {
-      const pointKey = `${lat1},${lng1}`; // Create a unique key for the point
-
-      if (visitedPoints.has(pointKey)) {
-        continue; // Skip if the point has already been visited
-      }
-
-      for (const {
-        coordinates: [lat2, lng2]
-      } of Object.values(routePath)) {
-        const point1 = new coreLibrary.LatLng(lat1, lng1);
-        const point2 = new coreLibrary.LatLng(lat2, lng2);
-
-        const distance = geometryLibrary.spherical.computeDistanceBetween(point1, point2);
-        if (distance <= radius) {
-          intersectionCount++; // Increment counter for each intersection
-          visitedPoints.add(pointKey); // Mark the point as visited
-          break; // Stop checking further routePath points for this assignedRoute point
-        }
-      }
-    }
-
-    return intersectionCount; // Return the total count of intersections
-  };
 
   const getOfficerDetails = (clusterId, officerId) => {
     // Find the cluster by ID
@@ -297,7 +264,7 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
   const { markers, setSelectedTask, setSelectedIncident } = useMapDataContext(); // Access global methods and state
 
   const officerDetails = getOfficerDetails(task.clusterId, task.userId);
-  const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
+  const intersectionCount = checkIntersection(task.assigned_route, task.route_path).size;
   const totalPoints = task.assigned_route.length;
   const percentage = ((intersectionCount / totalPoints) * 100).toFixed(0);
 
