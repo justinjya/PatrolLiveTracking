@@ -125,7 +125,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
-  width: 65%;
+  width: 55%;
 }
 
 .tatar-name {
@@ -156,7 +156,18 @@
 }
 
 .tatar-delete-tatar-button {
-  background-color: #FF2825;
+  background-color: transparent;
+  color: #9F1B1A;
+}
+
+.tatar-delete-tatar-button.confirm-delete-button {
+  background-color: transparent;
+  color: #9F1B1A;
+}
+
+.tatar-delete-tatar-button.cancel-button {
+  background-color: transparent;
+  color: #002e83;
 }
 
 .tatar-actions {
@@ -253,15 +264,14 @@
   color: #9F1B1A;
 }
 
-
 .officer-card-button.confirm-delete-button {
-  color: #9F1B1A; /* Green */
+  color: #9F1B1A;
   border: none;
   cursor: pointer;
 }
 
 .officer-card-button.cancel-button {
-  color: #002e83; /* Red */
+  color: #002e83;
   border: none;
   cursor: pointer;
 }

@@ -1,7 +1,6 @@
 import {
   faChevronDown,
   faChevronUp,
-  faCircleNotch,
   faCity,
   faEnvelope,
   faLocationDot,
@@ -23,10 +22,9 @@ import "./TatarManagement.css";
 function TatarManagement() {
   const { auth, db } = useFirebase();
 
-  const { markers, setSelectedCluster, isEditing, setIsEditing, tempPatrolPoints, setTempPatrolPoints, loading, setLoading } =
+  const { markers, setSelectedCluster, isEditing, setIsEditing, tempPatrolPoints, setTempPatrolPoints, setLoading } =
     useMapDataContext();
   const [isAddingTatar, setIsAddingTatar] = useState(false);
-  const [selectedTatar, setSelectedTatar] = useState(null); // Track the currently selected Tatar for editing
   const [name, setName] = useState(""); // State for name
   const [email, setEmail] = useState(""); // State for email
   const [password, setPassword] = useState(""); // State for password
@@ -47,7 +45,6 @@ function TatarManagement() {
 
   const toggleAddingTatar = () => {
     setSelectedCluster(null); // Reset selected Tatar when toggling Tatar editing
-    setSelectedTatar(null); // Reset selected Tatar when toggling Tatar editing
     setTempPatrolPoints([]); // Clear temporary patrol points when toggling Tatar editing
     setIsAddingTatar(prev => !prev);
 
@@ -56,13 +53,11 @@ function TatarManagement() {
     }
   };
 
-  const toggleEditingPatrolPoints = cluster => {
+  const toggleEditingPatrolPoints = () => {
     if (isEditing === "Patrol Points") {
       setIsEditing(null); // Reset editing state if currently editing patrol points
-      setSelectedTatar(null); // Reset selected Tatar
       return;
     }
-
     setIsEditing("Patrol Points");
   };
 
@@ -172,7 +167,7 @@ function TatarManagement() {
                 className="tatar-form-button"
                 type="button"
                 disabled={isEditing === "Patrol Points" && tempPatrolPoints.length < 3}
-                onClick={() => toggleEditingPatrolPoints(null)}
+                onClick={toggleEditingPatrolPoints}
               >
                 {isEditing === "Patrol Points" ? "Simpan" : "Edit Titik Patroli"}
               </button>
@@ -181,7 +176,7 @@ function TatarManagement() {
                 disabled={!isFormValid} // Disable if form is invalid
                 type="submit"
               >
-                {loading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : "Kirim"}
+                Kirim
               </button>
             </form>
             <div className="separator" />
@@ -190,19 +185,28 @@ function TatarManagement() {
         {markers.tatars.length === 0 ? (
           <div className="no-tasks-message">Tidak ada tatar yang tersedia</div>
         ) : (
-          markers.tatars.map(tatar => (
-            <TatarCard key={tatar.id} tatar={tatar} setSelectedCluster={setSelectedCluster} />
-          ))
+          markers.tatars.map(tatar => <TatarCard key={tatar.id} tatar={tatar} setIsAddingTatar={setIsAddingTatar} />)
         )}
       </div>
     </div>
   );
 }
 
-function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsClick, onDeleteTatarClick, isSelected }) {
+function TatarCard({ tatar, setIsAddingTatar }) {
   const map = useMap();
+  const { db } = useFirebase();
+  const {
+    selectedCluster,
+    setSelectedCluster,
+    isEditing,
+    setIsEditing,
+    tempPatrolPoints,
+    setTempPatrolPoints,
+    setLoading
+  } = useMapDataContext();
   const [isOfficersExpanded, setIsOfficersExpanded] = useState(false);
   const [isAddingOfficer, setIsAddingOfficer] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false); // State for delete confirmation
 
   const toggleOfficersDropdown = () => {
     setIsOfficersExpanded(prev => !prev);
@@ -214,6 +218,19 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
   };
 
   const viewOnMap = () => {
+    if (isEditing === "Patrol Points") {
+      setIsEditing(null); // Reset editing state if currently editing patrol points
+    }
+
+    if (selectedCluster && selectedCluster.id === tatar.id) {
+      // If the same cluster is clicked, deselect it
+      setTempPatrolPoints([]); // Clear temporary patrol points when viewing on map
+      setSelectedCluster(null);
+      return;
+    }
+
+    setIsAddingTatar(false); // Reset adding Tatar state when viewing on map
+    setTempPatrolPoints([]); // Clear temporary patrol points when viewing on map
     // Calculate the center of the cluster_coordinates
     const center = tatar.cluster_coordinates.reduce(
       (acc, [lat, lng]) => {
@@ -232,7 +249,36 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
     map.setZoom(17); // Zoom in to focus on the cluster
   };
 
-  const handleEditPatrolPoints = () => {
+  const handleEditPatrolPoints = async () => {
+    setIsAddingTatar(false); // Reset adding Tatar state when editing patrol points
+
+    if (isEditing === "Patrol Points" && selectedCluster?.id === tatar.id) {
+      try {
+        setLoading(true); // Show loading spinner
+
+        // Update the cluster_coordinates in Firebase
+        const tatarRef = ref(db, `users/${tatar.id}`);
+        await set(tatarRef, {
+          ...tatar, // Keep existing Tatar data
+          cluster_coordinates: tempPatrolPoints, // Update patrol points
+          updated_at: new Date().toISOString() // Update the timestamp
+        });
+      } catch (error) {
+        console.error("Error updating cluster coordinates:", error);
+      } finally {
+        setLoading(false); // Hide loading spinner
+        setIsEditing(null); // Exit editing mode
+        setTempPatrolPoints([]); // Clear temporary patrol points
+
+        // Update the selectedCluster state immediately
+        setSelectedCluster(prevCluster => ({
+          ...prevCluster,
+          cluster_coordinates: tempPatrolPoints // Update patrol points in the selectedCluster
+        }));
+      }
+      return;
+    }
+
     const center = tatar.cluster_coordinates.reduce(
       (acc, [lat, lng]) => {
         acc.lat += lat;
@@ -247,7 +293,36 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 
     map.setCenter(center); // Set the map center to the calculated center
     map.setZoom(17); // Zoom in to focus on the cluster
-    onEditPatrolPointsClick();
+
+    setIsEditing("Patrol Points"); // Set editing state to "Patrol Points"
+    setSelectedCluster(tatar);
+    setTempPatrolPoints(tatar.cluster_coordinates || []); // Load existing patrol points if available
+  };
+
+  const handleDeleteTatar = async () => {
+    try {
+      setLoading(true); // Set loading state to true
+      const tatarRef = ref(db, `users/${tatar.id}`);
+      await remove(tatarRef); // Delete the Tatar from Firebase
+      setSelectedCluster(null); // Deselect the cluster if it was selected
+    } catch (error) {
+      console.error("Error deleting Tatar:", error);
+    } finally {
+      setLoading(false); // Set loading state to false
+      setIsConfirmingDelete(false); // Close confirmation dialog
+      setIsEditing(null); // Reset editing state
+      setTempPatrolPoints([]); // Clear temporary patrol points
+      setIsAddingTatar(false); // Reset adding Tatar state
+    }
+  };
+
+  const areCoordinatesEqual = (coords1, coords2) => {
+    if (coords1.length !== coords2.length) return false;
+
+    return coords1.every(([lat1, lng1], index) => {
+      const [lat2, lng2] = coords2[index];
+      return lat1 === lat2 && lng1 === lng2;
+    });
   };
 
   return (
@@ -268,9 +343,47 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
         </div>
         <div>
           <button className="tatar-view-on-map-button" onClick={viewOnMap}>
-            Lihat di Peta
+            {selectedCluster && selectedCluster.id === tatar.id ? "Sembunyikan dari Peta" : "Lihat di Peta"}
           </button>
         </div>
+      </div>
+
+      <div className="tatar-actions">
+        <button
+          className="tatar-edit-patrol-points-button"
+          onClick={handleEditPatrolPoints}
+          disabled={
+            isConfirmingDelete || // Disable if confirming delete
+            (isEditing === "Patrol Points" && selectedCluster?.id !== tatar.id) || // Disable if editing another Tatar
+            areCoordinatesEqual(tempPatrolPoints, tatar.cluster_coordinates) // Disable if no changes to patrol points
+          }
+        >
+          {isEditing === "Patrol Points" && selectedCluster?.id === tatar.id ? "Simpan" : "Edit Titik Patroli"}
+        </button>
+        {isConfirmingDelete ? (
+          <>
+            <button
+              className="tatar-delete-tatar-button confirm-delete-button"
+              onClick={handleDeleteTatar}
+              disabled={isEditing === "Patrol Points"} // Disable if editing patrol points
+            >
+              <strong>Hapus</strong>
+            </button>
+            <button className="tatar-delete-tatar-button cancel-button" onClick={() => setIsConfirmingDelete(false)}>
+              Batal
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="tatar-delete-tatar-button"
+              onClick={() => setIsConfirmingDelete(true)}
+              disabled={isEditing === "Patrol Points"} // Disable if editing patrol points
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Expandable Section for Officers */}
@@ -336,10 +449,9 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 
 function OfficerCard({ tatar, officer }) {
   const { db } = useFirebase();
-  const { loading, setLoading } = useMapDataContext();
+  const { setLoading } = useMapDataContext();
   const [isEditingOfficer, setIsEditingOfficer] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false); // State for delete confirmation
-  const [isDeleting, setIsDeleting] = useState(false); // State for delete loading
 
   // Find the type label and style from typeOptions
   const typeOption = typeOptions.find(option => option.value === officer.type);
@@ -394,11 +506,8 @@ function OfficerCard({ tatar, officer }) {
         </button>
         {isConfirmingDelete ? (
           <>
-            <button
-              className="officer-card-button confirm-delete-button"
-              onClick={handleDeleteOfficer}
-            >
-              {loading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : <strong>Hapus</strong>}
+            <button className="officer-card-button confirm-delete-button" onClick={handleDeleteOfficer}>
+              <strong>Hapus</strong>
             </button>
             <button className="officer-card-button cancel-button" onClick={() => setIsConfirmingDelete(false)}>
               Batal
@@ -418,7 +527,7 @@ function OfficerCard({ tatar, officer }) {
 
 function OfficerForm({ tatar, officer = {}, onCancel }) {
   const { db } = useFirebase();
-  const { loading, setLoading } = useMapDataContext();
+  const { setLoading } = useMapDataContext();
   const [name, setName] = useState(officer.name || "");
   const [type, setType] = useState(officer.type || "");
   const [shift, setShift] = useState(officer.shift || "");
@@ -523,7 +632,7 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
             type="submit"
             disabled={!isFormValid} // Disable button if form is invalid or loading
           >
-            {loading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : officer.id ? "Simpan Perubahan" : "Kirim"}
+            {officer.id ? "Simpan" : "Kirim"}
           </button>
         </div>
       </form>
