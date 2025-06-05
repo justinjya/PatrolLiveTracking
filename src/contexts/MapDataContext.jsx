@@ -29,6 +29,8 @@ export const MapDataProvider = ({ children }) => {
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [selectedCluster, setSelectedCluster] = useState(null);
   const [selectedCamera, setSelectedCamera] = useState(null);
+  const [tempPatrolPoints, setTempPatrolPoints] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
 
   // Utility function to subscribe to data changes in Firebase
@@ -73,9 +75,11 @@ export const MapDataProvider = ({ children }) => {
       fetchCount += 1;
       if (fetchCount === totalFetches) {
         setInitialized(true); // Set initialized to true after all fetches are complete
+        setLoading(false); // Set loading to false after all fetches are complete
       }
     };
 
+    setLoading(true); // Set loading to true before starting fetches
     const unsubscribePatrols = subscribeToFirebase(patrolsRef, setMarkers, null, handleFetchComplete);
     const unsubscribeReports = subscribeToFirebase(reportsRef, setMarkers, null, handleFetchComplete);
     const unsubscribeTatars = subscribeToFirebase(
@@ -206,7 +210,11 @@ export const MapDataProvider = ({ children }) => {
         setSelectedCluster,
         selectedCamera,
         setSelectedCamera,
+        tempPatrolPoints,
+        setTempPatrolPoints,
         initialized,
+        loading,
+        setLoading,
         checkIntersection
       }}
     >

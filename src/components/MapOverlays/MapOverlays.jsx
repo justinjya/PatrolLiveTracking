@@ -8,7 +8,7 @@ import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 import Patrols from "../../pages/Patrols/Patrols";
-import AddMarkerInfoWindow from "../AddMarkerInfoWindow/AddMarkerInfoWindow";
+import AddCameraMarkerInfoWindow from "../AddCameraMarkerInfoWindow/AddCameraMarkerInfoWindow";
 import "./MapOverlays.css";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOptions }) {
@@ -21,6 +21,8 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     setSelectedTask,
     selectedCluster,
     selectedCamera,
+    tempPatrolPoints,
+    setTempPatrolPoints,
     clearPolylines,
     addPolylines,
     checkIntersection
@@ -49,6 +51,21 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     }
   };
 
+  const handleAddPatrolPointMarker = () => {
+    if (infoWindow && infoWindow.type === "map") {
+      const newMarker = [infoWindow.lat, infoWindow.lng];
+      setTempPatrolPoints([...tempPatrolPoints, newMarker]);
+      closeInfoWindow(); // Close the InfoWindow
+    }
+  };
+
+  const handleDeletePatrolPointMarker = index => {
+    if (infoWindow && infoWindow.type === "marker") {
+      setTempPatrolPoints(tempPatrolPoints.filter((_, i) => i !== index)); // Remove the marker at the specified index
+      closeInfoWindow(); // Close the InfoWindow
+    }
+  };
+
   useEffect(() => {
     if (selectedTask && selectedTask.route_path) {
       const updatedTask = markers.patrols.find(task => task.id === selectedTask.id);
@@ -62,7 +79,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         addPolylines(map, routePathCoordinates);
       }
     }
-  }, [markers.patrols, selectedTask]);
+  }, [markers.patrols, selectedTask?.id]);
 
   useEffect(() => {
     if (selectedTask) {
@@ -201,10 +218,21 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         </AdvancedMarker>
       ))}
 
-      {/* InfoWindow for adding markers */}
-      {infoWindow && infoWindow.type === "map" && (
+      {/* Render markers for when editing cluster patrol points */}
+      {tempPatrolPoints.map((marker, index) => (
+        <AdvancedMarker
+          key={`patrolPoint-${index}`}
+          position={{ lat: marker[0], lng: marker[1] }}
+          onClick={() => handleMarkerClick({ marker, index })} // Handle marker clicks
+        >
+          <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
+        </AdvancedMarker>
+      ))}
+
+      {/* InfoWindow for adding camera markers */}
+      {infoWindow && infoWindow.type === "map" && isEditing === "Cameras" && (
         <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
-          <AddMarkerInfoWindow
+          <AddCameraMarkerInfoWindow
             position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
             closeInfoWindow={closeInfoWindow}
           />
@@ -221,6 +249,26 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
           <button onClick={handleDeleteCameraMarker}>Hapus Kamera</button>
+        </InfoWindow>
+      )}
+
+      {/* InfoWindow for adding temporary patrol points markers */}
+      {infoWindow && infoWindow.type === "map" && isEditing === "Patrol Points" && (
+        <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
+          <button onClick={handleAddPatrolPointMarker}>Add Patrol Point Marker</button>
+        </InfoWindow>
+      )}
+
+      {/* InfoWindow for temporary patrol points marker clicks */}
+      {infoWindow && infoWindow.type === "marker" && isEditing === "Patrol Points" && (
+        <InfoWindow
+          position={{
+            lat: infoWindow.marker[0],
+            lng: infoWindow.marker[1]
+          }}
+          onCloseClick={closeInfoWindow} // Close the InfoWindow
+        >
+          <button onClick={() => handleDeletePatrolPointMarker(infoWindow.index)}>Remove Patrol Point Marker</button>
         </InfoWindow>
       )}
 

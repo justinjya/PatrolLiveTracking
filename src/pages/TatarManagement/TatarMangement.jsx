@@ -2,13 +2,16 @@ import {
   faChevronDown,
   faChevronUp,
   faCircleNotch,
+  faCity,
   faEnvelope,
   faLocationDot,
+  faLock,
   faPen,
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { push, ref, remove, set } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import Input from "../../components/Input/Input";
@@ -18,12 +21,172 @@ import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import "./TatarManagement.css";
 
 function TatarManagement() {
-  const { markers, setSelectedCluster } = useMapDataContext();
+  const { auth, db } = useFirebase();
+
+  const { markers, setSelectedCluster, isEditing, setIsEditing, tempPatrolPoints, setTempPatrolPoints, loading, setLoading } =
+    useMapDataContext();
+  const [isAddingTatar, setIsAddingTatar] = useState(false);
+  const [selectedTatar, setSelectedTatar] = useState(null); // Track the currently selected Tatar for editing
+  const [name, setName] = useState(""); // State for name
+  const [email, setEmail] = useState(""); // State for email
+  const [password, setPassword] = useState(""); // State for password
+  const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    const isValid =
+      name.trim() !== "" && // Name must not be empty
+      email.trim() !== "" && // Email must not be empty
+      password.trim() !== "" && // Password must not be empty
+      confirmPassword.trim() !== "" && // Confirm password must not be empty
+      password === confirmPassword && // Password and confirm password must match
+      tempPatrolPoints.length >= 3; // At least 3 patrol points must be selected
+
+    setIsFormValid(isValid); // Update the form validity state
+  }, [name, email, password, confirmPassword, tempPatrolPoints]);
+
+  const toggleAddingTatar = () => {
+    setSelectedCluster(null); // Reset selected Tatar when toggling Tatar editing
+    setSelectedTatar(null); // Reset selected Tatar when toggling Tatar editing
+    setTempPatrolPoints([]); // Clear temporary patrol points when toggling Tatar editing
+    setIsAddingTatar(prev => !prev);
+
+    if (isEditing === "Patrol Points") {
+      setIsEditing(null); // Reset editing state if currently editing patrol points
+    }
+  };
+
+  const toggleEditingPatrolPoints = cluster => {
+    if (isEditing === "Patrol Points") {
+      setIsEditing(null); // Reset editing state if currently editing patrol points
+      setSelectedTatar(null); // Reset selected Tatar
+      return;
+    }
+
+    setIsEditing("Patrol Points");
+  };
+
+  const handleAddTatarSubmit = async event => {
+    event.preventDefault();
+    setLoading(true); // Set loading state to true
+
+    const testEmail = import.meta.env.VITE_TEST_EMAIL;
+    const testPassword = import.meta.env.VITE_TEST_PASSWORD;
+
+    try {
+      // Step 1: Sign up the new Tatar account
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Step 2: Create the Tatar object
+      const tatarData = {
+        name,
+        email,
+        role: "patrol",
+        cluster_coordinates: tempPatrolPoints, // Use the selected patrol points
+        created_at: new Date().toISOString(), // Current timestamp
+        updated_at: new Date().toISOString() // Current timestamp
+      };
+
+      // Step 3: Save the Tatar data to the "users" collection in Firebase
+      const userRef = ref(db, `users/${user.uid}`);
+      await set(userRef, tatarData);
+
+      // Step 4: Sign out of the newly created Tatar account
+      await signOut(auth);
+
+      // Step 5: Log back in with the admin account
+      await signInWithEmailAndPassword(auth, testEmail, testPassword);
+    } catch (error) {
+      console.error("Error adding Tatar:", error);
+    } finally {
+      setLoading(false); // Set loading state to false
+      setIsAddingTatar(false); // Close the add Tatar form
+      setIsEditing(null); // Reset editing state
+      setTempPatrolPoints([]); // Clear temporary patrol points
+    }
+  };
 
   return (
     <div className="tatar-management">
-      <h3 className="tatar-management-title">Daftar Tatar</h3>
+      <div className="tatar-management-header">
+        <h3 className="tatar-management-title">Daftar Tatar</h3>
+        <button className="add-tatar-button" onClick={toggleAddingTatar}>
+          {isAddingTatar ? "Batal" : "Tambah Tatar"}
+        </button>
+      </div>
       <div className="tatar-list">
+        {isAddingTatar && (
+          <div className="add-tatar-form-container">
+            <h4 className="tatar-management-title">Tambah Tatar</h4>
+            <form className="add-tatar-form" onSubmit={handleAddTatarSubmit}>
+              <Input
+                icon={faCity}
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Nama Tatar"
+                position="left"
+                required
+                value={name} // Bind input value to state
+                onChange={e => setName(e.target.value)} // Update state on change
+              />
+              <Input
+                icon={faEnvelope}
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                position="left"
+                required
+                value={email} // Bind input value to state
+                onChange={e => setEmail(e.target.value)} // Update state on change
+              />
+              <Input
+                icon={faLock}
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                position="left"
+                required
+                value={password} // Bind input value to state
+                onChange={e => setPassword(e.target.value)} // Update state on change
+              />
+              <Input
+                icon={faLock}
+                type="password"
+                id="confirm-password"
+                name="confirm-password"
+                placeholder="Konfirmasi Password"
+                position="left"
+                required
+                value={confirmPassword} // Bind input value to state
+                onChange={e => setConfirmPassword(e.target.value)} // Update state on change
+              />
+              <span className="edit-patrol-point-hint">
+                Klik pada peta untuk menambahkan titik patroli. Minimal 3 titik untuk membentuk area.
+              </span>
+              <span className="edit-patrol-point-count">Titik dipilih: {tempPatrolPoints.length}</span>
+              <button
+                className="tatar-form-button"
+                type="button"
+                disabled={isEditing === "Patrol Points" && tempPatrolPoints.length < 3}
+                onClick={() => toggleEditingPatrolPoints(null)}
+              >
+                {isEditing === "Patrol Points" ? "Simpan" : "Edit Titik Patroli"}
+              </button>
+              <button
+                className="tatar-form-button"
+                disabled={!isFormValid} // Disable if form is invalid
+                type="submit"
+              >
+                {loading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : "Kirim"}
+              </button>
+            </form>
+            <div className="separator" />
+          </div>
+        )}
         {markers.tatars.length === 0 ? (
           <div className="no-tasks-message">Tidak ada tatar yang tersedia</div>
         ) : (
@@ -111,7 +274,7 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
       </div>
 
       {/* Expandable Section for Officers */}
-      {tatar.officers && Object.keys(tatar.officers).length > 0 && (
+      {tatar.officers && Object.keys(tatar.officers).length > 0 ? (
         <>
           <button className="dropdown-button" onClick={toggleOfficersDropdown}>
             {isOfficersExpanded
@@ -147,6 +310,25 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
             </>
           )}
         </>
+      ) : (
+        <>
+          <div className="officer-list-header">
+            <button className="add-officer-button" onClick={toggleAddingOfficer}>
+              {isAddingOfficer ? "Batal" : "Tambah Petugas"}
+            </button>
+          </div>
+          {isAddingOfficer && (
+            <>
+              <OfficerForm
+                tatar={tatar}
+                onCancel={() => {
+                  setIsAddingOfficer(false);
+                }}
+              />
+              <div className="separator" />
+            </>
+          )}
+        </>
       )}
     </div>
   );
@@ -154,6 +336,7 @@ function TatarCard({ tatar, isEditing, setSelectedCluster, onEditPatrolPointsCli
 
 function OfficerCard({ tatar, officer }) {
   const { db } = useFirebase();
+  const { loading, setLoading } = useMapDataContext();
   const [isEditingOfficer, setIsEditingOfficer] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false); // State for delete confirmation
   const [isDeleting, setIsDeleting] = useState(false); // State for delete loading
@@ -173,13 +356,13 @@ function OfficerCard({ tatar, officer }) {
 
   const handleDeleteOfficer = async () => {
     try {
-      setIsDeleting(true); // Set loading state to true
+      setLoading(true); // Set loading state to true
       const officerRef = ref(db, `users/${tatar.id}/officers/${officer.id}`);
       await remove(officerRef); // Delete the officer from Firebase
     } catch (error) {
       console.error("Error deleting officer:", error);
     } finally {
-      setIsDeleting(false); // Set loading state to false
+      setLoading(false); // Set loading state to false
       setIsConfirmingDelete(false); // Close confirmation dialog
     }
   };
@@ -214,9 +397,8 @@ function OfficerCard({ tatar, officer }) {
             <button
               className="officer-card-button confirm-delete-button"
               onClick={handleDeleteOfficer}
-              disabled={isDeleting} // Disable the button while deleting
             >
-              {isDeleting ? <FontAwesomeIcon icon={faCircleNotch} spin /> : <strong>Hapus</strong>}
+              {loading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : <strong>Hapus</strong>}
             </button>
             <button className="officer-card-button cancel-button" onClick={() => setIsConfirmingDelete(false)}>
               Batal
@@ -236,11 +418,11 @@ function OfficerCard({ tatar, officer }) {
 
 function OfficerForm({ tatar, officer = {}, onCancel }) {
   const { db } = useFirebase();
+  const { loading, setLoading } = useMapDataContext();
   const [name, setName] = useState(officer.name || "");
   const [type, setType] = useState(officer.type || "");
   const [shift, setShift] = useState(officer.shift || "");
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   // Validate the form manually
   useEffect(() => {
@@ -259,7 +441,7 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    setIsLoading(true); // Set loading state to true
+    setLoading(true); // Set loading state to true
 
     try {
       const officersRef = ref(db, `users/${tatar.id}/officers`); // Reference to the "officers" document under the specific cluster
@@ -289,7 +471,7 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
     } catch (error) {
       console.error("Error saving officer to Firebase:", error);
     } finally {
-      setIsLoading(false); // Set loading state to false
+      setLoading(false); // Set loading state to false
     }
 
     onCancel(); // Close the form after submission
@@ -305,7 +487,7 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
           </button>
         )}
       </div>
-      <form className="officer-form" onSubmit={handleSubmit} autoComplete="off">
+      <form className="officer-form" onSubmit={handleSubmit}>
         <Input
           type="text"
           id="name"
@@ -339,9 +521,9 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
           <button
             className="tatar-form-button tatar-form-submit-button"
             type="submit"
-            disabled={!isFormValid || isLoading} // Disable button if form is invalid or loading
+            disabled={!isFormValid} // Disable button if form is invalid or loading
           >
-            {isLoading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : officer.id ? "Simpan Perubahan" : "Kirim"}
+            {loading ? <FontAwesomeIcon icon={faCircleNotch} spin /> : officer.id ? "Simpan Perubahan" : "Kirim"}
           </button>
         </div>
       </form>

@@ -50,9 +50,10 @@ function Input({ icon, type, name, id, placeholder, required, style, position, o
             type="text"
             id={id}
             name={name}
-            placeholder={selectedOption || placeholder || "Select an option"}
+            placeholder={placeholder || "Select an option"}
             required={required}
             readOnly // Make the input read-only for dropdown
+            value={selectedOption} // Display the selected option
             onClick={() => setIsDropdownOpen(prev => !prev)} // Toggle dropdown visibility
           />
           <FontAwesomeIcon
@@ -96,8 +97,10 @@ function Input({ icon, type, name, id, placeholder, required, style, position, o
         placeholder={placeholder}
         required={required}
         style={style} // Allow additional inline styles if needed
-        defaultValue={defaultValue} // Set default value for regular input
+        value={defaultValue} // Set default value for regular input
         onChange={onChange} // Trigger onChange when input value changes
+        onInvalid={(e) => e.preventDefault()} // Suppress the default required message
+        autoComplete="off" // Disable autofill
       />
       {type === "password" && (
         <FontAwesomeIcon
