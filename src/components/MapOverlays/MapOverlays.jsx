@@ -1,12 +1,14 @@
 import { faTriangleExclamation, faUser, faVideo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AdvancedMarker, InfoWindow, Pin, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, InfoWindow, Pin, useAdvancedMarkerRef, useMap } from "@vis.gl/react-google-maps";
+import { ref, remove } from "firebase/database";
 import React, { useEffect } from "react";
+import { useFirebase } from "../../contexts/FirebaseContext";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { useSidebarContext } from "../../contexts/SidebarContext";
 import Incidents from "../../pages/Incidents/Incidents";
 import Patrols from "../../pages/Patrols/Patrols";
-import AddMarkerInfoWindow from "../AddMarkerInfoWindow/AddMarkerInfoWindow";
+import AddCameraMarkerInfoWindow from "../AddCameraMarkerInfoWindow/AddCameraMarkerInfoWindow";
 import "./MapOverlays.css";
 import { ref, remove } from "firebase/database";
 import { useFirebase } from "../../contexts/FirebaseContext";
@@ -21,41 +23,18 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     setSelectedTask,
     selectedCluster,
     selectedCamera,
+    tempPatrolPoints,
+    setTempPatrolPoints,
     clearPolylines,
-    addPolylines
+    addPolylines,
+    checkIntersection
   } = useMapDataContext();
   const { db } = useFirebase(); // Import Firebase database from context
   const { handleMenuClick } = useSidebarContext(); // Import handleMenuClick from context
   const map = useMap();
-  const coreLibrary = useMapsLibrary("core");
-  const geometryLibrary = useMapsLibrary("geometry");
+  const [markerRef] = useAdvancedMarkerRef();
 
-  const checkIntersection = (assignedRoute, routePath, radius = 5) => {
-    if (!routePath || !geometryLibrary || !coreLibrary) {
-      return new Set(); // Return an empty set if routePath is null
-    }
-
-    const intersectedPoints = new Set(); // Track intersected points in assignedRoute
-
-    for (const [lat1, lng1] of assignedRoute) {
-      for (const {
-        coordinates: [lat2, lng2]
-      } of Object.values(routePath)) {
-        const point1 = new coreLibrary.LatLng(lat1, lng1);
-        const point2 = new coreLibrary.LatLng(lat2, lng2);
-
-        const distance = geometryLibrary.spherical.computeDistanceBetween(point1, point2);
-        if (distance <= radius) {
-          intersectedPoints.add(`${lat1},${lng1}`); // Add intersected point to the set
-          break; // Stop checking further routePath points for this assignedRoute point
-        }
-      }
-    }
-
-    return intersectedPoints; // Return the set of intersected points
-  };
-
-  const intersectedPoints = selectedTask?.assigned_route
+  const intersectedPoints = selectedTask?.route_path
     ? checkIntersection(selectedTask.assigned_route, selectedTask.route_path)
     : new Set();
 
@@ -74,6 +53,21 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
     }
   };
 
+  const handleAddPatrolPointMarker = () => {
+    if (infoWindow && infoWindow.type === "map") {
+      const newMarker = [infoWindow.lat, infoWindow.lng];
+      setTempPatrolPoints([...tempPatrolPoints, newMarker]);
+      closeInfoWindow(); // Close the InfoWindow
+    }
+  };
+
+  const handleDeletePatrolPointMarker = index => {
+    if (infoWindow && infoWindow.type === "marker") {
+      setTempPatrolPoints(tempPatrolPoints.filter((_, i) => i !== index)); // Remove the marker at the specified index
+      closeInfoWindow(); // Close the InfoWindow
+    }
+  };
+
   useEffect(() => {
     if (selectedTask && selectedTask.route_path) {
       const updatedTask = markers.patrols.find(task => task.id === selectedTask.id);
@@ -87,7 +81,13 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         addPolylines(map, routePathCoordinates);
       }
     }
-  }, [markers.patrols, selectedTask]);
+  }, [markers.patrols, selectedTask?.id]);
+
+  useEffect(() => {
+    if (selectedTask) {
+      closeInfoWindow(); // Close InfoWindow when selectedTask.id changes
+    }
+  }, [selectedTask?.id]);
 
   return (
     <>
@@ -144,11 +144,21 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
 
       {/* Render markers for assignedRoute */}
       {selectedTask?.assigned_route?.map(([lat, lng], index) => {
-        const pointKey = `${lat},${lng}`;
-        const isIntersected = intersectedPoints.has(pointKey);
+        const intersectedPoint = Array.from(intersectedPoints).find(point => point.lat === lat && point.lng === lng);
+
+        const isIntersected = !!intersectedPoint;
 
         return (
-          <AdvancedMarker key={`assignedRoute-${index}`} position={{ lat, lng }}>
+          <AdvancedMarker
+            ref={markerRef}
+            key={`assignedRoute-${index}`}
+            position={{ lat, lng }}
+            onClick={() => {
+              handleMarkerClick({
+                marker: { lat, lng, timestamp: intersectedPoint ? intersectedPoint.timestamp : null }
+              });
+            }} // Handle marker clicks
+          >
             <Pin
               background={isIntersected ? "#00EB1A" : "#FE2B25"} // Green for intersected, red for non-intersected
               glyphColor={isIntersected ? "#008100" : "#8D0004"}
@@ -183,7 +193,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
 
           const [key, point] = lastRoutePoint; // Destructure the key and point
 
-          const isSelected = patrol === selectedTask; // Check if the marker is selected
+          const isSelected = selectedTask ? patrol.id === selectedTask.id : false; // Check if the marker is selected
 
           return (
             <AdvancedMarker
@@ -201,7 +211,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         })}
 
       {/* Render markers for when a cluster is selected */}
-      {selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
+      {isEditing !== "Patrol Points" && tempPatrolPoints.length === 0 && selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
         <AdvancedMarker
           key={`cluster-${selectedCluster.id}-coordinate-${index}`}
           position={{ lat: coordinate[0], lng: coordinate[1] }}
@@ -210,16 +220,25 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         </AdvancedMarker>
       ))}
 
-      {/* InfoWindow for adding markers */}
-      {infoWindow && infoWindow.type === "map" && (
-        <AdvancedMarker position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
-          <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
-            <AddMarkerInfoWindow
-              position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
-              closeInfoWindow={closeInfoWindow}
-            />
-          </InfoWindow>
+      {/* Render markers for when editing cluster patrol points */}
+      {tempPatrolPoints.map((marker, index) => (
+        <AdvancedMarker
+          key={`patrolPoint-${index}`}
+          position={{ lat: marker[0], lng: marker[1] }}
+          onClick={() => handleMarkerClick({ marker, index })} // Handle marker clicks
+        >
+          <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
         </AdvancedMarker>
+      ))}
+
+      {/* InfoWindow for adding camera markers */}
+      {infoWindow && infoWindow.type === "map" && isEditing === "Cameras" && (
+        <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
+          <AddCameraMarkerInfoWindow
+            position={{ lat: infoWindow.lat, lng: infoWindow.lng }}
+            closeInfoWindow={closeInfoWindow}
+          />
+        </InfoWindow>
       )}
 
       {/* InfoWindow for marker clicks */}
@@ -232,6 +251,49 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
           onCloseClick={closeInfoWindow} // Close the InfoWindow
         >
           <button onClick={handleDeleteCameraMarker}>Hapus Kamera</button>
+        </InfoWindow>
+      )}
+
+      {/* InfoWindow for adding temporary patrol points markers */}
+      {infoWindow && infoWindow.type === "map" && isEditing === "Patrol Points" && (
+        <InfoWindow position={{ lat: infoWindow.lat, lng: infoWindow.lng }} onCloseClick={closeInfoWindow}>
+          <button onClick={handleAddPatrolPointMarker}>Add Patrol Point Marker</button>
+        </InfoWindow>
+      )}
+
+      {/* InfoWindow for temporary patrol points marker clicks */}
+      {infoWindow && infoWindow.type === "marker" && isEditing === "Patrol Points" && (
+        <InfoWindow
+          position={{
+            lat: infoWindow.marker[0],
+            lng: infoWindow.marker[1]
+          }}
+          onCloseClick={closeInfoWindow} // Close the InfoWindow
+        >
+          <button onClick={() => handleDeletePatrolPointMarker(infoWindow.index)}>Remove Patrol Point Marker</button>
+        </InfoWindow>
+      )}
+
+      {/* InfoWindow for selected marker */}
+      {infoWindow && infoWindow.type === "marker" && selectedTask && (
+        <InfoWindow
+          position={{ lat: infoWindow.marker.lat, lng: infoWindow.marker.lng }}
+          onCloseClick={closeInfoWindow}
+        >
+          <div>
+            <strong>
+              {infoWindow.marker.timestamp
+                ? `Titik ini dikunjungi pada ${new Date(infoWindow.marker.timestamp).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                  })}, ${new Date(infoWindow.marker.timestamp).toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}`
+                : "Titik ini belum dikunjungi."}
+            </strong>
+          </div>
         </InfoWindow>
       )}
     </>

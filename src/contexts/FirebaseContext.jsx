@@ -45,7 +45,7 @@ export const FirebaseProvider = ({ children, config }) => {
     return () => unsubscribe();
   }, [auth, config]);
 
-  return <FirebaseContext.Provider value={{ db, isAuthenticated }}>{children}</FirebaseContext.Provider>;
+  return <FirebaseContext.Provider value={{ db, auth, isAuthenticated }}>{children}</FirebaseContext.Provider>;
 };
 
 // Custom hook to use the Firebase context

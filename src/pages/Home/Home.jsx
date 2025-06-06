@@ -1,4 +1,11 @@
-import { faCity, faTriangleExclamation, faUserShield, faVideo, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleNotch,
+  faCity,
+  faTriangleExclamation,
+  faUserShield,
+  faVideo,
+  faXmark
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import InteractiveMap from "../../components/InteractiveMap/InteractiveMap";
@@ -11,14 +18,15 @@ import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
 
 function Home() {
-  const { isEditing, setIsEditing, initialized, selectedTask } = useMapDataContext(); // Access selectedTask from context
+  const { loading, initialized, isEditing, setIsEditing, selectedCluster, setTempPatrolPoints, selectedTask } = useMapDataContext();
 
   return (
     <div>
-      {!initialized && (
+      {/* Global Loading Spinner */}
+      {loading && (
         <div className="loading-overlay">
-          <div className="spinner"></div>
-          <span>Memuat...</span>
+          <FontAwesomeIcon icon={faCircleNotch} size="2x" spin />
+          {!initialized && <span>Memuat...</span>}
         </div>
       )}
 
@@ -30,6 +38,7 @@ function Home() {
           isEditing={isEditing}
           onClose={() => {
             setIsEditing(null);
+            setTempPatrolPoints(selectedCluster ? selectedCluster.cluster_coordinates : []); // Clear temporary patrol points when editing is closed
           }}
         />
       )}
@@ -61,7 +70,8 @@ function Home() {
 function EditingIndicator({ isEditing, onClose }) {
   const isEditingLabels = {
     Cameras: "Kamera",
-  }
+    "Patrol Points": "Patroli"
+  };
 
   return (
     <div className="editing-indicator">

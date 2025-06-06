@@ -2,7 +2,7 @@ import { push, ref, set } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import { useFirebase } from "../../contexts/FirebaseContext";
 import Input from "../Input/Input";
-import "./AddMarkerInfoWindow.css";
+import "./AddCameraMarkerInfoWindow.css";
 
 function AddMarkerInfoWindow({ position, closeInfoWindow }) {
   const { db } = useFirebase(); // Access setMarkers from context to update markers state\
@@ -61,4 +61,4 @@ function AddMarkerInfoWindow({ position, closeInfoWindow }) {
   );
 }
 
-export default AddMarkerInfoWindow;
+export default AddCameraMarkerInfoWindow;

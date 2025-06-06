@@ -1,19 +1,77 @@
-import { faCalendar, faClock } from "@fortawesome/free-regular-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { useMap } from "@vis.gl/react-google-maps";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import Input from "../../components/Input/Input";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
 import "./Patrols.css";
+import { push, ref, set } from "firebase/database";
+import { useFirebase } from "../../contexts/FirebaseContext";
 
 function Patrols() {
-  const { markers, selectedTask, setSelectedTask } = useMapDataContext(); // Access global methods and state
+  const { db } = useFirebase();
+  const {
+    markers,
+    selectedTask,
+    setSelectedTask,
+    setSelectedCluster,
+    checkIntersection,
+    isEditing,
+    setIsEditing,
+    clearPolylines,
+    tempPatrolPoints,
+    setTempPatrolPoints,
+    setLoading
+  } = useMapDataContext(); // Access global methods and state
   const map = useMap(); // Access the map instance
-  const coreLibrary = useMapsLibrary("core");
-  const geometryLibrary = useMapsLibrary("geometry");
   const itemRefs = useRef({});
+
+  const [isAddingPatrol, setIsAddingPatrol] = useState(false);
+  const [tatar, setTatar] = useState(""); // State to hold the selected tatar
+  const [officer, setOfficer] = useState(""); // State to hold the selected officer
+  const [startDateTime, setStartDateTime] = useState({ day: "", month: "", year: "", hour: "", minute: "" });
+  const [endDateTime, setEndDateTime] = useState({ day: "", month: "", year: "", hour: "", minute: "" });
+
+  // Find the selected tatar object
+  const tatarObj = tatar ? markers.tatars.find(t => t.id === tatar) : null;
+  const officerOptions = tatarObj
+    ? Object.values(tatarObj?.officers || {}).map(officer => ({
+        label: officer.name, // Display the officer name
+        value: officer.id // Pass the officer ID as the value
+      }))
+    : []; // Default to an empty array if no tatar is selected
+
+  // Find the selected officer details
+  const officerObj = Object.values(tatarObj?.officers || {}).find(o => o.id === officer) || null;
+
+  // Find the type label and style from typeOptions
+  const typeOption = typeOptions.find(option => option.value === officerObj?.type);
+  const typeLabel = typeOption?.label || officerObj?.type || "Unknown";
+  const typeStyle = typeOption?.style || {};
+
+  // Find the shift label from shiftOptions
+  const shiftOption = shiftOptions.find(option => option.value === officerObj?.shift);
+  const shiftLabel = shiftOption?.label || officerObj?.shift || "Unknown";
+
+  const statusLabels = {
+    ontime: "Tepat Waktu",
+    late: "Terlambat",
+    expired: "Kadaluarsa",
+    active: "Aktif",
+    idle: "Tidak Aktif",
+    "Unknown Timeliness": "Tidak Diketahui",
+    "Unknown Status": "Tidak Diketahui"
+  };
+
+  const handleDateTimeChange = (setDateTime, newValue) => {
+    setDateTime(prevDateTime => ({
+      ...prevDateTime, // Keep the existing values
+      ...newValue // Update only the changed segment
+    }));
+  };
 
   const [collapsedClusters, setCollapsedClusters] = useState(() => {
     const initialState = {};
@@ -84,37 +142,21 @@ function Patrols() {
     return grouped;
   }, [markers.patrols]);
 
-  const checkIntersection = (assignedRoute, routePath, radius = 5) => {
-    if (!routePath || !geometryLibrary || !coreLibrary) {
-      return 0; // Return 0 intersections if routePath is null
-    }
+  const toggleAddPatrol = () => {
+    setIsAddingPatrol(prev => !prev);
 
-    let intersectionCount = 0; // Initialize intersection counter
-    const visitedPoints = new Set(); // Track visited points in assignedRoute
+    // Reset temporary patrol points and selected task
+    setTempPatrolPoints([]); // Clear temporary patrol points when cancelling
+    setSelectedTask(null); // Reset selected task when starting to add a patrol
+    setSelectedCluster(null); // Reset selected cluster when starting to add a patrol
+    clearPolylines(); // Clear any drawn polylines
 
-    for (const [lat1, lng1] of assignedRoute) {
-      const pointKey = `${lat1},${lng1}`; // Create a unique key for the point
-
-      if (visitedPoints.has(pointKey)) {
-        continue; // Skip if the point has already been visited
-      }
-
-      for (const {
-        coordinates: [lat2, lng2]
-      } of Object.values(routePath)) {
-        const point1 = new coreLibrary.LatLng(lat1, lng1);
-        const point2 = new coreLibrary.LatLng(lat2, lng2);
-
-        const distance = geometryLibrary.spherical.computeDistanceBetween(point1, point2);
-        if (distance <= radius) {
-          intersectionCount++; // Increment counter for each intersection
-          visitedPoints.add(pointKey); // Mark the point as visited
-          break; // Stop checking further routePath points for this assignedRoute point
-        }
-      }
-    }
-
-    return intersectionCount; // Return the total count of intersections
+    // Reset tatar, officer, and date/time states
+    setTatar(""); // Reset tatar selection
+    setOfficer(""); // Reset officer selection
+    // Reset date/time states
+    setStartDateTime({ day: "", month: "", year: "", hour: "", minute: "" });
+    setEndDateTime({ day: "", month: "", year: "", hour: "", minute: "" });
   };
 
   const getOfficerDetails = (clusterId, officerId) => {
@@ -146,6 +188,13 @@ function Patrols() {
   };
 
   const handleViewClick = task => {
+    if (selectedTask && selectedTask.id === task.id) {
+      // If the same task is clicked, deselect it
+      setSelectedTask(null);
+      clearPolylines();
+      return;
+    }
+
     const assignedRoute = task.assigned_route; // Array of [latitude, longitude]
     const routePath = task.route_path; // Object with coordinates (can be null)
 
@@ -175,6 +224,42 @@ function Patrols() {
     map.setZoom(17);
   };
 
+  const calculateAndSetCenter = (map, coordinates, zoomLevel = 17) => {
+    if (!coordinates || coordinates.length === 0) {
+      console.warn("No coordinates provided to calculate center.");
+      return;
+    }
+
+    // Calculate the center of the coordinates
+    const center = coordinates.reduce(
+      (acc, [lat, lng]) => {
+        acc.lat += lat;
+        acc.lng += lng;
+        return acc;
+      },
+      { lat: 0, lng: 0 }
+    );
+
+    center.lat /= coordinates.length;
+    center.lng /= coordinates.length;
+
+    // Set the map's center and zoom level
+    if (map) {
+      map.setCenter(center);
+      map.setZoom(zoomLevel);
+    }
+
+    return center; // Return the calculated center
+  };
+
+  const toggleEditingPatrolPoints = () => {
+    if (isEditing === "Patrol Points") {
+      setIsEditing(null); // Reset editing state if currently editing patrol points
+      return;
+    }
+    setIsEditing("Patrol Points");
+  };
+
   const toggleClusterCollapse = clusterName => {
     setCollapsedClusters(prev => ({
       ...prev,
@@ -192,26 +277,214 @@ function Patrols() {
     }));
   };
 
-  const statusLabels = {
-    ontime: "Tepat Waktu",
-    late: "Terlambat",
-    expired: "Kadaluarsa",
-    active: "Aktif",
-    idle: "Tidak Aktif",
-    "Unknown Timeliness": "Tidak Diketahui",
-    "Unknown Status": "Tidak Diketahui"
+  const isFormValid = () => {
+    // Check if all required fields are filled
+    const isStartDateTimeValid =
+      startDateTime.day &&
+      startDateTime.month &&
+      startDateTime.year &&
+      startDateTime.hour !== "" &&
+      startDateTime.minute !== "";
+    const isEndDateTimeValid =
+      endDateTime.day &&
+      endDateTime.month &&
+      endDateTime.year &&
+      endDateTime.hour !== "" &&
+      endDateTime.minute !== "";
+
+    if (!tatar || !officer || !isStartDateTimeValid || !isEndDateTimeValid) {
+      return false; // Form is incomplete
+    }
+
+    // Validate date-time inputs based on the officer's shift
+    const shiftDetails = shiftOptions.find(option => option.value === officerObj.shift);
+    if (shiftDetails) {
+      const { minTime, maxTime } = shiftDetails;
+
+      const parseTime = time => {
+        const [hour, minute] = time.split(":").map(Number);
+        return new Date(0, 0, 0, hour, minute); // Create a Date object for comparison
+      };
+
+      const startTime = new Date(0, 0, 0, startDateTime.hour, startDateTime.minute);
+      const endTime = new Date(0, 0, 0, endDateTime.hour, endDateTime.minute);
+      const shiftStartTime = parseTime(minTime);
+      const shiftEndTime = parseTime(maxTime);
+
+      // Handle shifts that span midnight (e.g., "23:00" to "07:00")
+      const isStartTimeValid =
+        shiftStartTime <= shiftEndTime
+          ? startTime >= shiftStartTime && startTime <= shiftEndTime
+          : startTime >= shiftStartTime || startTime <= shiftEndTime;
+
+      const isEndTimeValid =
+        shiftStartTime <= shiftEndTime
+          ? endTime >= shiftStartTime && endTime <= shiftEndTime
+          : endTime >= shiftStartTime || endTime <= shiftEndTime;
+
+      if (!isStartTimeValid || !isEndTimeValid) {
+        return false; // Start or end time is outside the shift range
+      }
+
+      // Ensure endTime is after startTime
+      if (endTime <= startTime) {
+        return false; // End time must be after start time
+      }
+    }
+
+    return true; // Form is valid
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Prepare the data for the new task
+    const newTask = {
+      clusterId: tatarObj.id, // Selected cluster ID
+      clusterName: tatarObj.name, // Selected cluster name
+      assigned_route: tempPatrolPoints, // Selected patrol points
+      userId: officerObj.id, // Selected officer ID
+      officerName: officerObj.name, // Selected officer name
+      assignedStartTime: new Date(
+        startDateTime.year,
+        startDateTime.month - 1, // JavaScript months are 0-indexed
+        startDateTime.day,
+        startDateTime.hour,
+        startDateTime.minute
+      ).toISOString(), // Convert to ISO string
+      assignedEndTime: new Date(
+        endDateTime.year,
+        endDateTime.month - 1,
+        endDateTime.day,
+        endDateTime.hour,
+        endDateTime.minute
+      ).toISOString(), // Convert to ISO string
+      status: "active", // Default status for a new task
+      createdAt: new Date().toISOString() // Current timestamp
+    };
+
+    try {
+      // Simulate adding the task to the database (replace with actual API call)
+      setLoading(true); // Set loading state to true
+
+      const tasksRef = ref(db, "tasks"); // Reference to the "officers" document under the specific cluster
+      const newTaskRef = push(tasksRef); // Create a new task reference
+      await set(newTaskRef, newTask); // Set the new task data
+    } catch (error) {
+      console.error("Error creating task:", error);
+    } finally {
+      setLoading(false); // Set loading state to false after submission
+
+      // Reset the form after successful submission
+      setTatar("");
+      setOfficer("");
+      setStartDateTime({ day: "", month: "", year: "", hour: "", minute: "" });
+      setEndDateTime({ day: "", month: "", year: "", hour: "", minute: "" });
+      setTempPatrolPoints([]);
+      setSelectedCluster(null);
+      setIsAddingPatrol(false); // Close the form
+      setIsEditing(null); // Reset editing state
+    }
   };
 
   useEffect(() => {
+    // Automatically scroll to the selected task if it exists
     if (selectedTask && itemRefs.current[selectedTask.id]) {
-      itemRefs.current[selectedTask.id]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      itemRefs.current[selectedTask.id].scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [selectedTask]);
+  }, [selectedTask?.id]);
 
   return (
     <div className="patrols-page">
-      <h3 className="patrols-title">Daftar Patroli</h3>
+      <div className="patrols-header">
+        <h3 className="patrols-title">Daftar Patroli</h3>
+        <button className="add-patrol-button" onClick={toggleAddPatrol}>
+          {isAddingPatrol ? "Batal" : "Tambah Patroli"}
+        </button>
+      </div>
       <div className="patrols-list">
+        {isAddingPatrol && (
+          <div className="add-tatar-form-container">
+            <h4 className="tatar-management-title">Tambah Patroli</h4>
+            <form className="add-tatar-form" onSubmit={handleSubmit}>
+              <Input
+                type="dropdown"
+                id="tatar"
+                name="tatar"
+                placeholder="Tatar"
+                options={markers.tatars.map(tatar => ({
+                  label: tatar.name, // Display the tatar name
+                  value: tatar.id // Use the tatar ID as the value
+                }))}
+                value={tatar}
+                onChange={selectedValue => {
+                  setTatar(selectedValue); // Update the selected tatar
+
+                  const selectedTatar = markers.tatars.find(t => t.id === selectedValue);
+                  setTempPatrolPoints(selectedTatar.cluster_coordinates || []);
+                  setSelectedCluster(selectedTatar);
+                  setOfficer("");
+
+                  if (selectedTatar.cluster_coordinates) {
+                    calculateAndSetCenter(map, selectedTatar.cluster_coordinates);
+                  }
+                }}
+                required
+              />
+              <Input
+                type="dropdown"
+                id="officer"
+                name="officer"
+                placeholder="Petugas"
+                options={officerOptions}
+                value={officer}
+                disabled={tatar === ""}
+                onChange={selectedValue => setOfficer(selectedValue)} // Update the selected officer
+                required
+              />
+              <div className="patrol-item-badges">
+                <div className="patrol-badge type-badge" style={typeStyle}>
+                  {typeLabel}
+                </div>
+                <div className="patrol-badge shift-badge">{shiftLabel}</div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <div style={{ display: "flex", flexDirection: "column", textAlign: "start", gap: "3px" }}>
+                  <span className="patrol-form-label">Waktu Mulai</span>
+                  <Input
+                    type="datetime"
+                    id="start-time"
+                    name="start-time"
+                    value={startDateTime}
+                    onChange={newValue => handleDateTimeChange(setStartDateTime, newValue)}
+                    required
+                  />
+                </div>
+                <div style={{ padding: "20px" }}>-</div>
+                <div style={{ display: "flex", flexDirection: "column", textAlign: "end", gap: "3px" }}>
+                  <span className="patrol-form-label">Waktu Selesai</span>
+                  <Input
+                    type="datetime"
+                    id="end-time"
+                    name="end-time"
+                    value={endDateTime}
+                    onChange={newValue => handleDateTimeChange(setEndDateTime, newValue)}
+                    required
+                  />
+                </div>
+              </div>
+              <span className="edit-patrol-point-hint">Klik pada peta untuk menentukan titik-titik patroli</span>
+              <span className="edit-patrol-point-count">Titik dipilih: {tempPatrolPoints.length}</span>
+              <button className="tatar-form-button" type="button" onClick={toggleEditingPatrolPoints}>
+                {isEditing === "Patrol Points" ? "Simpan" : "Edit Titik Patroli"}
+              </button>
+              <button className="tatar-form-button" type="submit" disabled={!isFormValid()}>
+                Kirim
+              </button>
+            </form>
+            <div className="separator" />
+          </div>
+        )}
         <h4 className="patrols-subtitle">Sedang Berjalan</h4>
         {markers.patrols.filter(task => task.status === "ongoing").length === 0 ? (
           <div className="no-tasks-message">Tidak ada patroli yang sedang berjalan</div>
@@ -294,10 +567,10 @@ function Patrols() {
 }
 
 function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onViewClick }) {
-  const { markers, setSelectedTask, setSelectedIncident } = useMapDataContext(); // Access global methods and state
+  const { markers, selectedTask, setSelectedTask, setSelectedIncident } = useMapDataContext(); // Access global methods and state
 
   const officerDetails = getOfficerDetails(task.clusterId, task.userId);
-  const intersectionCount = checkIntersection(task.assigned_route, task.route_path);
+  const intersectionCount = checkIntersection(task.assigned_route, task.route_path).size;
   const totalPoints = task.assigned_route.length;
   const percentage = ((intersectionCount / totalPoints) * 100).toFixed(0);
 
@@ -371,10 +644,23 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
         </div>
       </div>
       <div className="patrol-item-details">
-        <div className="patrol-item-timestamps">
-          <span>
-            <FontAwesomeIcon icon={faCalendar} />
-            &nbsp;&nbsp;&nbsp;
+        <div className="patrol-item-detail-group">
+          <span className="patrol-item-timestamps patrol-item-assigned-start-time">
+            <strong>Waktu Mulai</strong>
+            {isNaN(new Date(task.assignedStartTime).getTime())
+              ? "N/A"
+              : `${new Date(task.assignedStartTime).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                })}, ${new Date(task.assignedStartTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}`}{" "}
+          </span>
+          <span className="patrol-item-timestamps patrol-item-time-range">
+            <strong>Waktu Pelaksanaan</strong>
             {isNaN(new Date(task.startTime).getTime())
               ? "N/A"
               : `${new Date(task.startTime).toLocaleDateString("id-ID", {
@@ -413,7 +699,7 @@ function PatrolItem({ ref, task, map, getOfficerDetails, checkIntersection, onVi
       </div>
       <div className="patrol-item-view-on-map-button-container">
         <button className="patrol-item-view-on-map-button" onClick={onViewClick}>
-          Lihat di Peta
+          {selectedTask && selectedTask.id === task.id ? "Sembunyikan dari Peta" : "Lihat di Peta"}
         </button>
       </div>
       <div className="patrol-item-details-button-container">
