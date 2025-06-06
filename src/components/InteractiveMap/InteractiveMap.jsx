@@ -63,10 +63,6 @@ function InteractiveMap() {
   };
 
   const handleMarkerClick = ({ marker, index = null }) => {
-    if (!isEditing) {
-      return; // If not in edit mode, do not open InfoWindow on marker click
-    }
-
     setInfoWindow({
       type: "marker",
       marker,

@@ -6,7 +6,7 @@
 .sidebar {
   width: 250px;
   height: 100vh;
-  background-color: #002E83;
+  background-color: #002e83;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -43,10 +43,10 @@
   border: none;
   outline: none;
   margin-top: 10px;
-  transition: color 0.3s ease
+  transition: color 0.3s ease;
 }
 .sidebar-toggle-button.active {
-  color: #002E83;
+  color: #002e83;
   cursor: default;
 }
 
@@ -64,11 +64,11 @@
 }
 
 .sidebar-menu-item:hover .sidebar-menu-icon {
-  color: #002E83;
+  color: #002e83;
 }
 
 .sidebar-menu-item:hover .sidebar-menu-label {
-  color: #002E83;
+  color: #002e83;
 }
 
 .sidebar-menu-item.selected {
@@ -78,11 +78,11 @@
 .sidebar-menu-icon {
   margin-right: 10px;
   color: #fff;
-  transition: color 0.3s ease
+  transition: color 0.3s ease;
 }
 
 .sidebar-menu-icon.selected {
-  color: #002E83;
+  color: #002e83;
 }
 
 .sidebar-menu-label {

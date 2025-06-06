@@ -15,7 +15,8 @@ function Sidebar({ children }) {
     setSelectedIncident,
     setSelectedCluster,
     setSelectedCamera,
-    clearPolylines,
+    setTempPatrolPoints,
+    clearPolylines
   } = useMapDataContext();
 
   return (
@@ -40,6 +41,7 @@ function Sidebar({ children }) {
                   setSelectedIncident(null); // Reset selected incident when switching menus
                   setSelectedCluster(null); // Reset selected cluster when switching menus
                   setSelectedCamera(null); // Reset selected camera when switching menus
+                  setTempPatrolPoints([]); // Clear temporary patrol points when switching menus
                   clearPolylines(); // Clear polylines when switching menus
                 }
               })
@@ -60,6 +62,7 @@ function Sidebar({ children }) {
             setSelectedIncident(null); // Reset selected incident when closing the sidebar
             setSelectedCluster(null); // Reset selected cluster when closing the sidebar
             setSelectedCamera(null); // Reset selected camera when closing the sidebar
+            setTempPatrolPoints([]); // Clear temporary patrol points when closing the sidebar
             clearPolylines();
           }}
           title={activeMenu}
