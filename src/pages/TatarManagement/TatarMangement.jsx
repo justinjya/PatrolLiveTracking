@@ -48,6 +48,12 @@ function TatarManagement() {
     setTempPatrolPoints([]); // Clear temporary patrol points when toggling Tatar editing
     setIsAddingTatar(prev => !prev);
 
+    // Reset form fields
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+
     if (isEditing === "Patrol Points") {
       setIsEditing(null); // Reset editing state if currently editing patrol points
     }
@@ -355,7 +361,7 @@ function TatarCard({ tatar, setIsAddingTatar }) {
           disabled={
             isConfirmingDelete || // Disable if confirming delete
             (isEditing === "Patrol Points" && selectedCluster?.id !== tatar.id) || // Disable if editing another Tatar
-            areCoordinatesEqual(tempPatrolPoints, tatar.cluster_coordinates) // Disable if no changes to patrol points
+            (isEditing === "Patrol Points" && areCoordinatesEqual(tempPatrolPoints, tatar.cluster_coordinates)) // Disable if no changes to patrol points and editing patrol points
           }
         >
           {isEditing === "Patrol Points" && selectedCluster?.id === tatar.id ? "Simpan" : "Edit Titik Patroli"}
@@ -601,29 +607,29 @@ function OfficerForm({ tatar, officer = {}, onCancel }) {
           type="text"
           id="name"
           name="name"
-          placeholder="Officer Name"
+          placeholder="Nama Petugas"
           required
-          defaultValue={name}
+          value={name}
           onChange={e => setName(e.target.value)}
         />
         <Input
           type="dropdown"
           id="type"
           name="type"
-          placeholder="Officer Type"
+          placeholder="Tipe Petugas"
           options={typeOptions}
           required
-          defaultValue={type}
+          value={type}
           onChange={value => setType(value)}
         />
         <Input
           type="dropdown"
           id="shift"
           name="shift"
-          placeholder="Officer Shift"
+          placeholder="Shift Petugas"
           options={shiftOptions}
           required
-          defaultValue={shift}
+          value={shift}
           onChange={value => setShift(value)}
         />
         <div className="tatar-form-button-group">

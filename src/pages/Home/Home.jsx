@@ -18,7 +18,7 @@ import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
 
 function Home() {
-  const { loading, initialized, isEditing, setIsEditing, setTempPatrolPoints, selectedTask } = useMapDataContext();
+  const { loading, initialized, isEditing, setIsEditing, selectedCluster, setTempPatrolPoints, selectedTask } = useMapDataContext();
 
   return (
     <div>
@@ -38,7 +38,7 @@ function Home() {
           isEditing={isEditing}
           onClose={() => {
             setIsEditing(null);
-            setTempPatrolPoints([]); // Clear temporary patrol points when editing is closed
+            setTempPatrolPoints(selectedCluster ? selectedCluster.cluster_coordinates : []); // Clear temporary patrol points when editing is closed
           }}
         />
       )}

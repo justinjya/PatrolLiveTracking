@@ -1,14 +1,16 @@
+/* General Input Container */
 .input-container {
   position: relative;
   display: flex;
   align-items: center;
   color: #000;
   font-size: 14px;
+  text-align: left;
 }
 
 .input-icon {
   position: absolute;
-  color: #002E83;
+  color: #002e83;
 }
 
 .icon-left .input-icon {
@@ -23,7 +25,7 @@
   width: 100%;
   padding: 10px 10px;
   border: 1px solid #afd7f8;
-  background-color: #fff;;
+  background-color: #fff;
   border-radius: 8px;
   color: #000;
 }
@@ -37,12 +39,12 @@
 }
 
 .input::placeholder {
-  color: #6B6B6B;
+  color: #6b6b6b;
 }
 
 .input:focus {
   outline: none;
-  border-color: #002E83;
+  border-color: #002e83;
 }
 
 .input:-webkit-autofill {
@@ -53,13 +55,15 @@
   transition: background-color 5000s ease-in-out 0s; /* Prevent flashing effect */
 }
 
+/* Password Toggle Icon */
 .password-toggle-icon {
   position: absolute;
   right: 10px;
   cursor: pointer;
-  color: #002E83;
+  color: #002e83;
 }
 
+/* Dropdown Styling */
 .custom-dropdown {
   display: flex;
   flex-grow: 1;
@@ -71,7 +75,7 @@
   transform: translateY(-50%);
   right: 10px;
   cursor: pointer;
-  color: #002E83;
+  color: #002e83;
 }
 
 .dropdown-options {
@@ -101,4 +105,102 @@
 .dropdown-option:hover {
   background-color: #f0f0f0;
   border-radius: 4px; /* Add slight rounding to hover effect for better appearance */
+}
+
+/* DateTime Input Box Styling */
+.datetime-box {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping */
+  align-items: center;
+  gap: 5px; /* Add spacing between segments */
+  padding: 7px 10px;
+  border: 1px solid #afd7f8;
+  border-radius: 8px;
+  background-color: #fff;
+  width: 100%;
+  box-sizing: border-box; /* Include padding and border in the width */
+}
+
+.datetime-segment {
+  font-size: 14px;
+  text-align: left; /* Align text and cursor to the left */
+  border: none;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #000;
+  width: 3ch; /* Adjust width to fit 3 characters (e.g., "DD" or "MM") */
+}
+
+.datetime-segment[name="year"] {
+  width: 4ch; /* Adjust width to fit 4 characters (e.g., "YYYY") */
+}
+
+.datetime-segment[name="hour"],
+.datetime-segment[name="minute"] {
+  width: 3ch; /* Adjust width to fit 2 characters (e.g., "HH" or "MM") */
+}
+
+/* Ensure hour and minute wrap to the next line */
+.datetime-box > .time-group {
+  display: flex;
+  gap: 5px;
+  flex-basis: 100%; /* Force the time group to wrap to the next line */
+  justify-content: flex-start; /* Align hour and minute to the left */
+}
+
+.datetime-segment::placeholder {
+  color: #6b6b6b;
+}
+
+.datetime-segment:focus {
+  outline: none;
+  background-color: #f0f8ff; /* Light background on focus */
+  border-radius: 4px;
+}
+
+.datetime-segment::placeholder {
+  color: #6b6b6b;
+}
+
+.datetime-segment:focus {
+  outline: none;
+  background-color: #f0f8ff; /* Light background on focus */
+  border-radius: 4px;
+}
+
+.datetime-box:focus-within {
+  border-color: #002e83; /* Highlight the box when any input is focused */
+  box-shadow: 0 0 3px rgba(0, 46, 131, 0.5);
+}
+
+/* Remove default spinner controls */
+.datetime-segment::-webkit-inner-spin-button,
+.datetime-segment::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.datetime-segment {
+  -moz-appearance: textfield; /* Remove spinner controls for Firefox */
+}
+
+/* General styling for disabled inputs */
+.input:disabled,
+.custom-dropdown.disabled,
+.datetime-box.disabled {
+  cursor: not-allowed; /* Change cursor to not-allowed */
+  opacity: 0.75; /* Reduce opacity to 75% */
+}
+
+/* Disabled dropdown options */
+.dropdown-option.disabled {
+  cursor: not-allowed; /* Change cursor to not-allowed */
+  opacity: 0.75; /* Reduce opacity to 75% */
+  pointer-events: none; /* Prevent interaction */
+}
+
+/* Disabled datetime segments */
+.datetime-segment:disabled {
+  cursor: not-allowed; /* Change cursor to not-allowed */
+  opacity: 0.75; /* Reduce opacity to 75% */
 }

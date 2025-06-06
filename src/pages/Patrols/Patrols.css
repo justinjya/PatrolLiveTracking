@@ -5,6 +5,31 @@
   padding-bottom: 40px;
 }
 
+.patrols-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.add-patrol-button {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  color: #002e83;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.patrol-form-label {
+  font-size: 11px;
+  color: #BCBDC6;
+}
+
 .patrols-title {
   text-align: start;
   margin: 0;

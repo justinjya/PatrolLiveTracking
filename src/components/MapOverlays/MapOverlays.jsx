@@ -209,7 +209,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         })}
 
       {/* Render markers for when a cluster is selected */}
-      {isEditing !== "Patrol Points" && selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
+      {isEditing !== "Patrol Points" && tempPatrolPoints.length === 0 && selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
         <AdvancedMarker
           key={`cluster-${selectedCluster.id}-coordinate-${index}`}
           position={{ lat: coordinate[0], lng: coordinate[1] }}
@@ -219,7 +219,7 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
       ))}
 
       {/* Render markers for when editing cluster patrol points */}
-      {isEditing === "Patrol Points" && tempPatrolPoints.map((marker, index) => (
+      {tempPatrolPoints.map((marker, index) => (
         <AdvancedMarker
           key={`patrolPoint-${index}`}
           position={{ lat: marker[0], lng: marker[1] }}
