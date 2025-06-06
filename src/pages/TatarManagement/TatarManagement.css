@@ -17,7 +17,8 @@
   margin: 0;
 }
 
-.add-tatar-button, .add-officer-button {
+.add-tatar-button,
+.add-officer-button {
   background-color: transparent;
   padding: 0;
   border: none;
@@ -30,7 +31,8 @@
   margin-bottom: 3px;
 }
 
-.add-tatar-form-container, .officer-form-container {
+.add-tatar-form-container,
+.officer-form-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -41,7 +43,8 @@
   margin-bottom: 0;
 }
 
-.add-tatar-form, .officer-form {
+.add-tatar-form,
+.officer-form {
   display: flex;
   flex-direction: column;
   gap: 7px;
@@ -55,13 +58,13 @@
 .edit-patrol-point-hint {
   text-align: left;
   font-size: 11px;
-  color: #BCBDC6;
+  color: #bcbdc6;
 }
 
 .edit-patrol-point-count {
   text-align: right;
   font-size: 11px;
-  color: #8F9098;
+  color: #8f9098;
   font-size: 11px;
   margin-bottom: 5px;
 }
@@ -77,14 +80,16 @@
   color: #002e83;
   background-color: transparent;
   border: none;
-  font-size: 12px
+  font-size: 12px;
 }
 
 .tatar-form-submit-button {
   flex-grow: 2;
 }
 
-.tatar-form-button:disabled, .tatar-edit-patrol-points-button:disabled, .tatar-delete-tatar-button:disabled {
+.tatar-form-button:disabled,
+.tatar-edit-patrol-points-button:disabled,
+.tatar-delete-tatar-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -135,15 +140,18 @@
 
 .tatar-email {
   font-size: 12px;
-  color: #B8B9C2;
+  color: #b8b9c2;
 }
 
 .tatar-coordinates {
   font-size: 12px;
-  color: #B8B9C2;
+  color: #b8b9c2;
 }
 
-.tatar-view-on-map-button, .tatar-edit-patrol-points-button, .tatar-delete-tatar-button, .tatar-form-button {
+.tatar-view-on-map-button,
+.tatar-edit-patrol-points-button,
+.tatar-delete-tatar-button,
+.tatar-form-button {
   border: none;
   border-radius: 20px;
   padding: 5px 10px;
@@ -157,12 +165,12 @@
 
 .tatar-delete-tatar-button {
   background-color: transparent;
-  color: #9F1B1A;
+  color: #9f1b1a;
 }
 
 .tatar-delete-tatar-button.confirm-delete-button {
   background-color: transparent;
-  color: #9F1B1A;
+  color: #9f1b1a;
 }
 
 .tatar-delete-tatar-button.cancel-button {
@@ -179,7 +187,7 @@
   background-color: transparent;
   padding: 0;
   border: none;
-  color: #002E83;
+  color: #002e83;
   cursor: pointer;
   font-size: 12px;
   display: flex;
@@ -261,11 +269,11 @@
 }
 
 .officer-card-button.delete-button {
-  color: #9F1B1A;
+  color: #9f1b1a;
 }
 
 .officer-card-button.confirm-delete-button {
-  color: #9F1B1A;
+  color: #9f1b1a;
   border: none;
   cursor: pointer;
 }

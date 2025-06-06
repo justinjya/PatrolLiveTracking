@@ -22,14 +22,14 @@ function Input({
   const dropdownRef = useRef(null); // Ref for the dropdown container
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev);
+    setIsPasswordVisible(prev => !prev);
   };
 
   const inputType = type === "password" && isPasswordVisible ? "text" : type;
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false); // Collapse dropdown
       }
@@ -63,14 +63,14 @@ function Input({
             placeholder={placeholder || "Select an option"}
             required={required}
             readOnly // Make the input read-only for dropdown
-            value={options.find((option) => option.value === value)?.label || ""} // Display the selected option
-            onClick={() => !disabled && setIsDropdownOpen((prev) => !prev)} // Toggle dropdown visibility if not disabled
+            value={options.find(option => option.value === value)?.label || ""} // Display the selected option
+            onClick={() => !disabled && setIsDropdownOpen(prev => !prev)} // Toggle dropdown visibility if not disabled
             disabled={disabled} // Disable the input if the disabled prop is true
           />
           <FontAwesomeIcon
             icon={faChevronDown}
             className={`dropdown-toggle-icon ${disabled ? "disabled" : ""}`} // Add disabled class if the input is disabled
-            onClick={() => !disabled && setIsDropdownOpen((prev) => !prev)} // Toggle dropdown visibility if not disabled
+            onClick={() => !disabled && setIsDropdownOpen(prev => !prev)} // Toggle dropdown visibility if not disabled
           />
           {isDropdownOpen && !disabled && (
             <ul className="dropdown-options">
@@ -99,13 +99,15 @@ function Input({
     return (
       <div className={`input-container ${position ? (position === "right" ? "icon-right" : "icon-left") : ""}`}>
         {icon && position && <FontAwesomeIcon icon={icon} className="input-icon" />}
-        <div className={`datetime-box ${disabled ? "disabled" : ""}`}> {/* Add disabled class if the input is disabled */}
+        <div className={`datetime-box ${disabled ? "disabled" : ""}`}>
+          {" "}
+          {/* Add disabled class if the input is disabled */}
           <input
             type="number"
             name="day"
             placeholder="dd"
             value={value?.day || ""}
-            onChange={(e) => {
+            onChange={e => {
               if (!disabled) {
                 const rawValue = e.target.value;
                 const value = rawValue === "" ? "" : Math.max(1, Math.min(31, parseInt(rawValue) || 0));
@@ -124,7 +126,7 @@ function Input({
             name="month"
             placeholder="mm"
             value={value?.month || ""}
-            onChange={(e) => {
+            onChange={e => {
               if (!disabled) {
                 const rawValue = e.target.value;
                 const value = rawValue === "" ? "" : Math.max(1, Math.min(12, parseInt(rawValue) || 0));
@@ -143,7 +145,7 @@ function Input({
             name="year"
             placeholder="yyyy"
             value={value?.year || ""}
-            onChange={(e) => {
+            onChange={e => {
               if (!disabled) {
                 const rawValue = e.target.value;
                 const value = rawValue === "" ? "" : Math.max(0, Math.min(2100, parseInt(rawValue) || 0));
@@ -156,13 +158,13 @@ function Input({
             required={required}
             disabled={disabled} // Disable the input if the disabled prop is true
           />
-                    <div className="time-group">
+          <div className="time-group">
             <input
               type="number"
               name="hour"
               placeholder="hh"
               value={value?.hour === 0 ? "0" : value?.hour || ""} // Show "0" if the value is 0
-              onChange={(e) => {
+              onChange={e => {
                 if (!disabled) {
                   const rawValue = e.target.value;
                   const parsedValue = rawValue === "" ? "" : Math.max(0, Math.min(23, parseInt(rawValue) || 0));
@@ -181,7 +183,7 @@ function Input({
               name="minute"
               placeholder="mm"
               value={value?.minute === 0 ? "0" : value?.minute || ""} // Show "0" if the value is 0
-              onChange={(e) => {
+              onChange={e => {
                 if (!disabled) {
                   const rawValue = e.target.value;
                   const parsedValue = rawValue === "" ? "" : Math.max(0, Math.min(59, parseInt(rawValue) || 0));

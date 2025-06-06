@@ -2,14 +2,14 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
+import { push, ref, set } from "firebase/database";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Input from "../../components/Input/Input";
+import { useFirebase } from "../../contexts/FirebaseContext";
 import { useMapDataContext } from "../../contexts/MapDataContext";
 import { shiftOptions, typeOptions } from "../../utils/OfficerOptions";
 import { timelinessLabels } from "../../utils/TimelinessLabels";
 import "./Patrols.css";
-import { push, ref, set } from "firebase/database";
-import { useFirebase } from "../../contexts/FirebaseContext";
 
 function Patrols() {
   const { db } = useFirebase();
@@ -286,11 +286,7 @@ function Patrols() {
       startDateTime.hour !== "" &&
       startDateTime.minute !== "";
     const isEndDateTimeValid =
-      endDateTime.day &&
-      endDateTime.month &&
-      endDateTime.year &&
-      endDateTime.hour !== "" &&
-      endDateTime.minute !== "";
+      endDateTime.day && endDateTime.month && endDateTime.year && endDateTime.hour !== "" && endDateTime.minute !== "";
 
     if (!tatar || !officer || !isStartDateTimeValid || !isEndDateTimeValid) {
       return false; // Form is incomplete

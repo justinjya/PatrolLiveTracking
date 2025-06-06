@@ -19,8 +19,8 @@
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #002E83;
-  color: #FBFCFD;
+  background-color: #002e83;
+  color: #fbfcfd;
   padding: 10px 20px;
   border-radius: 20px;
   display: flex;
@@ -32,7 +32,7 @@
 .editing-indicator-close-button {
   background: transparent;
   border: none;
-  color:#FBFCFD;
+  color: #fbfcfd;
   cursor: pointer;
   padding: 0;
 }
@@ -88,7 +88,7 @@
   height: 5px;
   margin-right: 10px;
   border-radius: 2px;
-  background-color: #007BFF; /* Blue color for route taken */
+  background-color: #007bff; /* Blue color for route taken */
 }
 
 .no-tasks-message {

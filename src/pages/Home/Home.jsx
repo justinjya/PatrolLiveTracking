@@ -18,7 +18,8 @@ import TatarManagement from "../TatarManagement/TatarMangement";
 import "./Home.css";
 
 function Home() {
-  const { loading, initialized, isEditing, setIsEditing, selectedCluster, setTempPatrolPoints, selectedTask } = useMapDataContext();
+  const { loading, initialized, isEditing, setIsEditing, selectedCluster, setTempPatrolPoints, selectedTask } =
+    useMapDataContext();
 
   return (
     <div>
