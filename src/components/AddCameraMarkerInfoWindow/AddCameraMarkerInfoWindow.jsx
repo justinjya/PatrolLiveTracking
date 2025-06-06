@@ -5,7 +5,7 @@ import Input from "../Input/Input";
 import "./AddCameraMarkerInfoWindow.css";
 
 function AddCameraMarkerInfoWindow({ position, closeInfoWindow }) {
-  const { db } = useFirebase(); // Access setMarkers from context to update markers state\
+  const { db } = useFirebase(); // Access setMarkers from context to update markers state
   const [isAddingMarker, setIsAddingMarker] = useState(false); // Track whether the dropdown is visible
   const [markerName, setMarkerName] = useState(""); // Track the marker name input
   const [isFormValid, setIsFormValid] = useState(false); // Track form validity
