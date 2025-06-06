@@ -292,6 +292,27 @@ function Patrols() {
       return false; // Form is incomplete
     }
 
+    // Construct full Date objects for start and end times
+    const startDate = new Date(
+      startDateTime.year,
+      startDateTime.month - 1, // JavaScript months are 0-indexed
+      startDateTime.day,
+      startDateTime.hour,
+      startDateTime.minute
+    );
+    const endDate = new Date(
+      endDateTime.year,
+      endDateTime.month - 1, // JavaScript months are 0-indexed
+      endDateTime.day,
+      endDateTime.hour,
+      endDateTime.minute
+    );
+
+    // Ensure endDate is not before startDate
+    if (endDate <= startDate) {
+      return false; // End date must be after start date
+    }
+
     // Validate date-time inputs based on the officer's shift
     const shiftDetails = shiftOptions.find(option => option.value === officerObj.shift);
     if (shiftDetails) {
@@ -302,10 +323,12 @@ function Patrols() {
         return new Date(0, 0, 0, hour, minute); // Create a Date object for comparison
       };
 
-      const startTime = new Date(0, 0, 0, startDateTime.hour, startDateTime.minute);
-      const endTime = new Date(0, 0, 0, endDateTime.hour, endDateTime.minute);
       const shiftStartTime = parseTime(minTime);
       const shiftEndTime = parseTime(maxTime);
+
+      // Extract only the time portion of startDate and endDate for comparison
+      const startTime = new Date(0, 0, 0, startDate.getHours(), startDate.getMinutes());
+      const endTime = new Date(0, 0, 0, endDate.getHours(), endDate.getMinutes());
 
       // Handle shifts that span midnight (e.g., "23:00" to "07:00")
       const isStartTimeValid =
@@ -320,11 +343,6 @@ function Patrols() {
 
       if (!isStartTimeValid || !isEndTimeValid) {
         return false; // Start or end time is outside the shift range
-      }
-
-      // Ensure endTime is after startTime
-      if (endTime <= startTime) {
-        return false; // End time must be after start time
       }
     }
 
