@@ -16,7 +16,7 @@ function Sidebar({ children }) {
     setSelectedCluster,
     setSelectedCamera,
     setTempPatrolPoints,
-    clearPolylines,
+    clearPolylines
   } = useMapDataContext();
 
   return (

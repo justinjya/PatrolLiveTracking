@@ -10,8 +10,6 @@ import Incidents from "../../pages/Incidents/Incidents";
 import Patrols from "../../pages/Patrols/Patrols";
 import AddCameraMarkerInfoWindow from "../AddCameraMarkerInfoWindow/AddCameraMarkerInfoWindow";
 import "./MapOverlays.css";
-import { ref, remove } from "firebase/database";
-import { useFirebase } from "../../contexts/FirebaseContext";
 
 function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOptions }) {
   const {
@@ -211,14 +209,16 @@ function MapOverlays({ infoWindow, closeInfoWindow, handleMarkerClick, displayOp
         })}
 
       {/* Render markers for when a cluster is selected */}
-      {isEditing !== "Patrol Points" && tempPatrolPoints.length === 0 && selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
-        <AdvancedMarker
-          key={`cluster-${selectedCluster.id}-coordinate-${index}`}
-          position={{ lat: coordinate[0], lng: coordinate[1] }}
-        >
-          <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
-        </AdvancedMarker>
-      ))}
+      {isEditing !== "Patrol Points" &&
+        tempPatrolPoints.length === 0 &&
+        selectedCluster?.cluster_coordinates?.map((coordinate, index) => (
+          <AdvancedMarker
+            key={`cluster-${selectedCluster.id}-coordinate-${index}`}
+            position={{ lat: coordinate[0], lng: coordinate[1] }}
+          >
+            <Pin background="#FE2B25" glyphColor={"#8D0004"} borderColor={"#FFFEFE"} />
+          </AdvancedMarker>
+        ))}
 
       {/* Render markers for when editing cluster patrol points */}
       {tempPatrolPoints.map((marker, index) => (

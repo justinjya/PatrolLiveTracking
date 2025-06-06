@@ -8,6 +8,6 @@ export const timelinessLabels = {
     style: { backgroundColor: "#8F7100" }
   },
   idle: {
-    label: "Tidak Aktif",
+    label: "Tidak Aktif"
   }
 };
