@@ -4,7 +4,7 @@ import { useFirebase } from "../../contexts/FirebaseContext";
 import Input from "../Input/Input";
 import "./AddCameraMarkerInfoWindow.css";
 
-function AddMarkerInfoWindow({ position, closeInfoWindow }) {
+function AddCameraMarkerInfoWindow({ position, closeInfoWindow }) {
   const { db } = useFirebase(); // Access setMarkers from context to update markers state\
   const [isAddingMarker, setIsAddingMarker] = useState(false); // Track whether the dropdown is visible
   const [markerName, setMarkerName] = useState(""); // Track the marker name input
