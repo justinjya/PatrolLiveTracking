@@ -1,5 +1,5 @@
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faChevronUp, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faCity, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import React, { useEffect, useRef, useState } from "react";
@@ -69,6 +69,9 @@ function IncidentCard({ incident, onViewClick, isSelected }) {
       <div className="incident-content-container">
         <div className="incident-content">
           <div className="incident-title">{incident.title}</div>
+          <div className="incident-subtitle">
+            <FontAwesomeIcon icon={faCity} />&nbsp;&nbsp;&nbsp;{incident.clusterName}
+          </div>
           <div className="incident-timestamp">
             <FontAwesomeIcon icon={faClock} />
             &nbsp;&nbsp;&nbsp;
