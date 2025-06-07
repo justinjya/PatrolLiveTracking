@@ -1,5 +1,5 @@
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faChevronUp, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faCity, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import { push, ref, set } from "firebase/database";
@@ -809,6 +809,10 @@ function IncidentItem({ incident, onViewClick }) {
       <div className="incident-content-container">
         <div className="incident-content patrol-item-incident-content">
           <div className="incident-title patrol-item-incident-title">{incident.title}</div>
+          <div className="incident-subtitle patrol-item-incident-subtitle">
+            <FontAwesomeIcon icon={faCity} style={{ color: "#3535f3" }} />
+            &nbsp;&nbsp;&nbsp;{incident.clusterName}
+          </div>
           <div className="incident-timestamp">
             <FontAwesomeIcon icon={faClock} style={{ color: "#3535F3" }} />
             &nbsp;&nbsp;&nbsp;

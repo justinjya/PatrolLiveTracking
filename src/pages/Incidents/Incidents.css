@@ -52,6 +52,11 @@
   color: #213547;
 }
 
+.incident-subtitle {
+  font-size: 12px;
+  text-align: start;
+}
+
 .incident-coordinates {
   font-size: 11px; /* Smaller font size for coordinates */
 }
