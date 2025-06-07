@@ -407,6 +407,10 @@
   font-size: 12px;
 }
 
+.patrol-item-incident-subtitle {
+  font-size: 12px;
+}
+
 .patrol-item-incidents strong {
   color: #3535f3;
 }
