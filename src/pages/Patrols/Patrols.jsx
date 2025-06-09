@@ -1,5 +1,12 @@
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faChevronUp, faCity, faLocationDot, faRoute, faUserShield } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronUp,
+  faCity,
+  faLocationDot,
+  faRoute,
+  faUserShield
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import { push, ref, set } from "firebase/database";
@@ -352,29 +359,44 @@ function Patrols() {
   const handleSubmit = async e => {
     e.preventDefault(); // Prevent default form submission behavior
 
-    // Prepare the data for the new task
+    const toLocaleIsoString = date => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+      const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    };
+
     const newTask = {
       clusterId: tatarObj.id, // Selected cluster ID
       clusterName: tatarObj.name, // Selected cluster name
       assigned_route: tempPatrolPoints, // Selected patrol points
       userId: officerObj.id, // Selected officer ID
       officerName: officerObj.name, // Selected officer name
-      assignedStartTime: new Date(
-        startDateTime.year,
-        startDateTime.month - 1, // JavaScript months are 0-indexed
-        startDateTime.day,
-        startDateTime.hour,
-        startDateTime.minute
-      ).toISOString(), // Convert to ISO string
-      assignedEndTime: new Date(
-        endDateTime.year,
-        endDateTime.month - 1,
-        endDateTime.day,
-        endDateTime.hour,
-        endDateTime.minute
-      ).toISOString(), // Convert to ISO string
+      assignedStartTime: toLocaleIsoString(
+        new Date(
+          startDateTime.year,
+          startDateTime.month - 1, // JavaScript months are 0-indexed
+          startDateTime.day,
+          startDateTime.hour,
+          startDateTime.minute
+        )
+      ), // Convert to locale ISO string
+      assignedEndTime: toLocaleIsoString(
+        new Date(
+          endDateTime.year,
+          endDateTime.month - 1, // JavaScript months are 0-indexed
+          endDateTime.day,
+          endDateTime.hour,
+          endDateTime.minute
+        )
+      ), // Convert to locale ISO string
       status: "active", // Default status for a new task
-      createdAt: new Date().toISOString() // Current timestamp
+      createdAt: toLocaleIsoString(new Date()) // Current timestamp in locale ISO format
     };
 
     try {
