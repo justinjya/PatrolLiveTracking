@@ -10,7 +10,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMap } from "@vis.gl/react-google-maps";
 import { push, ref, set } from "firebase/database";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Input from "../../components/Input/Input";
 import { useFirebase } from "../../contexts/FirebaseContext";
 import { useMapDataContext } from "../../contexts/MapDataContext";
