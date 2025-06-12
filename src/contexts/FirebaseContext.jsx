@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { getDatabase } from "firebase/database";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 // Create the Firebase context
 const FirebaseContext = createContext();
@@ -45,7 +45,10 @@ export const FirebaseProvider = ({ children, config }) => {
     return () => unsubscribe();
   }, [auth, config]);
 
-  return <FirebaseContext.Provider value={{ db, auth, isAuthenticated }}>{children}</FirebaseContext.Provider>;
+  // return <FirebaseContext.Provider value={{ db, auth, isAuthenticated }}>{children}</FirebaseContext.Provider>;
+  return (
+    <FirebaseContext.Provider value={{ db: null, auth: null, isAuthenticated }}>{children}</FirebaseContext.Provider>
+  );
 };
 
 // Custom hook to use the Firebase context

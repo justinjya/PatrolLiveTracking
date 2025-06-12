@@ -62,41 +62,37 @@ export const MapDataProvider = ({ children }) => {
     });
   };
 
-  useEffect(() => {
-    const patrolsRef = ref(db, "tasks");
-    const reportsRef = ref(db, "reports");
-    const tatarsRef = ref(db, "users");
-    const camerasRef = ref(db, "cameras");
-
-    let fetchCount = 0; // Track the number of completed fetches
-    const totalFetches = 4; // Total number of Firebase subscriptions
-
-    const handleFetchComplete = () => {
-      fetchCount += 1;
-      if (fetchCount === totalFetches) {
-        setInitialized(true); // Set initialized to true after all fetches are complete
-        setLoading(false); // Set loading to false after all fetches are complete
-      }
-    };
-
-    setLoading(true); // Set loading to true before starting fetches
-    const unsubscribePatrols = subscribeToFirebase(patrolsRef, setMarkers, null, handleFetchComplete);
-    const unsubscribeReports = subscribeToFirebase(reportsRef, setMarkers, null, handleFetchComplete);
-    const unsubscribeTatars = subscribeToFirebase(
-      tatarsRef,
-      setMarkers,
-      tatar => tatar.role === "patrol",
-      handleFetchComplete
-    );
-    const unsubscribeCameras = subscribeToFirebase(camerasRef, setMarkers, null, handleFetchComplete);
-
-    // Cleanup subscriptions on unmount
-    return () => {
-      unsubscribePatrols();
-      unsubscribeReports();
-      unsubscribeTatars();
-      unsubscribeCameras();
-    };
+    useEffect(() => {
+    setLoading(true);
+  
+    fetch("/data/firebase-export.json")
+      .then(res => res.json())
+      .then(data => {
+        // Transform Firebase-style objects to arrays with id
+        const toArray = obj =>
+          obj
+            ? Object.entries(obj).map(([id, value]) => ({ id, ...value }))
+            : [];
+  
+        setMarkers({
+          tatars: toArray(data.users),
+          patrols: toArray(data.tasks),
+          incidents: toArray(data.reports),
+          cameras: toArray(data.cameras),
+        });
+        setInitialized(true);
+        setLoading(false);
+      })
+      .catch(() => {
+        setMarkers({
+          tatars: [],
+          patrols: [],
+          incidents: [],
+          cameras: [],
+        });
+        setInitialized(true);
+        setLoading(false);
+      });
   }, []);
 
   // Utility function to clear polylines
